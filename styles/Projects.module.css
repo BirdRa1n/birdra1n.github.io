@@ -1,0 +1,123 @@
+.box {
+    background-color: RGBA(0, 0, 0, 0.04);
+    padding: 5px;
+    height: auto;
+}
+
+.ModalBody {
+    max-width: 430px;
+}
+
+.scroll {
+    overflow-y: scroll;
+    padding: 70px;
+    display: flex;
+}
+
+.row_container {
+    padding: 10px;
+
+}
+
+.name {
+    margin-bottom: -40px;
+    width: 150px; 
+}
+
+
+.public_repositories {
+    margin-bottom: -5.1rem;
+    margin-top: -2.1rem;
+}
+
+.footerModal {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.descriptionModal {
+    top: -20px;
+    position: relative;
+    font-size: 15px;
+}
+
+.iconSearch {
+    color: rgb(234, 234, 234);
+}
+.searchNavBox{
+    left: 1px;
+}
+
+
+@media (max-width:920px) {
+    .row_container {
+        display: grid;
+        padding: 0cm;
+    }
+
+    .scroll {
+        overflow-y: scroll;
+        height: 160vw;
+        padding: 10px;
+    }
+
+    .public_repositories {
+        margin-bottom: 0rem;
+        margin-top: 0rem;
+    }
+    .name {
+        margin-bottom: -10px;
+        width:20.1rem;
+    }
+    .boxIco{
+        display: none;
+    }
+    .searchNavBox{
+        left: -0px;
+    }   
+}
+@media (min-width:420px) {
+    .searchNavBox{
+        left: -80px;
+    }  
+}
+@media (min-width:920px) {
+    .searchNavBox{
+        left: -0px;
+    }  
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+
+    .icon, .public_repositories {
+        color: white;
+    }
+
+    .name {
+        color: white
+    }
+
+    .name_project {
+        color: aliceblue;
+    }
+
+    .box {
+        background-color: rgb(43, 43, 43);
+        height: auto;
+    }
+
+    .description {
+        color: rgb(224, 223, 223);
+    }
+
+    .row_container {
+        background-color: #222;
+        color: #222;
+        padding: 10px;
+    }
+
+
+}

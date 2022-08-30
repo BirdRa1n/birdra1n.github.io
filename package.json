@@ -1,0 +1,36 @@
+{
+  "name": "birdra1n",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "BirdRa1n",
+  "license": "ISC",
+  "private": true,
+  "description": "",
+  "homepage": "https://birdra1n.github.io",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.9",
+    "@chakra-ui/react": "^2.2.9",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "axios": "^0.27.2",
+    "framer-motion": "^6.5.1",
+    "next": "12.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.4.0",
+    "react-markdown": "^8.0.3",
+    "remark-gfm": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "8.23.0",
+    "eslint-config-next": "12.2.5"
+  }
+}

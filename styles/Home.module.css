@@ -1,0 +1,140 @@
+.container {
+  padding: 0 2rem;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 4rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.boxindex {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer {
+  display: flex;
+  flex: 1;
+  padding: 2rem 0;
+  border-top: 1px solid #eaeaea;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.title a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.title a:hover,
+.title a:focus,
+.title a:active {
+  text-decoration: underline;
+}
+
+.title {
+  margin: 0;
+  line-height: 1.15;
+  font-size: 4rem;
+}
+
+.title,
+.description {
+  text-align: center;
+}
+
+.btn_hello {
+  margin-top: 5.1rem;
+  
+}
+.name {
+  margin-top: -1.3rem;
+  background: radial-gradient(
+    50% 170.64% at 50% 50%,
+    #2504c7 0%,
+    #b52684 41.67%,
+    #670bff 91.89%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+.nav {
+  height: 3px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    #ff0000 0%,
+    #9206ff 57.81%,
+    #5f00bd 100%
+  );
+}
+
+.code {
+  background: #fafafa;
+  border-radius: 5px;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+.logo {
+  height: 1.2em;
+}
+.description {
+  width: 400px;
+}
+.hello {
+  right: 5.9rem;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    width: 100%;
+    flex-direction: column;
+  }
+  .description {
+    width: 340px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .footer {
+    border-top: 1px solid #eaeaea;
+    border-top-width: 50%;
+    border-color: rgb(255, 255, 255);
+    background-color: #222;
+  }
+  .main {
+    background-color: #222;
+    color: #222;
+  }
+
+  .hello {
+    color: #fff;
+  }
+  .description {
+    color: #fff;
+  }
+  .logo img {
+    filter: invert(1);
+  }
+  .footer_text {
+    color: #fff;
+  }
+}
