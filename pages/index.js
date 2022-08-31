@@ -240,12 +240,16 @@ export default function Home() {
           <title>{"I'm Dário Jr"}</title>
           <meta
             name="description"
+            
             content="I'm Dário, a young programmer who loves to learn new things. I am passionate about technology and programming!"
           />
           <link
             rel="icon"
             href="https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif"
           />
+          <meta prefix="og: http://birdra1n.github.io" /> 
+          <meta property="og:image" content={"https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif"} />
+
         </Head>
 
         <div className={styles.nav}></div>
