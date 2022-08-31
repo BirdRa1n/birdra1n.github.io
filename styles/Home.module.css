@@ -63,12 +63,7 @@
 }
 .name {
   margin-top: -1.3rem;
-  background: radial-gradient(
-    50% 170.64% at 50% 50%,
-    #2504c7 0%,
-    #b52684 41.67%,
-    #670bff 91.89%
-  );
+  background: radial-gradient(50% 170.64% at 50% 50%, #FF9900 0%, #EDB900 41.67%, #FF5C00 91.89%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -76,12 +71,7 @@
 }
 .nav {
   height: 3px;
-  background: radial-gradient(
-    50% 50% at 50% 50%,
-    #ff0000 0%,
-    #9206ff 57.81%,
-    #5f00bd 100%
-  );
+  background: radial-gradient(50% 50% at 50% 50%, #DFAE00 0%, #FFE600 35.42%, #FF8A00 57.29%, #ECAA00 100%);
 }
 
 .code {
@@ -100,7 +90,7 @@
   width: 400px;
 }
 .hello {
-  right: 5.9rem;
+  right: 4.2rem;
 }
 
 @media (max-width: 600px) {

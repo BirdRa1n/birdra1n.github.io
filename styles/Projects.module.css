@@ -1,123 +1,149 @@
 .box {
-    background-color: RGBA(0, 0, 0, 0.04);
-    padding: 5px;
-    height: auto;
+  background-color: RGBA(0, 0, 0, 0.04);
+  padding: 5px;
+  height: auto;
 }
 
 .ModalBody {
-    max-width: 430px;
+  max-width: 430px;
 }
 
 .scroll {
-    overflow-y: scroll;
-    padding: 70px;
-    display: flex;
-}
-
-.row_container {
-    padding: 10px;
-
+  overflow-y: scroll;
+  padding: 10px;
+  display: flex;
+  overflow: hidden; /* Hide scrollbars */
 }
 
 .name {
-    margin-bottom: -40px;
-    width: 150px; 
+  margin-bottom: -40px;
+  width: 150px;
+  background: radial-gradient(
+    50% 170.64% at 50% 50%,
+    #ff9900 0%,
+    #edb900 41.67%,
+    #ff5c00 91.89%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }
 
-
 .public_repositories {
-    margin-bottom: -5.1rem;
-    margin-top: -2.1rem;
+  margin-bottom: -5.1rem;
+  margin-top: -2.1rem;
 }
 
 .footerModal {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .descriptionModal {
-    top: -20px;
-    position: relative;
-    font-size: 15px;
+  top: -20px;
+  position: relative;
+  font-size: 15px;
 }
 
 .iconSearch {
-    color: rgb(234, 234, 234);
+  color: rgb(234, 234, 234);
 }
-.searchNavBox{
-    left: 1px;
-}
-
-
-@media (max-width:920px) {
-    .row_container {
-        display: grid;
-        padding: 0cm;
-    }
-
-    .scroll {
-        overflow-y: scroll;
-        height: 160vw;
-        padding: 10px;
-    }
-
-    .public_repositories {
-        margin-bottom: 0rem;
-        margin-top: 0rem;
-    }
-    .name {
-        margin-bottom: -10px;
-        width:20.1rem;
-    }
-    .boxIco{
-        display: none;
-    }
-    .searchNavBox{
-        left: -0px;
-    }   
-}
-@media (min-width:420px) {
-    .searchNavBox{
-        left: -80px;
-    }  
-}
-@media (min-width:920px) {
-    .searchNavBox{
-        left: -0px;
-    }  
+.searchNavBox {
+  left: 1px;
 }
 
+@media (max-width: 920px) {
+  .row_container {
+    display: grid;
+    padding: 0cm;
+  }
 
+  .scroll {
+    overflow-y: scroll;
+    height: 160vw;
+    padding: 10px;
+  }
+
+  .public_repositories {
+    margin-bottom: 0rem;
+    margin-top: 0rem;
+  }
+  .name {
+    margin-bottom: -10px;
+    width: 20.1rem;
+  }
+
+  .searchNavBox {
+    left: -0px;
+  }
+  .boxIco {
+    right: 10.1rem;
+    position: relative;
+  }
+}
+@media (min-width: 420px) {
+  .searchNavBox {
+    left: -80px;
+  }
+  .boxIco {
+    right: 11.1rem;
+    position: relative;
+  }
+}
+@media (min-width: 920px) {
+  .searchNavBox {
+    left: -0px;
+  }
+  .boxIco {
+    right: 1.1rem;
+    position: relative;
+  }
+}
+
+.row_container {
+  padding: 10px;
+}
+.boxIco {
+  width: 10px;
+}
 
 @media (prefers-color-scheme: dark) {
+  .icon,
+  .public_repositories {
+    color: white;
+  }
 
-    .icon, .public_repositories {
-        color: white;
-    }
+  .name {
+    background: radial-gradient(
+      50% 170.64% at 50% 50%,
+      #ff9900 0%,
+      #edb900 41.67%,
+      #ff5c00 91.89%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
 
-    .name {
-        color: white
-    }
+  .name_project {
+    color: aliceblue;
+  }
 
-    .name_project {
-        color: aliceblue;
-    }
+  .box {
+    background-color: rgb(43, 43, 43);
+    height: auto;
+  }
 
-    .box {
-        background-color: rgb(43, 43, 43);
-        height: auto;
-    }
+  .description {
+    color: rgb(224, 223, 223);
+  }
 
-    .description {
-        color: rgb(224, 223, 223);
-    }
-
-    .row_container {
-        background-color: #222;
-        color: #222;
-        padding: 10px;
-    }
-
-
+  .row_container {
+    background-color: #222;
+    color: #222;
+    padding: 10px;
+  }
 }
