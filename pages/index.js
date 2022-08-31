@@ -300,14 +300,14 @@ export default function Home() {
                 <Tab>Beta releases</Tab>
               </TabList>
               <TabPanels >
-                <TabPanel>
+                <TabPanel >
                   <Posts></Posts>
                 </TabPanel>
-                <TabPanel>
-                  <p></p>
+                <TabPanel h={'xl'}>
+                  
                 </TabPanel>
-                <TabPanel>
-                  <p></p>
+                <TabPanel h={'xl'}>
+                  
                 </TabPanel>
               </TabPanels>
 
