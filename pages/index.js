@@ -26,7 +26,7 @@ export default function Home() {
         />
         <link
           rel="icon"
-          href="https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif"
+          href="https://avatars.githubusercontent.com/u/53487868?v=4"
         />
       </Head>
 
