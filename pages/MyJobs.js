@@ -17,6 +17,8 @@ import {
     TabPanels,
     TabPanel,
 } from "@chakra-ui/react";
+import { TypeAnimation } from 'react-type-animation';
+
 
 //components
 import AllPosts from "../components/AllPosts";

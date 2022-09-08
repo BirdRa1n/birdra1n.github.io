@@ -9,9 +9,13 @@ import { Heading, Button, Text } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { motion, useRef } from "framer-motion";
 import React from "react";
+import { TypeAnimation } from 'react-type-animation';
+
 
 
 export default function Home() {
+  var description =
+    "I'm Dário, a young programmer who loves to learn new things. I am passionate about technology and programming!"
   return (
     <ChakraProvider>
       <Head>
@@ -65,7 +69,7 @@ export default function Home() {
               drag
             >
               <motion.div
-                initial="hidden"
+                initial='hidden'
                 animate="visible"
                 variants={{
                   hidden: {
@@ -137,17 +141,27 @@ export default function Home() {
           }}
         >
 
-          <Text
-            as="p"
-            fontSize={20}
-            textAlign="center"
-            marginTop={10}
+
+
+
+
+          <TypeAnimation
+            sequence={[
+              description,
+              10000, // Waits 1s
+            ]}
+            wrapper="div"
+            cursor={true}
+            repeat={Infinity}
             className={styles.description}
-          >
-            {
-              "I'm Dário, a young programmer who loves to learn new things. I am passionate about technology and programming!"
-            }
-          </Text>
+          />
+
+
+
+
+
+
+
         </motion.div>
         <motion.div
           initial={{ scale: 0 }}
