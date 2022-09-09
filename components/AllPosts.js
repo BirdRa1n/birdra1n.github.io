@@ -19,6 +19,7 @@ import {
     ModalCloseButton,
     useDisclosure,
 } from "@chakra-ui/react";
+import { FaJs, FaPhp, FaPython, FaHtml5 } from "react-icons/fa";
 
 export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
@@ -38,7 +39,6 @@ export default function AllPosts() {
             .get("https://api.github.com/repos/BirdRa1n/" + reponame + "/languages")
             .then(function (response) {
                 let responseRequest = JSON.stringify(response.data);
-                setLanguages(JSON.parse(responseRequest));
                 console.log(JSON.parse(responseRequest));
             });
 
@@ -57,6 +57,11 @@ export default function AllPosts() {
         getData();
 
     }, []);
+
+    function setIcons(language) {
+        alert(language)
+
+    }
 
     const Post = () => {
         return (
@@ -113,9 +118,9 @@ export default function AllPosts() {
                     ))}
                 </SimpleGrid>
 
-                <Modal isOpen={isOpen} onClose={onClose} size={"sm"}>
+                <Modal isOpen={isOpen} onClose={onClose} size={"sm"} >
                     <ModalOverlay />
-                    <ModalContent className={projects.modal_box}>
+                    <ModalContent className={projects.modal_box} >
                         <ModalHeader className={projects.ModalBody}>
                             {DataModal.reponame}
                         </ModalHeader>
@@ -128,7 +133,8 @@ export default function AllPosts() {
 
                         <ModalFooter>
                             <HStack className={projects.footerModal}>
-                                <Text>{DataModal.language}</Text>
+                                <Text>{DataModal.language == 'JavaScript' ? <FaJs fontSize={40}></FaJs> : DataModal.language == 'PHP' ? <FaPhp fontSize={40}></FaPhp> : DataModal.language == 'Python' ? <FaPython fontSize={40}></FaPython> : DataModal.language == 'HTML' ? <FaHtml5 fontSize={40}></FaHtml5> : DataModal.language}</Text>
+
                                 <div>
                                     <Button
                                         onClick={() => window.open(DataModal.url)}

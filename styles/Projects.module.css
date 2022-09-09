@@ -12,7 +12,6 @@
   overflow-y: scroll;
   padding: 10px;
   display: flex;
-  height: 500px;
 }
 .scroll::-webkit-scrollbar {
   display: none;  /* Safari and Chrome browsers */
@@ -85,6 +84,7 @@
     right: 10.1rem;
     position: relative;
   }
+ 
 }
 @media (min-width: 420px) {
   .searchNavBox {
@@ -111,6 +111,8 @@
 .boxIco {
   width: 10px;
 }
+
+
 
 @media (prefers-color-scheme: dark) {
   .icon,

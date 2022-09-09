@@ -125,7 +125,7 @@ export default function BoxIcons(){
                     borderRadius: "100%",
                 }}
             >
-                <a href="https://t.me/dariojr">
+                <a href="https://t.me/birdra1nchannel">
                     {" "}
                     <SiTelegram className={projects.icon} size={"20px"} />
                 </a>

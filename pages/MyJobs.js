@@ -17,7 +17,6 @@ import {
     TabPanels,
     TabPanel,
 } from "@chakra-ui/react";
-import { TypeAnimation } from 'react-type-animation';
 
 
 //components
@@ -43,6 +42,7 @@ export default function MyJobs() {
                 <meta property="og:image" content={"https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif"} />
 
             </Head>
+ 
 
             <div className={styles.nav}></div>
             <main className={projects.main}>
@@ -105,6 +105,7 @@ export default function MyJobs() {
                     <p className={styles.footer_text}>BirdRa1n</p>
                 </a>
             </footer>
+
         </ChakraProvider>
     )
 }
