@@ -55,6 +55,9 @@
 .searchNavBox {
   left: 1px;
 }
+.scroll{
+  height: 50vmax;
+}
 
 @media (max-width: 920px) {
   .row_container {
@@ -65,6 +68,7 @@
   .scroll {
     overflow-y: scroll;
     padding: 10px;
+   
   }
 
   .public_repositories {
@@ -83,6 +87,9 @@
     right: 10.1rem;
     position: relative;
   }
+  .scroll{
+    height: 100vmax;
+  }
  
 }
 @media (min-width: 420px) {
@@ -93,6 +100,7 @@
     right: 11.1rem;
     position: relative;
   }
+
 }
 @media (min-width: 920px) {
   .searchNavBox {
@@ -102,16 +110,16 @@
     right: 1.1rem;
     position: relative;
   }
+  
 }
+
+
 
 .row_container {
   padding: 10px;
 }
 .boxIco {
   width: 10px;
-}
-.scroll{
-  height: 50vmax;
 }
 .description {
   overflow: hidden;
