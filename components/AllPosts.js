@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+
 import {
     Modal,
     ModalOverlay,
@@ -25,12 +26,13 @@ export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
     const [DataModal, setDataModal] = useState({});
     const { isOpen, onOpen, onClose } = useDisclosure();
+
+
     function getData() {
         axios
             .get("https://api.github.com/users/birdra1n/repos")
             .then(function (response) {
-                let responseRequest = response.data;
-                setDataReq(responseRequest);
+                setDataReq(response.data);
             });
     }
 
@@ -38,8 +40,7 @@ export default function AllPosts() {
         axios
             .get("https://api.github.com/repos/BirdRa1n/" + reponame + "/languages")
             .then(function (response) {
-                let responseRequest = JSON.stringify(response.data);
-                console.log(JSON.parse(responseRequest));
+                console.log(JSON.parse(JSON.stringify(response.data)));
             });
 
         setDataModal({
@@ -55,43 +56,21 @@ export default function AllPosts() {
 
     useEffect(() => {
         getData();
-
     }, []);
-
-    function setIcons(language) {
-        alert(language)
-
-    }
 
     const Post = () => {
         return (
-            <div className={projects.scroll}>
+            <div className={projects.scroll} >
                 <SimpleGrid columns={[1, null, 3]} spacing="20px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
-                            initial="hidden"
-                            animate="visible"
-                            variants={{
-                                hidden: {
-                                    scale: 0.8,
-                                    opacity: 0,
-                                },
-                                visible: {
-                                    scale: 1,
-                                    opacity: 1,
-                                    transition: {
-                                        delay: 0.4,
-                                    },
-                                },
-                            }}
-                            whileHover={{
-                                scale: 1,
-                                rotate: 1,
-                            }}
-                            whileTap={{
-                                scale: 0.9,
-                                borderRadius: "100%",
-                            }}
+                        initial={{ scale: 0 }}
+                        animate={{ rotate: 0, scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 35,
+                          damping: 10
+                        }}
                             onClick={() =>
                                 setModalData(
                                     item.name,
@@ -105,6 +84,7 @@ export default function AllPosts() {
                                 height="100px"
                                 borderRadius={4}
                                 className={projects.box}
+
                             >
                                 <Heading size={50} className={projects.name_project}>
                                     {item.name}
@@ -152,10 +132,5 @@ export default function AllPosts() {
         )
     }
 
-    return (
-
-        <Post />
-
-
-    )
+    return (<Post />)
 }
