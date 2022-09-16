@@ -1,7 +1,7 @@
 
 import projects from "../styles/Projects.module.css";
 import {
-    HStack,
+    HStack, Stack, VStack,
 } from "@chakra-ui/react";
 import { Heading, Button, Text, SimpleGrid, Box } from "@chakra-ui/react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
@@ -20,7 +20,10 @@ import {
     ModalCloseButton,
     useDisclosure,
 } from "@chakra-ui/react";
-import { FaJs, FaPhp, FaPython, FaHtml5 } from "react-icons/fa";
+import { FaJs,FaCube, FaPhp, FaPython, FaHtml5,FaCode,FaCubes } from "react-icons/fa";
+import { DiPhp } from "react-icons/di";
+import { SiPhpstorm , SiPhpmyadmin} from "react-icons/si";
+
 
 export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
@@ -61,16 +64,16 @@ export default function AllPosts() {
     const Post = () => {
         return (
             <div className={projects.scroll} >
-                <SimpleGrid columns={[1, null, 3]} spacing="20px">
+                <SimpleGrid columns={[1, null, 2,3]} spacing="20px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ rotate: 0, scale: 1 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 35,
-                          damping: 10
-                        }}
+                            initial={{ scale: 0 }}
+                            animate={{ rotate: 0, scale: 1 }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 35,
+                                damping: 10
+                            }}
                             onClick={() =>
                                 setModalData(
                                     item.name,
@@ -84,15 +87,25 @@ export default function AllPosts() {
                                 height="100px"
                                 borderRadius={4}
                                 className={projects.box}
-
+                                alignContent={'space-between'}
                             >
-                                <Heading size={50} className={projects.name_project}>
-                                    {item.name}
-                                </Heading>
+                          
+                                  <HStack alignContent={'space-between'}>
+                                  <Heading size={50} className={projects.name_project}>
+                                        {item.name}
+                                    </Heading>
+                                    <Text className={projects.description}>
+                                    {item.language == 'JavaScript' ? <FaJs fontSize={20}></FaJs> : item.language == 'PHP' ? <SiPhpmyadmin fontSize={20}></SiPhpmyadmin> : item.language == 'Python' ? <FaPython fontSize={20}></FaPython> : item.language == 'HTML' ? <FaHtml5 fontSize={20}></FaHtml5> : < FaCube  fontSize={20}></FaCube>}
+                                    </Text>
+                                    
 
-                                <Text size={10} className={projects.description}>
-                                    {item.description}
-                                </Text>
+                                  </HStack>
+                                    <Text size={10} className={projects.description}>
+                                        {item.description}
+                                    </Text>
+                                  
+                                
+                            
                             </Box>
                         </motion.div>
                     ))}

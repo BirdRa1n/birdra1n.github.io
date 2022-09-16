@@ -1,7 +1,6 @@
 .box {
   background-color: RGBA(0, 0, 0, 0.04);
   padding: 5px;
-  height: auto;
 }
 
 .ModalBody {
@@ -129,7 +128,14 @@
           line-clamp: 2; 
   -webkit-box-orient: vertical;
 }
-
+.name_project{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
 
 
 @media (prefers-color-scheme: dark) {
@@ -157,7 +163,6 @@
 
   .box {
     background-color: rgb(43, 43, 43);
-    height: auto;
   }
 
   .description {
