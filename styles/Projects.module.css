@@ -129,6 +129,7 @@
   -webkit-box-orient: vertical;
 }
 .name_project{
+  max-width: 80%;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
