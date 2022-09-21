@@ -45,7 +45,7 @@ export default function Hello(){
               <Heading
                 position={"relative"}
                 as="h1"
-                fontSize={31}
+                fontSize={24}
                 noOfLines={1}
                 className={styles.hello}
               >
@@ -104,7 +104,7 @@ export default function Hello(){
 
           <Heading
             as="h1"
-            fontSize={91}
+            fontSize={81}
             noOfLines={1}
             className={styles.name}
           >

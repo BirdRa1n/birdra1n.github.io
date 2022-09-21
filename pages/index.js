@@ -40,7 +40,7 @@ export default function Home() {
       <nav className={styles.nav}></nav>
 
       <main className={styles.main}>
-      <SimpleGrid columns={[1, null, 2]}  >
+      <SimpleGrid columns={[1, null, 2]}  spacing={'9px'}>
       <Hello/>
       <AllPosts></AllPosts>
 
