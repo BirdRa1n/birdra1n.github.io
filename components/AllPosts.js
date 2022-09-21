@@ -1,6 +1,7 @@
 
 import projects from "../styles/Projects.module.css";
 import {
+    Divider,
     HStack, Stack, VStack,
 } from "@chakra-ui/react";
 import { Heading, Button, Text, SimpleGrid, Box } from "@chakra-ui/react";
@@ -19,11 +20,12 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure,
+    Badge
 } from "@chakra-ui/react";
-import { FaJs,FaCube, FaPhp, FaPython, FaHtml5,FaCode,FaCubes } from "react-icons/fa";
+import { FaJs, FaCube, FaPhp, FaPython, FaHtml5, FaCode, FaCubes, FaStar, FaRegStar } from "react-icons/fa";
 import { DiPhp } from "react-icons/di";
-import { SiPhpstorm , SiPhpmyadmin} from "react-icons/si";
-
+import { BiGitRepoForked } from "react-icons/bi";
+import { SiPhpstorm, SiPhpmyadmin } from "react-icons/si";
 
 export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
@@ -64,7 +66,7 @@ export default function AllPosts() {
     const Post = () => {
         return (
             <div className={projects.scroll} >
-                <SimpleGrid columns={[1, null, 2,3]} spacing="20px">
+                <SimpleGrid columns={[1, null, 2, 3]} spacing="20px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
                             initial={{ scale: 0 }}
@@ -84,28 +86,54 @@ export default function AllPosts() {
                             }
                         >
                             <Box
-                                height="100px"
+
                                 borderRadius={4}
                                 className={projects.box}
                                 alignContent={'space-between'}
                             >
-                          
-                                  <HStack alignContent={'space-between'}>
-                                  <Heading size={30} className={projects.name_project}>
+
+                                <HStack alignContent={'space-between'}>
+                                    <Heading size={30} className={projects.name_project}>
                                         {item.name}
                                     </Heading>
                                     <Text className={projects.description}>
-                                    {item.language == 'JavaScript' ? <FaJs fontSize={20}></FaJs> : item.language == 'PHP' ? <SiPhpmyadmin fontSize={20}></SiPhpmyadmin> : item.language == 'Python' ? <FaPython fontSize={20}></FaPython> : item.language == 'HTML' ? <FaHtml5 fontSize={20}></FaHtml5> : < FaCube  fontSize={20}></FaCube>}
+                                        {item.language == 'JavaScript' ? <FaJs fontSize={20}></FaJs> : item.language == 'PHP' ? <SiPhpmyadmin fontSize={20}></SiPhpmyadmin> : item.language == 'Python' ? <FaPython fontSize={20}></FaPython> : item.language == 'HTML' ? <FaHtml5 fontSize={20}></FaHtml5> : < FaCube fontSize={20}></FaCube>}
                                     </Text>
-                                    
 
-                                  </HStack>
-                                    <Text size={10} className={projects.description}>
-                                        {item.description}
-                                    </Text>
-                                  
+
+                                </HStack>
+                                <Text size={10} className={projects.description}>
+                                    {item.description}
+                                </Text>
+                              
+                                <Box right={1.5} position={'relative'}>
+
+                                    {item.topics?.map((item, itemI) => (
+                                        <Badge ml='1' fontSize='0.7em' colorScheme='yellow'>
+                                            {item}
+                                        </Badge>
+                                    ))}
+                                </Box>
                                 
-                            
+
+                                <Box marginTop={10}>
+
+                                    <HStack>
+                                        <HStack>
+                                            <FaRegStar className={projects.icon} fontSize={14}></FaRegStar><Heading fontSize={15} className={projects.icon}>{item.stargazers_count}</Heading>
+                                        </HStack>
+                                        <HStack>
+                                            <BiGitRepoForked className={projects.icon} fontSize={14}></BiGitRepoForked><Heading fontSize={15} className={projects.icon}>{item.forks}</Heading>
+                                        </HStack>
+                                    </HStack>
+
+
+                                </Box>
+
+
+
+
+
                             </Box>
                         </motion.div>
                     ))}
