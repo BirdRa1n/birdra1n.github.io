@@ -59,32 +59,38 @@ export default function AllPosts() {
     useEffect(() => {
         getData();
     }, []);
+    const container = {
+        hidden: { opacity: 1, scale: 0 },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            transition: {
+                delayChildren: 0.3,
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const item = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1
+        }
+    };
 
     const Post = () => {
         return (
             <div className={projects.scroll} >
-                <SimpleGrid columns={[1, null, 2, 3]} spacing="20px">
+                <SimpleGrid columns={[1, null, 1]} spacing="20px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
-                            initial={{
-                                opacity: 0,
-                                y: 60, scale: 0.5
-                            }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                                scale: 1,
-                                // making use of framer-motion spring animation
-                                // with stiffness = 300
-                                transition: {
-                                    type: "spring",
-                                    stiffness: 300
-                                }
-                            }}
-                            exit={{
-                                opacity: 0, scale: 0.5,
-                                transition: { duration: 0.6 }
-                            }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.8 }}
+                            variants={container}
+                            initial="hidden"
+                            animate="visible"
+
                             onClick={
                                 () => window.open(item.html_url)
                             }

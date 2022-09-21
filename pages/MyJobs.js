@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import projects from "../styles/Projects.module.css";
 import {
+    Box,
     ChakraProvider,
     HStack,
 
@@ -17,6 +18,7 @@ import {
     TabPanels,
     TabPanel,
 } from "@chakra-ui/react";
+import { TypeAnimation } from "react-type-animation";
 
 
 //components
@@ -46,44 +48,7 @@ export default function MyJobs() {
 
             <div className={styles.nav}></div>
             <main className={projects.main}>
-                <div className={projects.row_container}>
-                    <HStack marginBottom={1} spacing={1}>
-                        <img
-                            width={41}
-                            src="https://avatars.githubusercontent.com/u/53487868?v=4"
-                            alt="Avatar"
-                        ></img>{" "}
-                        <Heading fontSize={31} noOfLines={1} className={projects.name}>
-                            {"Dário Jr"}
-                        </Heading>
-                        <BoxIcons />
-                    </HStack>
-
-
-
-                    <Tabs colorScheme={'#FFCB26'}>
-                        <TabList color={'#FFC200'} >
-                            <Tab color={'#FFC200'} >All</Tab>
-                            <Tab>Finished releases</Tab>
-                            <Tab>Beta releases</Tab>
-                        </TabList>
-                        <TabPanels >
-                            <TabPanel >
-                                <AllPosts></AllPosts>
-                            </TabPanel>
-                            <TabPanel h={'xl'}>
-
-                            </TabPanel>
-                            <TabPanel h={'xl'}>
-
-                            </TabPanel>
-                        </TabPanels>
-
-
-                    </Tabs>
-
-
-                </div>
+         <Box className={styles.footer} minH={'100.5rem'} ></Box>
             </main>
 
             <footer className={styles.footer}>

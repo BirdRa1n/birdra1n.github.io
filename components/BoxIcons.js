@@ -39,11 +39,11 @@ import { FiSearch } from "react-icons/fi";
 export default function BoxIcons(){
     return (
         <HStack
-            className={projects.boxIco}
+        
             marginTop={2}
             marginBottom={4}
             spacing={3}
-            marginLeft={1}
+        
         >
             <motion.div
                 initial={{ scale: 0 }}
