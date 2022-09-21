@@ -29,7 +29,7 @@ import { SiPhpstorm, SiPhpmyadmin } from "react-icons/si";
 
 export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
-    
+
     function getData() {
         axios
             .get("https://api.github.com/users/birdra1n/repos")
@@ -66,12 +66,24 @@ export default function AllPosts() {
                 <SimpleGrid columns={[1, null, 2, 3]} spacing="20px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ rotate: 0, scale: 1 }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 35,
-                                damping: 10
+                            initial={{
+                                opacity: 0,
+                                y: 60, scale: 0.5
+                            }}
+                            animate={{
+                                opacity: 1,
+                                y: 0,
+                                scale: 1,
+                                // making use of framer-motion spring animation
+                                // with stiffness = 300
+                                transition: {
+                                    type: "spring",
+                                    stiffness: 300
+                                }
+                            }}
+                            exit={{
+                                opacity: 0, scale: 0.5,
+                                transition: { duration: 0.6 }
                             }}
                             onClick={
                                 () => window.open(item.html_url)
@@ -131,7 +143,7 @@ export default function AllPosts() {
                     ))}
                 </SimpleGrid>
 
-               
+
             </div>
         )
     }
