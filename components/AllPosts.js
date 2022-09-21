@@ -29,10 +29,7 @@ import { SiPhpstorm, SiPhpmyadmin } from "react-icons/si";
 
 export default function AllPosts() {
     const [DataReq, setDataReq] = useState();
-    const [DataModal, setDataModal] = useState({});
-    const { isOpen, onOpen, onClose } = useDisclosure();
-
-
+    
     function getData() {
         axios
             .get("https://api.github.com/users/birdra1n/repos")
@@ -76,13 +73,8 @@ export default function AllPosts() {
                                 stiffness: 35,
                                 damping: 10
                             }}
-                            onClick={() =>
-                                setModalData(
-                                    item.name,
-                                    item.description,
-                                    item.language,
-                                    item.html_url
-                                )
+                            onClick={
+                                () => window.open(item.html_url)
                             }
                         >
                             <Box
@@ -105,7 +97,7 @@ export default function AllPosts() {
                                 <Text size={10} className={projects.description}>
                                     {item.description}
                                 </Text>
-                              
+
                                 <Box right={1.5} position={'relative'}>
 
                                     {item.topics?.map((item, itemI) => (
@@ -114,7 +106,7 @@ export default function AllPosts() {
                                         </Badge>
                                     ))}
                                 </Box>
-                                
+
 
                                 <Box marginTop={10}>
 
@@ -123,7 +115,7 @@ export default function AllPosts() {
                                             <FaRegStar className={projects.icon} fontSize={14}></FaRegStar><Heading fontSize={15} className={projects.icon}>{item.stargazers_count}</Heading>
                                         </HStack>
                                         <HStack>
-                                            <BiGitRepoForked className={projects.icon} fontSize={14}></BiGitRepoForked><Heading fontSize={15} className={projects.icon}>{item.forks}</Heading>
+                                            <BiGitRepoForked className={projects.icon} fontSize={1}></BiGitRepoForked><Heading fontSize={15} className={projects.icon}>{item.forks}</Heading>
                                         </HStack>
                                     </HStack>
 
@@ -139,36 +131,7 @@ export default function AllPosts() {
                     ))}
                 </SimpleGrid>
 
-                <Modal isOpen={isOpen} onClose={onClose} size={"xs"} >
-                    <ModalOverlay />
-                    <ModalContent className={projects.modal_box} >
-                        <ModalHeader className={projects.ModalBody}>
-                            {DataModal.reponame}
-                        </ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody className={projects.ModalBody}>
-                            <Text className={projects.descriptionModal}>
-                                {DataModal.description}
-                            </Text>
-                        </ModalBody>
-
-                        <ModalFooter>
-                            <HStack className={projects.footerModal}>
-                                <Text>{DataModal.language == 'JavaScript' ? <FaJs fontSize={40}></FaJs> : DataModal.language == 'PHP' ? <FaPhp fontSize={40}></FaPhp> : DataModal.language == 'Python' ? <FaPython fontSize={40}></FaPython> : DataModal.language == 'HTML' ? <FaHtml5 fontSize={40}></FaHtml5> : DataModal.language}</Text>
-
-                                <div>
-                                    <Button
-                                        onClick={() => window.open(DataModal.url)}
-                                        variant="ghost"
-                                        rightIcon={<ArrowForwardIcon />}
-                                    >
-                                        Open repo
-                                    </Button>
-                                </div>
-                            </HStack>
-                        </ModalFooter>
-                    </ModalContent>
-                </Modal>
+               
             </div>
         )
     }
