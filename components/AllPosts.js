@@ -111,7 +111,7 @@ export default function AllPosts() {
                     ))}
                 </SimpleGrid>
 
-                <Modal isOpen={isOpen} onClose={onClose} size={"sm"} >
+                <Modal isOpen={isOpen} onClose={onClose} size={"xs"} >
                     <ModalOverlay />
                     <ModalContent className={projects.modal_box} >
                         <ModalHeader className={projects.ModalBody}>
