@@ -91,7 +91,7 @@ export default function AllPosts() {
                             >
                           
                                   <HStack alignContent={'space-between'}>
-                                  <Heading fontSize={19} className={projects.name_project}>
+                                  <Heading  className={projects.name_project}>
                                         {item.name}
                                     </Heading>
                                     <Text className={projects.description}>
