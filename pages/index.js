@@ -35,6 +35,7 @@ export default function Home() {
           rel="icon"
           href="https://avatars.githubusercontent.com/u/53487868?v=4"
         />
+             <html lang="en"></html>
       </Head>
 
       <nav className={styles.nav}></nav>
