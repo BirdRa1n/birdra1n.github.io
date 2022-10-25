@@ -82,10 +82,10 @@ export default function AllPosts() {
     const Post = () => {
         return (
             <div className={projects.scroll} >
-                <SimpleGrid columns={[1, null, 1]} spacing="20px">
+                <SimpleGrid columns={[1, null, 1]} spacing="19px">
                     {DataReq?.map((item, itemI) => (
                         <motion.div
-                            whileHover={{ scale: 1.02 }}
+                            whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.8 }}
                             variants={container}
                             initial="hidden"

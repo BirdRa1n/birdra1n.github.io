@@ -170,18 +170,7 @@ export default function Hello(){
             borderRadius: "100%",
           }}
         >
-          <Button
-          
-            rightIcon={<ArrowForwardIcon />}
-            borderRadius={4}
-            colorScheme="orange"
-            size="sm"
-            bgColor={"#F7C112"}
-            className={styles.btn_hello}
-            onClick={() => alert('Developing')}
-          >
-            See my work
-          </Button>
+         
         </motion.div>
         </Center>
         
