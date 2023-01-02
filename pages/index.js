@@ -35,6 +35,8 @@ export default function Home() {
           rel="icon"
           href="https://avatars.githubusercontent.com/u/53487868?v=4"
         />
+            <meta name="shrtfly-verification" content="fdaa760ad36e7239b4f6941fbedcbeeb" />
+
           
       </Head>
 
