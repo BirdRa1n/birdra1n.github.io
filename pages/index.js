@@ -43,6 +43,17 @@ export default function Home() {
       <nav className={styles.nav}></nav>
 
       <main className={styles.main}>
+        
+        <script type="text/javascript">
+    var app_url = 'https://shrtfly.com/';
+    var app_website_key = '5yYgDG4';
+    var app_advert = 1;
+    var app_frequency = 3;
+</script>
+<script src='https://shrtfly.vip/js/tag.js'></script>
+        
+        
+        
       <SimpleGrid columns={[1, null, 2]}  spacing={'9px'}>
       <Hello/>
       <AllPosts></AllPosts>
