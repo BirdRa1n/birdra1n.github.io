@@ -1,40 +1,34 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<img src="https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif" width="100px" alt="bash" align="right" />
 
-## Getting Started
+## Hi! I’m Dário Jr
 
-First, run the development server:
+A young programmer who loves to learn new things. I am passionate about technology and programming!
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<details open>
+  <summary>More about me</summary>
+  <ul>
+    <li>🎓 Computer Technician by IFPI</li>
+    <li>📚 Studying Dev. Web and Mobile | IoT</li>
+  </ul>
+</details>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<details>
+  <summary>My Stats on Github</summary>
+  <p>
+    <img src="https://github-readme-stats.vercel.app/api/top-langs?username=birdra1n&bg_color=141414&text_color=fff&title_color=fff" alt="Techs utilizadas nos projetos" />
+    <img src="https://github-readme-stats.vercel.app/api?username=birdra1n&show_icons=true&include_all_commits=true&bg_color=141414&text_color=fff&title_color=fff" alt="Estátisticas Gerais" />
+  </p>
+</details>
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<div align="center">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"/>
+  <img src="https://img.shields.io/badge/-C%2B%2B-FFD43B?style=for-the-badge&logo=C%2B%2B&logoColor=blue"/>
+  <img src="https://img.shields.io/badge/-php-FFD43B?style=for-the-badge&logo=php&logoColor=blue"/>
+</div>
+<hr/>
