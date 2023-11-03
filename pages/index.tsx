@@ -62,8 +62,9 @@ export default function Home() {
               '&::-webkit-scrollbar-thumb': {
                 backgroundColor: 'transparent', // Safari and Chrome
               },
-            }}>
-            <Box shadow={"xl"} borderRadius={7} w={['100%', null, '360px']} h={['100%', null, "650px"]} maxH={['650px', null, "100%"]} bg='#1E1E20' p={10} justifyContent='space-between' >
+            }}
+          >
+            <Box shadow={"xl"} borderRadius={7} w={['100%', null, '360px']} h={['100%', null, "650px"]} maxH={['650px', null, "100%"]} bg='#1E1E20' p={10} justifyContent='space-between' minH={'650px'}>
               <Center>
                 <Stack direction={['column', null, 'column']} spacing='24px' alignItems={['center', null, 'center']}>
                   <Box borderRadius={33} w={150} h={140} bg={"#393939"}>
@@ -138,7 +139,8 @@ export default function Home() {
             </Box>
 
             <Box
-              shadow={"xl"} borderRadius={7} w={['100%']} h={['190vh', null, "100%"]} bg='#1E1E20' p={[3, null, 10]}>
+              shadow={"xl"} borderRadius={7} w={['100%']} bg='#1E1E20' p={[3, null, 10]} minH={['160%', null, "75.5vh"]}
+            >
 
               <HStack w={"100%"} justifyContent='space-between'>
                 <Heading fontSize={"4xl"} color={"#F9F9F9"}>  {RenderTabs[activeTab]?.title || ""}</Heading>
