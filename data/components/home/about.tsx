@@ -10,8 +10,9 @@ import { LuMail, LuCalendarRange, LuGlobe } from "react-icons/lu";
 import { FaCode, FaFacebookF, FaInstagram, FaSquareXTwitter } from "react-icons/fa6";
 import { MdPhonelink } from "react-icons/md";
 
+
 const About = () => {
-    return (<>
+    return (<Box >
         <VStack spacing={2} marginTop={10} marginBottom={10}>
             <Text color={"#D5D5D5"}>{`Greetings! I'm a technology enthusiast and a developer with experience in both front-end and back-end development. My focus is on creating exceptional digital solutions and enhancing the user experience.`}</Text>
 
@@ -25,7 +26,7 @@ const About = () => {
 
         <Stack direction={['column', null, 'row']} >
 
-            <Box w={["100%", null, "50%"]} bg={"#222223"} borderRadius={14} p={10}>
+            <Box w={["100%", null, "50%"]} bg={"#222223"} borderRadius={14} p={10} >
 
 
                 <HStack spacing={5} alignItems='flex-start'>
@@ -62,7 +63,7 @@ const About = () => {
 
 
         </Stack>
-    </>)
+    </Box>)
 }
 
 export default About;
