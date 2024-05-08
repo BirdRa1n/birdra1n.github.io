@@ -2,18 +2,24 @@
 'use client'
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Button, Card, CardFooter, CardHeader, Image, Spinner } from "@nextui-org/react";
+import { Button, Card, CardFooter, CardHeader, Image, Spinner, useDisclosure } from "@nextui-org/react";
+import ModalShowDescription from "@/components/apps/modal";
 
 const Apps = () => {
     const [apps, setApps] = useState([]);
     const [isLoading, setIsloading] = useState(true);
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [markdown, setMarkdown] = useState('');
+    const [title, setTitle] = useState('');
+
 
     const fetchData = async () => {
         const supabase = createClient();
 
         const { data, error } = await supabase
             .from('apps')
-            .select();
+            .select()
+            .order('id');
 
         if (!error) {
             setApps(Object(data));
@@ -35,8 +41,8 @@ const Apps = () => {
                 <h1 className="font-bold text-2xl mb-4">Apps</h1>
 
           <div className="grid grid-cols-1 gap-1 sm:grid-cols-4 gap-4 md:grid-cols-3 gap-3 ">
-            {apps.map((item: { title: string, subtitle: string, platforms: any }, index) => (
-                <div key={index}>
+            {apps.map((item: { title: string, subtitle: string, platforms: any,description:any }, index) => (
+                <div key={index} onClick={()=>{setMarkdown(item?.description);setTitle(item?.title); onOpen()}}>
                     <Card isFooterBlurred className="w-full h-[300px] col-span-12 sm:col-span-7">
                         <CardHeader className="absolute z-10 top-1 flex-col items-start">
                             <p className="text-tiny text-black/60 uppercase font-bold">{item?.title}</p>
@@ -67,6 +73,7 @@ const Apps = () => {
                             <Button radius="full" size="sm">Get App</Button>
                         </CardFooter>
                     </Card>
+                    <ModalShowDescription onOpen={onOpen} title={title} markdown={markdown} onOpenChange={onOpenChange} isOpen={isOpen}/>
                 </div>
             ))}
         </div>

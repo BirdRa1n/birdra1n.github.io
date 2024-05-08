@@ -14,6 +14,7 @@ const ScrollApps = () => {
         const { data, error } = await supabase
             .from('apps')
             .select()
+            .order('id')
             .limit(3);
 
         if (!error) {
@@ -33,7 +34,7 @@ const ScrollApps = () => {
             </div> : <div className="flex justify-center p-10 w-full overflow-x-auto">
                 {apps.map((item: { title: string, subtitle: string, platforms: any }, index) => (
                     <div key={index}>
-                        <Card isFooterBlurred className="ml-[33px] h-[300px] min-w-[330px] max-w-[330px] sm:min-w-[380px] max-w-[380px]">
+                        <Card isFooterBlurred className="ml-[33px] h-[300px] min-w-[330px] max-w-[330px] sm:min-w-[380px] max-w-[380px] ml-[15px]">
                             <CardHeader className="absolute z-10 top-1 flex-col items-start">
                                 <p className="text-tiny text-black/60 uppercase font-bold">{item?.title}</p>
                                 <h4 className="text-black/60 font-medium text-xl">{item?.subtitle}</h4>
