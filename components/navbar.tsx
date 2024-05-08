@@ -1,3 +1,4 @@
+'use client'
 import {
 	Navbar as NextUINavbar,
 	NavbarContent,
@@ -28,6 +29,7 @@ import {
 } from "@/components/icons";
 
 import { Logo } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
 	const searchInput = (
@@ -50,6 +52,7 @@ export const Navbar = () => {
 			type="search"
 		/>
 	);
+	const router = useRouter();
 
 	return (
 		<NextUINavbar maxWidth="xl" position="sticky">
@@ -117,21 +120,18 @@ export const Navbar = () => {
 				<NavbarMenuToggle />
 			</NavbarContent>
 
-			<NavbarMenu>
+			<NavbarMenu >
 				{searchInput}
 				<div className="mx-4 mt-2 flex flex-col gap-2">
 					{siteConfig.navMenuItems.map((item, index) => (
-						<NavbarMenuItem key={`${item}-${index}`}>
+						<NavbarMenuItem key={`${item}-${index}`} >
 							<Link
-								color={
-									index === 2
-										? "primary"
-										: index === siteConfig.navMenuItems.length - 1
-										? "danger"
-										: "foreground"
-								}
-								href="#"
-								size="lg"
+								className={clsx(
+									linkStyles({ color: "foreground" }),
+									"data-[active=true]:text-primary data-[active=true]:font-medium"
+								)}
+								color="foreground"
+								onClick={() => {router.push(item.label.toLowerCase())}}
 							>
 								{item.label}
 							</Link>
