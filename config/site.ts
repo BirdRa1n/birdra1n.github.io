@@ -37,7 +37,7 @@ export const siteConfig = {
 		{
 			label: "About",
 			href: "/about",
-		}
+		},
 	],
 	links: {
 		github: "https://github.com/birdra1n",
