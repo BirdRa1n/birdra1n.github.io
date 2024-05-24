@@ -1,11 +1,5 @@
 import { Divider } from '@nextui-org/react';
-import Markdown from 'react-markdown';
-import ReactMarkdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
-import remarkGfm from 'remark-gfm'
-
 const Page = () => {
-
     return (
         <div >
             <div className="max-w-3xl mx-auto py-8 px-4">
