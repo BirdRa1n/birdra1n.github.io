@@ -31,8 +31,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="en" suppressHydrationWarning>
-<meta name="theme-color" content="#333"/>
+		<html lang="pt-br" suppressHydrationWarning>
+			<meta name="theme-color" content="#333" />
 
 			<head />
 			<body
@@ -43,7 +43,7 @@ export default function RootLayout({
 			>
 				<Providers >
 					<div className="relative flex flex-col h-screen">
-					<Navbar />
+						<Navbar />
 						<main className="light container mx-auto max-w-7xl pt-10 px-6 flex-grow">
 							{children}
 						</main>
