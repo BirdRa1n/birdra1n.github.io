@@ -1,51 +1,34 @@
-# Next.js & NextUI Template
+<img src="https://images2.imgbox.com/bf/61/jhyKvIs2_o.gif" width="100px" alt="bash" align="right" />
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+## Hi! I’m Dário Jr
 
-## Technologies Used
+A young programmer who loves to learn new things. I am passionate about technology and programming!
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+<details open>
+  <summary>More about me</summary>
+  <ul>
+    <li>🎓 Computer Technician by IFPI</li>
+    <li>📚 Studying Dev. Web and Mobile | IoT</li>
+  </ul>
+</details>
 
-## How to Use
+<details>
+  <summary>My Stats on Github</summary>
+  <p>
+    <img src="https://github-readme-stats.vercel.app/api/top-langs?username=birdra1n&bg_color=141414&text_color=fff&title_color=fff" alt="Techs utilizadas nos projetos" />
+    <img src="https://github-readme-stats.vercel.app/api?username=birdra1n&show_icons=true&include_all_commits=true&bg_color=141414&text_color=fff&title_color=fff" alt="Estátisticas Gerais" />
+  </p>
+</details>
 
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
-npm install
-```
-
-### Run the development server
-
-```bash
-npm run dev
-```
-
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@nextui-org/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/nextui-org/next-app-template/blob/main/LICENSE).
+<div align="center">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+  <img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"/>
+  <img src="https://img.shields.io/badge/-C%2B%2B-FFD43B?style=for-the-badge&logo=C%2B%2B&logoColor=blue"/>
+  <img src="https://img.shields.io/badge/-php-FFD43B?style=for-the-badge&logo=php&logoColor=blue"/>
+</div>
+<hr/>
