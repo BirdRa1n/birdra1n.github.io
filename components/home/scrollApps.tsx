@@ -31,7 +31,7 @@ const ScrollApps = () => {
         <>
             {isLoading ? <div className="justify-center">
                 <Spinner className="mt-[25vh]" color="warning" />
-            </div> : <div className="flex justify-center p-10 w-full overflow-x-auto">
+            </div> : <div className="flex justify-center p-10 w-full overflow-x-auto hide-scrollbar">
                 {apps.map((item: { title: string, subtitle: string, platforms: any }, index) => (
                     <div key={index}>
                         <Card isFooterBlurred className="ml-[33px] h-[300px] min-w-[330px] max-w-[330px] sm:min-w-[380px] max-w-[380px] ml-[15px]">
