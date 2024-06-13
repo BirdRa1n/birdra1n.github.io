@@ -30,7 +30,7 @@ const ScrollApps = () => {
     return (
         <>
             {isLoading ? <div className="justify-center">
-                <Spinner className="mt-[25vh]" color="warning"/>
+                <Spinner className="mt-[25vh]" color="warning" />
             </div> : <div className="flex justify-center p-10 w-full overflow-x-auto">
                 {apps.map((item: { title: string, subtitle: string, platforms: any }, index) => (
                     <div key={index}>
@@ -43,7 +43,7 @@ const ScrollApps = () => {
                                 removeWrapper
                                 alt="Relaxing app background"
                                 className="z-0 w-full h-full object-cover"
-                                src={`https://sdaiedyprqaiscilvchp.supabase.co/storage/v1/object/public/apps/${item?.id}/card/card.gif`}
+                                src={`https://sdaiedyprqaiscilvchp.supabase.co/storage/v1/object/public/apps/${item?.id}/card/card.webp`}
                             />
 
                         </Card>
