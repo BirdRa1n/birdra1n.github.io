@@ -107,7 +107,7 @@ const Apps = () => {
             {isLoading ? <div className="justify-center">
                 <Spinner className="min-w-[100%] mt-[38vh]" color="warning" />
             </div> :
-                <div>
+                <div className="container mx-auto max-w-7xl pt-10 px-6">
 
                     <h1 className="font-bold text-2xl mb-4">Apps</h1>
 
