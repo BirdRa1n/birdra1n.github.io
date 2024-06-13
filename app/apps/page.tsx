@@ -129,7 +129,7 @@ const Apps = () => {
                                         <div className="flex flex-grow gap-2 items-center">
                                             <Image
                                                 alt="Breathing app icon"
-                                                className="rounded w-14 h-13 bg-black"
+                                                className="rounded w-14 max-w-14 max-h-13 h-13 bg-black"
                                                 src={`https://sdaiedyprqaiscilvchp.supabase.co/storage/v1/object/public/apps/${item?.id}/card/icon.webp`}
                                             />
                                             <div className="flex flex-col">

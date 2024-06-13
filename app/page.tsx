@@ -14,13 +14,12 @@ export default function Home() {
 		<section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 			<div className="inline-block max-w-lg text-center justify-center">
 				<h1 className={title()}>
-				Hi all, I'm 
+					Hi all, I'm
 				</h1>
 				<h1 className={title({ color: "yellow" })}> Dário Jr&nbsp;</h1>
 
 				<h2 className={subtitle({ class: "mt-4" })}>
-				Greetings! I'm a technology enthusiast and a developer with experience in both front-end and back-end development. My focus is on creating exceptional digital solutions and enhancing the user experience.
-				</h2>
+					Saudações! Sou um entusiasta de tecnologia e desenvolvedor com experiência em desenvolvimento front-end e back-end. Meu foco é criar soluções digitais excepcionais e aprimorar a experiência do usuário.				</h2>
 			</div>
 
 			<div className="flex gap-3">
@@ -29,7 +28,7 @@ export default function Home() {
 					href={'./apps'}
 					className={buttonStyles({ color: "warning", radius: "sm", variant: "shadow" })}
 				>
-					My Apps
+					Meus Aplicativos
 				</Link>
 				<Link
 					isExternal
@@ -41,9 +40,9 @@ export default function Home() {
 				</Link>
 			</div>
 
-			<ScrollApps/>
+			<ScrollApps />
 
-		
+
 		</section>
 	);
 }

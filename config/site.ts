@@ -5,11 +5,11 @@ export const siteConfig = {
 	description: "Greetings! I'm a technology enthusiast and a developer with experience in both front-end and back-end development. My focus is on creating exceptional digital solutions and enhancing the user experience.",
 	navItems: [
 		{
-			label: "Apps",
+			label: "Aplicativos",
 			href: "/apps",
 		},
 		{
-			label: "Projects",
+			label: "Projetos",
 			href: "/projects",
 		},
 		{
@@ -17,17 +17,17 @@ export const siteConfig = {
 			href: "/blog",
 		},
 		{
-			label: "About",
+			label: "Sobre",
 			href: "/about",
 		},
 	],
 	navMenuItems: [
 		{
-			label: "Apps",
+			label: "Aplicativos",
 			href: "/apps",
 		},
 		{
-			label: "Projects",
+			label: "Projetos",
 			href: "/projects",
 		},
 		{
@@ -35,7 +35,7 @@ export const siteConfig = {
 			href: "/blog",
 		},
 		{
-			label: "About",
+			label: "Sobre",
 			href: "/about",
 		},
 	],
