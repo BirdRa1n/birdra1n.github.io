@@ -100,7 +100,7 @@ export const Navbar = () => {
 				<NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
 				<NavbarItem className="hidden md:flex">
 					<Button
-            isExternal
+						isExternal
 						as={Link}
 						className="text-sm font-normal text-default-600 bg-default-100"
 						href={siteConfig.links.sponsor}
@@ -131,7 +131,7 @@ export const Navbar = () => {
 									"data-[active=true]:text-primary data-[active=true]:font-medium"
 								)}
 								color="foreground"
-								onClick={() => {router.push(item.label.toLowerCase())}}
+								onClick={() => { router.push(item.href.toLowerCase()) }}
 							>
 								{item.label}
 							</Link>
