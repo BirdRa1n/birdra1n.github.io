@@ -29,12 +29,12 @@ const ScrollApps = () => {
 
     return (
         <>
-            {isLoading ? <div className="justify-center">
+            {isLoading ? <center className="justify-center">
                 <Spinner className="mt-[25vh]" color="warning" />
-            </div> : <div className="flex justify-center p-10 w-full overflow-x-auto hide-scrollbar">
+            </center> : <div className="flex justify-center p-10 w-full overflow-x-auto hide-scrollbar">
                 {apps.map((item: { title: string, subtitle: string, platforms: any }, index) => (
                     <div key={index}>
-                        <Card isFooterBlurred className="ml-[33px] h-[300px] min-w-[330px] max-w-[330px] sm:min-w-[380px] max-w-[380px] ml-[15px]">
+                        <Card isFooterBlurred className="ml-[33px] h-[300px] min-w-[330px] md:min-w-[400px] max-w-[330px] sm:min-w-[330px] max-w-[380px]">
                             <CardHeader className="absolute z-10 top-1 flex-col items-start">
                                 <p className="text-tiny text-black/60 uppercase font-bold">{item?.title}</p>
                                 <h4 className="text-black/60 font-medium text-xl">{item?.subtitle}</h4>
