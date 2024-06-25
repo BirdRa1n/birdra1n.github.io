@@ -5,9 +5,11 @@ import { createClient } from "@/utils/supabase/client";
 import { Button, Card, CardFooter, CardHeader, Image, Spinner, useDisclosure } from "@nextui-org/react";
 import ModalShowDescription from "@/components/apps/modal";
 import { detectOS } from "@/utils/getOS";
+import { card } from "@nextui-org/theme";
 
 const Apps = () => {
     const [apps, setApps] = useState([]);
+    const [styleCard, setStyleCard] = useState([]);
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [isLoading, setIsloading] = useState(true);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -24,8 +26,18 @@ const Apps = () => {
             .select()
             .order('id');
 
-        if (!error) {
+        const { data: cardStyles, error: errorStyle } = await supabase.from('styleAppCard').select().order('id')
+
+
+        if (!error || !errorStyle) {
+            setStyleCard(cardStyles);
             setApps(Object(data));
+            // Mapear estilos para cada aplicativo
+            const appsWithStyles = data?.map(app => {
+                const stylesForApp = cardStyles.filter(style => style.appId === app.id);
+                return { ...app, style: stylesForApp[0] };
+            });
+            setApps(appsWithStyles);
             setIsloading(false);
         }
     };
@@ -112,7 +124,8 @@ const Apps = () => {
                     <h1 className="font-bold text-2xl mb-4">Apps</h1>
 
                     <div className="grid grid-cols-1 gap-1 sm:grid-cols-4 gap-4 md:grid-cols-3 gap-3 ">
-                        {apps.map((item: { title: string, subtitle: string, platforms: any, description: any, github_repo: any }, index) => (
+                        {apps.map((item: { id: number, title: string, subtitle: string, platforms: any, description: any, github_repo: any, style: { mt_cardImage: number } }, index) => (
+
                             <div key={index} onClick={() => { setMarkdown(item?.description); setGithub_repo(item?.github_repo); setTitle(item?.title); onOpen() }}>
                                 <Card isFooterBlurred className="w-full h-[300px] col-span-12 sm:col-span-7">
                                     <CardHeader className="absolute z-10 top-1 flex-col items-start">
@@ -120,11 +133,13 @@ const Apps = () => {
                                         <h4 className="text-black/60 font-medium text-xl">{item?.subtitle}</h4>
                                     </CardHeader>
                                     <Image
+                                        style={{ marginTop: item.style?.mt_cardImage }}
                                         removeWrapper
                                         alt="Relaxing app background"
-                                        className="z-0 w-full h-full object-cover"
+                                        className={`z-0 w-full h-full object-cover`}
                                         src={`https://sdaiedyprqaiscilvchp.supabase.co/storage/v1/object/public/apps/${item?.id}/card/card.webp`}
                                     />
+
                                     <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                                         <div className="flex flex-grow gap-2 items-center">
                                             <Image
