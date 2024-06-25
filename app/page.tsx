@@ -1,3 +1,4 @@
+"use client"
 // @ts-nocheck
 import { Link } from "@nextui-org/link";
 import { Snippet } from "@nextui-org/snippet";
@@ -8,8 +9,12 @@ import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
 import Apps from "./apps/page";
 import ScrollApps from "@/components/home/scrollApps";
+import { Button } from "@nextui-org/button";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+
+	const router = useRouter();
 	return (
 		<>
 			<section className="flex flex-col items-center justify-center gap-4 py-8 pr-5 pl-5 md:py-10">
@@ -24,16 +29,15 @@ export default function Home() {
 				</div>
 
 				<div className="flex gap-3">
-					<Link
-						isExternal
-						href={'./apps'}
+					<Button onClick={() => { router.push('apps') }}
 						className={buttonStyles({ color: "warning", radius: "sm", variant: "shadow" })}
-					>
-						Meus Aplicativos
-					</Link>
+
+					>						Aplcativos
+					</Button>
+
 					<Link
 						isExternal
-						className={buttonStyles({ variant: "bordered", radius: "full" })}
+						className={buttonStyles({ variant: "bordered", radius: "sm" })}
 						href={siteConfig.links.github}
 					>
 						<GithubIcon size={20} />
