@@ -15,7 +15,7 @@ export default function Home() {
 			<section className="flex flex-col items-center justify-center gap-4 py-8 pr-5 pl-5 md:py-10">
 				<div className="inline-block max-w-lg text-center justify-center">
 					<h1 className={title()}>
-						Hi all, I'm
+						Hi! I'm
 					</h1>
 					<h1 className={title({ color: "yellow" })}> Dário Jr&nbsp;</h1>
 
