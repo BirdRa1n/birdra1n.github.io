@@ -20,7 +20,7 @@ export default function Home() {
 					<h1 className={title({ color: "yellow" })}> Dário Jr&nbsp;</h1>
 
 					<h2 className={subtitle({ class: "mt-4" })}>
-						Saudações! Sou um entusiasta de tecnologia e desenvolvedor com experiência em desenvolvimento front-end e back-end. Meu foco é criar soluções digitais excepcionais e aprimorar a experiência do usuário.				</h2>
+						Sou um entusiasta de tecnologia e desenvolvedor com experiência em desenvolvimento front-end e back-end. Meu foco é criar soluções digitais excepcionais e aprimorar a experiência do usuário.				</h2>
 				</div>
 
 				<div className="flex gap-3">
