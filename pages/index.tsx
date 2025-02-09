@@ -7,8 +7,18 @@ import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
+import supabase from "@/utils/supabase/client";
+import { useEffect } from "react";
 
 export default function IndexPage() {
+  const fetchPosts = async () => {
+    const { data } = await supabase.from('posts').select('*');
+    if (data) console.log(data);
+  }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
