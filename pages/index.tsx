@@ -1,5 +1,4 @@
 import { Link } from "@heroui/link";
-import { Snippet } from "@heroui/snippet";
 import { Code } from "@heroui/code";
 import { button as buttonStyles } from "@heroui/theme";
 
@@ -8,24 +7,19 @@ import { title, subtitle } from "@/components/primitives";
 import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
 import supabase from "@/utils/supabase/client";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import { useTheme } from "next-themes";
+import ListProjects from "@/components/home/projects";
 
 export default function IndexPage() {
-  const fetchPosts = async () => {
-    const { data } = await supabase.from('posts').select('*');
-    if (data) console.log(data);
-  }
 
-  useEffect(() => {
-    fetchPosts()
-  }, [])
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 
         <div className="inline-block max-w-lg text-center justify-center">
           <h1 className={title()}>
-            Hi! I'm
+            Hi! I'm,
           </h1>
           <h1 className={title({ color: "green" })}> Dário Jr&nbsp;</h1>
 
@@ -35,13 +29,12 @@ export default function IndexPage() {
 
         <div className="flex gap-3">
           <Link
-            isExternal
             className={buttonStyles({
               radius: "sm",
               variant: "shadow",
               className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964]',
             })}
-            href={'/#projects'}
+            href={'/projects'}
           >
             Projects
           </Link>
@@ -56,11 +49,7 @@ export default function IndexPage() {
         </div>
 
         <div className="mt-8" id="#projects">
-          {
-            /**
-             * postagens
-             */
-          }
+          <ListProjects />
         </div>
       </section>
     </DefaultLayout >
