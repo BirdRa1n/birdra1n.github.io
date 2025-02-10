@@ -2,7 +2,7 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "BirdRa1n",
-  description: "sss",
+  description: "",
   navItems: [
     {
       label: "Home",
@@ -10,11 +10,7 @@ export const siteConfig = {
     },
     {
       label: "Projects",
-      href: "#projects",
-    },
-    {
-      label: "Experience",
-      href: "#experience",
+      href: "/projects",
     },
     {
       label: "Contact",
@@ -28,11 +24,7 @@ export const siteConfig = {
     },
     {
       label: "Projects",
-      href: "#projects",
-    },
-    {
-      label: "Experience",
-      href: "#experience",
+      href: "/projects",
     },
     {
       label: "Contact",
@@ -42,7 +34,6 @@ export const siteConfig = {
   links: {
     github: "https://github.com/birdra1n",
     twitter: "https://x.com/birdra1n",
-    docs: "https://heroui.com",
     discord: "https://discord.gg/birdra1n",
     sponsor: "https://patreon.com/birdra1n",
   },
