@@ -21,8 +21,8 @@ const ListProjects = () => {
     const fetchLastProjects = async () => {
         const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(3);
         if (data) {
-            return setProjects(data);
             setIsLoading(false);
+            return setProjects(data);
         }
     }
 
