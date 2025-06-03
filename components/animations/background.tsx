@@ -14,6 +14,7 @@ const AnimatedBackground: React.FC = () => {
     const [particles, setParticles] = useState<Particle[]>([]);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const [numberOfParticles, setNumberOfParticles] = useState(20);
 
     // Detect color mode and sync with 'dark' class
     useEffect(() => {
@@ -34,12 +35,34 @@ const AnimatedBackground: React.FC = () => {
         };
     }, []);
 
+    // Konami code
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    const [konamiIndex, setKonamiIndex] = useState(0);
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (konamiCode[konamiIndex] === event.key) {
+            setKonamiIndex((prev) => prev + 1);
+            if (konamiIndex === konamiCode.length - 1) {
+                const newNumberOfParticles = Number(prompt('Number of particles:', numberOfParticles.toString()));
+                if (!isNaN(newNumberOfParticles)) {
+                    setNumberOfParticles(newNumberOfParticles);
+                }
+                setKonamiIndex(0); // Reset konamiIndex to allow reuse
+            }
+        } else {
+            setKonamiIndex(0);
+        }
+    };
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [konamiIndex]);
+
     // Initialize particles
     useEffect(() => {
         const updateParticles = () => {
             const width = containerRef.current?.offsetWidth || window.innerWidth;
             const height = containerRef.current?.offsetHeight || window.innerHeight;
-            const newParticles: Particle[] = Array.from({ length: 20 }, (_, i) => ({
+            const newParticles: Particle[] = Array.from({ length: numberOfParticles }, (_, i) => ({
                 id: i,
                 x: Math.random() * width,
                 y: Math.random() * height,
@@ -52,7 +75,7 @@ const AnimatedBackground: React.FC = () => {
         updateParticles();
         window.addEventListener('resize', updateParticles);
         return () => window.removeEventListener('resize', updateParticles);
-    }, []);
+    }, [numberOfParticles]); // Add numberOfParticles as a dependency
 
     // Animate particles with requestAnimationFrame
     useEffect(() => {
