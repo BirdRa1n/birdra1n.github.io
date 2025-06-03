@@ -9,6 +9,7 @@ import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
 import GitHubRepo from "@/types/github";
 import getRepos from "@/utils/github/repo";
+import storage from "@/utils/storage";
 import React, { useEffect } from "react";
 
 export default function IndexPage() {
@@ -16,15 +17,26 @@ export default function IndexPage() {
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
-    getRepos().then((data) => {
-      setRepos(data);
-      setLoading(false);
+    const cachedRepos = storage.getItem('repos');
+    if (cachedRepos) {
+      try {
+        const parsedRepos = JSON.parse(cachedRepos) as GitHubRepo[];
+        setRepos(parsedRepos);
+        setLoading(false);
+        return;
+      }
+      finally {
+        getRepos().then((data) => {
+          setRepos(data);
+          setLoading(false);
+          storage.setItem('repos', data);
+        }
+        ).catch((error) => {
+          console.error("Error fetching repositories:", error);
+          setLoading(false);
+        });
+      }
     }
-    ).catch((error) => {
-      console.error("Error fetching repositories:", error);
-      setLoading(false);
-    }
-    );
   }, []);
 
   return (
