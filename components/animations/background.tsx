@@ -13,7 +13,7 @@ const AnimatedBackground: React.FC = () => {
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [numberOfParticles, setNumberOfParticles] = useState(20); // Default to 20
+    const [numberOfParticles, setNumberOfParticles] = useState<number>(20); // Default to 20
     const particlesRef = useRef<Particle[]>([]);
 
     // Detect color mode
@@ -51,8 +51,8 @@ const AnimatedBackground: React.FC = () => {
         if (konamiCode[konamiIndex] === event.key) {
             setKonamiIndex((prev) => prev + 1);
             if (konamiIndex === konamiCode.length - 1) {
-                const input = prompt('Number of particles (max 1000):', numberOfParticles.toString());
-                const newNumberOfParticles = Math.min(Number(input), 1000);
+                const input = prompt('Number of particles:', numberOfParticles.toString());
+                const newNumberOfParticles = Number(input);
                 if (!isNaN(newNumberOfParticles) && newNumberOfParticles > 0) {
                     setNumberOfParticles(newNumberOfParticles);
                 }
