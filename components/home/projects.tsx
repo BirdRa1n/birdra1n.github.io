@@ -1,5 +1,5 @@
 import supabase from "@/utils/supabase/client";
-import { Spinner } from "@heroui/react";
+import { Card, CardHeader, Image, Spinner } from "@heroui/react";
 import { useEffect, useState } from "react";
 
 interface Project {
@@ -11,7 +11,8 @@ interface Project {
     thumbnail_url: string,
     slug: string,
     category_id: string,
-    created_at: string
+    created_at: string,
+    description: string,
 }
 
 const ListProjects = () => {
@@ -41,7 +42,27 @@ const ListProjects = () => {
 
     return (
         <div>
-            {/* Render projects here */}
+            {
+                projects.map((project) => (
+                    <Card key={project.id} radius="md" className="max-w-sm mb-4 cursor-pointer hover:shadow-lg transition-shadow duration-300 ease-in-out">
+                        <CardHeader className="flex flex-col gap-1 align-start items-start">
+                            <div className="flex gap-3 items-center">
+                                <Image
+                                    src={project.thumbnail_url}
+                                    alt={project?.title}
+                                    width={140}
+                                    height={70}
+                                    isBlurred
+                                />
+                                <div>
+                                    <h3 className="font-bold text-xl text-default-600">{project?.title}</h3>
+                                    <p className="text-default-500 text-[13px]">{project?.description}</p>
+                                </div>
+                            </div>
+                        </CardHeader>
+                    </Card>
+                ))
+            }
         </div>
     );
 }
