@@ -6,8 +6,25 @@ import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
 import DefaultLayout from "@/layouts/default";
+import GitHubRepo from "@/types/github";
+import getRepos from "@/utils/github/repo";
+import React, { useEffect } from "react";
 
 export default function IndexPage() {
+  const [repos, setRepos] = React.useState<GitHubRepo[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    getRepos().then((data) => {
+      setRepos(data);
+      setLoading(false);
+    }
+    ).catch((error) => {
+      console.error("Error fetching repositories:", error);
+      setLoading(false);
+    }
+    );
+  }, []);
 
   return (
     <DefaultLayout>
@@ -26,22 +43,31 @@ export default function IndexPage() {
         <div className="flex gap-3">
           <Link
             className={buttonStyles({
-              radius: "sm",
+              radius: "md",
               variant: "shadow",
-              className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964]',
+              className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
             })}
             href={'/projects'}
           >
             Projects
           </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig.links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
+          <div>
+            <Link
+              isExternal
+              className={buttonStyles({ variant: "bordered", radius: "md", className: "relative" })}
+              href={siteConfig.links.github}
+            >
+              <GithubIcon size={20} />
+              <div className="flex mt-1 flex-col items-start">
+                <p>GitHub</p>
+                {loading ? (
+                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">loading...</p>
+                ) : (
+                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">{repos.length} repositories</p>
+                )}
+              </div>
+            </Link>
+          </div>
         </div>
 
         <div className="mt-8" id="#projects">
