@@ -1,6 +1,7 @@
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 
+import AnimatedBackground from "@/components/animations/background";
 import ListProjects from "@/components/home/projects";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
@@ -28,7 +29,8 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+      <AnimatedBackground />
+      <section className="relative flex flex-col items-center justify-center gap-4 py-8 md:py-10">
 
         <div className="inline-block max-w-lg text-center justify-center">
           <h1 className={title()}>
@@ -54,7 +56,7 @@ export default function IndexPage() {
           <div>
             <Link
               isExternal
-              className={buttonStyles({ variant: "bordered", radius: "md", className: "relative" })}
+              className={buttonStyles({ variant: "bordered", radius: "md", className: "relative bg-white dark:bg-black" })}
               href={siteConfig.links.github}
             >
               <GithubIcon size={20} />
