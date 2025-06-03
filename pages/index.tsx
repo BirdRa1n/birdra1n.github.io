@@ -25,18 +25,20 @@ export default function IndexPage() {
         setLoading(false);
         return;
       }
-      finally {
-        getRepos().then((data) => {
-          setRepos(data);
-          setLoading(false);
-          storage.setItem('repos', data);
-        }
-        ).catch((error) => {
-          console.error("Error fetching repositories:", error);
-          setLoading(false);
-        });
+      catch (error) {
+        console.log("Error parsing cached repos:", error);
       }
     }
+
+    getRepos().then((data) => {
+      setRepos(data);
+      setLoading(false);
+      storage.setItem('repos', data);
+    }
+    ).catch((error) => {
+      console.error("Error fetching repositories:", error);
+      setLoading(false);
+    });
   }, []);
 
   return (
