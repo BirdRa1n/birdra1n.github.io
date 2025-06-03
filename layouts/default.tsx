@@ -1,10 +1,6 @@
-import { Link } from "@heroui/link";
-
-import { Head } from "./head";
-
 import { Navbar } from "@/components/navbar";
-import { sign } from "crypto";
-import { title } from "@/components/primitives";
+import { Link } from "@heroui/link";
+import { Head } from "./head";
 
 export default function DefaultLayout({
   children,

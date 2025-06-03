@@ -1,10 +1,9 @@
-import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { Form, Input, Button, Select, SelectItem } from "@heroui/react";
-import { Textarea } from "@heroui/input";
-import React, { useEffect } from "react";
 import supabase from "@/utils/supabase/client";
+import { Textarea } from "@heroui/input";
+import { Button, Form, Input, Select, SelectItem } from "@heroui/react";
 import { button as buttonStyles } from "@heroui/theme";
+import React, { useEffect } from "react";
 
 export default function DocsPage() {
   const [apps, setApps] = React.useState<any[]>([]);
