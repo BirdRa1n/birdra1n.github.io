@@ -40,7 +40,7 @@ const AnimatedBackground: React.FC = () => {
         // Only run on client side
         if (typeof window !== 'undefined') {
             const isMobile = window.innerWidth <= 768;
-            setNumberOfParticles(isMobile ? 20 : 120);
+            setNumberOfParticles(isMobile ? 20 : 25);
         }
     }, []);
 
