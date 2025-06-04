@@ -1,3 +1,4 @@
+import storage from "@/utils/storage";
 import supabase from "@/utils/supabase/client";
 import { Card, CardHeader, Image, Spinner } from "@heroui/react";
 import { useEffect, useState } from "react";
@@ -20,9 +21,15 @@ const ListProjects = () => {
     const [projects, setProjects] = useState<Project[]>([]);
 
     const fetchLastProjects = async () => {
+        const cachedProjects = storage.getItem('lastProjects');
+        if (cachedProjects) {
+            const parsedProjects = JSON.parse(cachedProjects) as Project[];
+            return setProjects(parsedProjects);
+        }
         const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(3);
         if (data) {
             setIsLoading(false);
+            storage.setItem('lastProjects', data);
             return setProjects(data);
         }
     }
