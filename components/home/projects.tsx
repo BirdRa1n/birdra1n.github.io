@@ -5,7 +5,7 @@ import { GithubIcon } from "../icons";
 const Projects = () => {
     const { repos, fetchingRepos } = useReposContext();
     return (
-        <>
+        <div id="projects">
             <p className="font-bold text-xl text-default-600">Projects</p>
             <p className="text-default-500 text-sm mb-4">Here are some of my latest projects. You can find more on my <a href="https://github.com/birdra1n?tab=repositories" className="text-inherit font-bold text-success">github page</a>.</p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
@@ -32,7 +32,7 @@ const Projects = () => {
                     ))
                 )}
             </div>
-        </>
+        </div>
     );
 }
 

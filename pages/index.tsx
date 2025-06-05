@@ -1,4 +1,6 @@
 import AnimatedBackground from "@/components/animations/background";
+import FeaturedProjects from "@/components/home/featured-projects";
+import Projects from "@/components/home/projects";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
@@ -7,10 +9,6 @@ import DefaultLayout from "@/layouts/default";
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { AnimatePresence, motion } from "framer-motion";
-import dynamic from 'next/dynamic';
-
-const FeaturedProjects = dynamic(() => import('@/components/home/featured-projects'), { ssr: false });
-const Projects = dynamic(() => import('@/components/home/projects'), { ssr: false });
 
 export default function IndexPage() {
   const { repos, fetchingRepos } = useReposContext();
@@ -34,7 +32,7 @@ export default function IndexPage() {
     <DefaultLayout>
       <AnimatedBackground />
       <section className="relative flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block max-w-md text-center justify-center">
+        <div className="inline-block max-w-md text-center justify-center items-center">
           <h1 className={title()}>
             Hi! I'm,
           </h1>
@@ -72,8 +70,7 @@ export default function IndexPage() {
               variant: "shadow",
               className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
             })}
-            rel="noopener noreferrer"
-            href={'/projects'}
+            href={'#projects'}
           >
             Projects
           </Link>
@@ -88,7 +85,7 @@ export default function IndexPage() {
               <div className="flex mt-1 flex-col items-start">
                 <p>GitHub</p>
                 {fetchingRepos ? (
-                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">loading...</p>
+                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">Loading...</p>
                 ) : (
                   <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">{repos.length} repositories</p>
                 )}
@@ -97,10 +94,10 @@ export default function IndexPage() {
           </div>
         </div>
 
-        <div className="mt-8" id="#projects">
+        <div className="mt-8">
           <FeaturedProjects />
         </div>
-        <div className="mt-8" id="#projects">
+        <div className="mt-8 pl-0 pr-0 md:pl-8 md:pr-8 lg:pl-8 lg:pr-8 xl:pl-8 xl:pr-8">
           <Projects />
         </div>
       </section>
