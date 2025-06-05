@@ -90,25 +90,24 @@ const AnimatedBackground: React.FC = () => {
         }
     }, [numberOfParticles]);
 
-    // Update default particle count on resize
     useEffect(() => {
-        const handleResize = () => {
-            if (typeof window !== 'undefined') {
-                const isMobile = window.innerWidth <= 768;
-                setNumberOfParticles((prev) => {
-                    if (prev === 20 || prev === 120) {
-                        return isMobile ? 20 : 120;
-                    }
-                    return prev;
-                });
-            }
-        };
+        const handleResize = debounce(() => {
+            const isMobile = window.innerWidth <= 768;
+            setNumberOfParticles((prev) => (prev === 20 || prev === 120 ? (isMobile ? 20 : 120) : prev));
+        }, 200);
 
-        if (typeof window !== 'undefined') {
-            window.addEventListener('resize', handleResize);
-            return () => window.removeEventListener('resize', handleResize);
-        }
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // Função de debounce
+    const debounce = (func: Function, wait: number) => {
+        let timeout: NodeJS.Timeout;
+        return (...args: any[]) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        };
+    };
 
     // Animate particles with canvas
     useEffect(() => {
@@ -175,7 +174,7 @@ const AnimatedBackground: React.FC = () => {
 
     return (
         <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <canvas id='canvas' ref={canvasRef} className="absolute w-full h-full" />
+            <canvas id='canvas' ref={canvasRef} className="absolute w-full h-full" aria-hidden="true" />
         </div>
     );
 };

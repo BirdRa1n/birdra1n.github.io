@@ -59,6 +59,7 @@ const ListProjects = () => {
                                     alt={project?.title}
                                     width={140}
                                     height={70}
+                                    loading="lazy"
                                     isBlurred
                                     isLoading={project?.thumbnail_url ? false : true}
                                 />

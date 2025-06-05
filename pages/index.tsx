@@ -1,5 +1,4 @@
 import AnimatedBackground from "@/components/animations/background";
-import ListProjects from "@/components/home/projects";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
@@ -10,7 +9,10 @@ import storage from "@/utils/storage";
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { AnimatePresence, motion } from "framer-motion";
+import dynamic from 'next/dynamic';
 import React, { useEffect } from "react";
+
+const ListProjects = dynamic(() => import('@/components/home/projects'), { ssr: false });
 
 export default function IndexPage() {
   const [repos, setRepos] = React.useState<GitHubRepo[]>([]);
@@ -98,6 +100,7 @@ export default function IndexPage() {
               variant: "shadow",
               className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
             })}
+            rel="noopener noreferrer"
             href={'/projects'}
           >
             Projects
@@ -107,6 +110,7 @@ export default function IndexPage() {
               isExternal
               className={buttonStyles({ variant: "bordered", radius: "md", className: "relative bg-white dark:bg-black" })}
               href={siteConfig.links.github}
+              rel="noopener noreferrer"
             >
               <GithubIcon size={20} />
               <div className="flex mt-1 flex-col items-start">
