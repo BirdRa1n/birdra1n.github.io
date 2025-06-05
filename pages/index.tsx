@@ -2,46 +2,18 @@ import AnimatedBackground from "@/components/animations/background";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
+import { useReposContext } from "@/contexts/repos";
 import DefaultLayout from "@/layouts/default";
-import GitHubRepo from "@/types/github";
-import getRepos from "@/utils/github/repo";
-import storage from "@/utils/storage";
 import { Link } from "@heroui/link";
 import { button as buttonStyles } from "@heroui/theme";
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from 'next/dynamic';
-import React, { useEffect } from "react";
 
-const ListProjects = dynamic(() => import('@/components/home/projects'), { ssr: false });
+const FeaturedProjects = dynamic(() => import('@/components/home/featured-projects'), { ssr: false });
+const Projects = dynamic(() => import('@/components/home/projects'), { ssr: false });
 
 export default function IndexPage() {
-  const [repos, setRepos] = React.useState<GitHubRepo[]>([]);
-  const [loading, setLoading] = React.useState(true);
-
-  useEffect(() => {
-    const cachedRepos = storage.getItem('repos');
-    if (cachedRepos) {
-      try {
-        const parsedRepos = JSON.parse(cachedRepos) as GitHubRepo[];
-        setRepos(parsedRepos);
-        setLoading(false);
-        return;
-      }
-      catch (error) {
-        console.log("Error parsing cached repos:", error);
-      }
-    }
-
-    getRepos().then((data) => {
-      setRepos(data);
-      setLoading(false);
-      storage.setItem('repos', data);
-    }
-    ).catch((error) => {
-      console.error("Error fetching repositories:", error);
-      setLoading(false);
-    });
-  }, []);
+  const { repos, fetchingRepos } = useReposContext();
 
   // Typewriter effect configuration
   const subtitleText = "I'm a tech enthusiast and developer with experience in front-end and back-end development. My focus is on creating exceptional digital solutions and improving the user experience.";
@@ -115,7 +87,7 @@ export default function IndexPage() {
               <GithubIcon size={20} />
               <div className="flex mt-1 flex-col items-start">
                 <p>GitHub</p>
-                {loading ? (
+                {fetchingRepos ? (
                   <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">loading...</p>
                 ) : (
                   <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">{repos.length} repositories</p>
@@ -126,7 +98,10 @@ export default function IndexPage() {
         </div>
 
         <div className="mt-8" id="#projects">
-          <ListProjects />
+          <FeaturedProjects />
+        </div>
+        <div className="mt-8" id="#projects">
+          <Projects />
         </div>
       </section>
     </DefaultLayout>

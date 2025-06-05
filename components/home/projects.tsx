@@ -1,80 +1,39 @@
-import storage from "@/utils/storage";
-import supabase from "@/utils/supabase/client";
-import { Card, CardHeader, Image, Spinner } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useReposContext } from "@/contexts/repos";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
+import { GithubIcon } from "../icons";
 
-interface Project {
-    id: string,
-    title: string,
-    content: string,
-    status: string,
-    views_count: number,
-    thumbnail_url: string,
-    slug: string,
-    category_id: string,
-    created_at: string,
-    description: string,
-}
-
-const ListProjects = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [projects, setProjects] = useState<Project[]>([]);
-
-    const fetchLastProjects = async () => {
-        const cachedProjects = storage.getItem('lastProjects');
-        if (cachedProjects) {
-            const parsedProjects = JSON.parse(cachedProjects) as Project[];
-            return setProjects(parsedProjects);
-        }
-        const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(3);
-        if (data) {
-            setIsLoading(false);
-            storage.setItem('lastProjects', data);
-            return setProjects(data);
-        }
-    }
-
-    useEffect(() => {
-        fetchLastProjects();
-    }, []);
-
-    if (projects.length === 0) {
-        return (
-            <center>
-                <Spinner color="success" size="sm" className="mt-20" />
-                <p className="font-size-sm">getting latest projects...</p>
-            </center>
-        )
-    }
-
+const Projects = () => {
+    const { repos, fetchingRepos } = useReposContext();
     return (
-        <div>
-            {
-                projects.map((project) => (
-                    <Card key={project.id} radius="md" className="max-w-sm mb-4 cursor-pointer hover:shadow-lg transition-shadow duration-300 ease-in-out">
-                        <CardHeader className="flex flex-col gap-1 align-start items-start">
-                            <div className="flex gap-3 items-center">
-                                <Image
-                                    src={project.thumbnail_url}
-                                    alt={project?.title}
-                                    width={140}
-                                    height={70}
-                                    loading="lazy"
-                                    isBlurred
-                                    isLoading={project?.thumbnail_url ? false : true}
-                                />
-                                <div>
-                                    <h3 className="font-bold text-xl text-default-600">{project?.title}</h3>
-                                    <p className="text-default-500 text-[13px]">{project?.description}</p>
+        <>
+            <p className="font-bold text-xl text-default-600">Projects</p>
+            <p className="text-default-500 text-sm mb-4">Here are some of my latest projects. You can find more on my <a href="https://github.com/birdra1n?tab=repositories" className="text-inherit font-bold text-success">github page</a>.</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {fetchingRepos ? (
+                    <p className="font-bold text-lg text-default-600">loading...</p>
+                ) : (
+                    repos?.map((repo, index) => (
+                        <Card key={index} className="flex flex-col items-center justify-center gap-2">
+                            <CardHeader className="flex flex-col items-center justify-center gap-2 p-2">
+                                <div className="bg-default-200 p-2 rounded-md">
+                                    <GithubIcon className="text-default-600" />
                                 </div>
-                            </div>
-                        </CardHeader>
-                    </Card>
-                ))
-            }
-        </div>
+                                <h3 className="font-bold text-lg text-default-600 is-truncated text-center">{repo.name}</h3>
+                            </CardHeader>
+                            <CardBody>
+                                <p className="text-default-500 text-sm text-justify">{repo.description || "No description available"}</p>
+                            </CardBody>
+                            <CardFooter>
+                                <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-success hover:underline">
+                                    View on GitHub
+                                </a>
+                            </CardFooter>
+                        </Card>
+                    ))
+                )}
+            </div>
+        </>
     );
 }
 
-
-export default ListProjects
+export default Projects;
