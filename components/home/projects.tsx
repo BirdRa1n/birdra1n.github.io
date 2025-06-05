@@ -60,6 +60,7 @@ const ListProjects = () => {
                                     width={140}
                                     height={70}
                                     isBlurred
+                                    isLoading={project?.thumbnail_url ? false : true}
                                 />
                                 <div>
                                     <h3 className="font-bold text-xl text-default-600">{project?.title}</h3>

@@ -112,7 +112,7 @@ export default function DocsPage() {
               <Button className={buttonStyles({
                 radius: "sm",
                 variant: "shadow",
-                className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964]',
+                className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
               })} type="submit">
                 Submit
               </Button>
