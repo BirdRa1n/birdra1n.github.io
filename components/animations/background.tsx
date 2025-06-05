@@ -175,7 +175,7 @@ const AnimatedBackground: React.FC = () => {
 
     return (
         <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <canvas ref={canvasRef} className="absolute w-full h-full" />
+            <canvas id='canvas' ref={canvasRef} className="absolute w-full h-full" />
         </div>
     );
 };
