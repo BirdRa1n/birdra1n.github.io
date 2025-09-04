@@ -6,7 +6,7 @@ export interface GitHubRepoWithSkills extends GitHubRepo {
 
 const getRepos = async (): Promise<any[]> => {
   const baseUrl = process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_API_URL || '' // Ensure we have a fallback empty string
+    ? process.env.NEXT_API_URL || ''
     : '';
 
   const response = await fetch(`${baseUrl}/api/repos/github`);
