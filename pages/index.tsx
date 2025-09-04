@@ -1,7 +1,7 @@
 import AnimatedBackground from "@/components/animations/background";
 import Certificates from "@/components/home/certificates";
 import FeaturedProjects from "@/components/home/featured-projects";
-import Projects from "@/components/home/projects";
+import Repositories from "@/components/home/repos";
 import { GithubIcon } from "@/components/icons";
 import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
@@ -71,9 +71,9 @@ export default function IndexPage() {
               variant: "shadow",
               className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
             })}
-            href={'#projects'}
+            href={'#repositories'}
           >
-            Projects
+            Repositories
           </Link>
           <div>
             <Link
@@ -103,7 +103,7 @@ export default function IndexPage() {
           <Certificates />
         </div>
         <div className="mt-8 pl-0 pr-0 md:pl-8 md:pr-8 lg:pl-8 lg:pr-8 xl:pl-8 xl:pr-8">
-          <Projects />
+          <Repositories />
         </div>
       </section>
     </DefaultLayout>
