@@ -5,9 +5,7 @@ export interface GitHubRepoWithSkills extends GitHubRepo {
 }
 
 const getRepos = async (): Promise<any[]> => {
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_API_URL || ''
-    : '';
+  const baseUrl = process.env.NODE_ENV === 'production' ? "https://birdra1n.vercel.app" : "";
   const response = await fetch(`${baseUrl}/api/repos/github`);
 
   if (!response.ok) {
