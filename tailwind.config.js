@@ -1,7 +1,7 @@
-import { heroui } from "@heroui/theme"
+import {heroui} from "@heroui/theme"
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
   content: [
     './layouts/**/*.{js,ts,jsx,tsx,mdx}',
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,9 +10,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-      },
       fontFamily: {
         sans: ["var(--font-sans)"],
         mono: ["var(--font-mono)"],
@@ -22,3 +19,5 @@ module.exports = {
   darkMode: "class",
   plugins: [heroui()],
 }
+
+export default config;
