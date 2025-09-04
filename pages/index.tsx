@@ -1,4 +1,5 @@
 import AnimatedBackground from "@/components/animations/background";
+import Certificates from "@/components/home/certificates";
 import FeaturedProjects from "@/components/home/featured-projects";
 import Projects from "@/components/home/projects";
 import { GithubIcon } from "@/components/icons";
@@ -96,6 +97,10 @@ export default function IndexPage() {
 
         <div className="mt-8">
           <FeaturedProjects />
+        </div>
+
+        <div className="mt-8">
+          <Certificates />
         </div>
         <div className="mt-8 pl-0 pr-0 md:pl-8 md:pr-8 lg:pl-8 lg:pr-8 xl:pl-8 xl:pr-8">
           <Projects />

@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/router";
 
 import { fontMono, fontSans } from "@/config/fonts";
+import { CertificatesProvider } from "@/contexts/certificates";
 import { ReposProvider } from "@/contexts/repos";
 import "@/styles/globals.css";
 
@@ -14,9 +15,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider attribute="class" defaultTheme="system">
-        <ReposProvider>
-          <Component {...pageProps} />
-        </ReposProvider>
+        <CertificatesProvider>
+          <ReposProvider>
+            <Component {...pageProps} />
+          </ReposProvider>
+        </CertificatesProvider>
       </NextThemesProvider>
     </HeroUIProvider>
   );
