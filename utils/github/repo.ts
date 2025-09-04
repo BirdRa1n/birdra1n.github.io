@@ -5,7 +5,11 @@ export interface GitHubRepoWithSkills extends GitHubRepo {
 }
 
 const getRepos = async (): Promise<any[]> => {
-  const response = await fetch(process.env.NODE_ENV === 'production' ? `${process.env.NEXT_API_URL}/api/repos/github` : '/api/repos/github');
+  const baseUrl = process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_API_URL || '' // Ensure we have a fallback empty string
+    : '';
+
+  const response = await fetch(`${baseUrl}/api/repos/github`);
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);
