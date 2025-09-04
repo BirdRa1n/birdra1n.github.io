@@ -18,8 +18,8 @@ const Certificates = () => {
                             <CardHeader className="flex flex-row w-full gap-2 justify-between items-start">
                                 <div className="flex flex-col gap-2">
                                     <Avatar radius="sm" fallback={<GoOrganization size={23} />} src={cert?.organization?.logo} />
-                                    <div>
-                                        {cert.title}
+                                    <div className="gap-1 flex flex-col">
+                                        <p className="text-lg font-medium">{cert.title}</p>
                                         <p className="text-xs">{cert.organization.name}</p>
                                     </div>
                                 </div>
