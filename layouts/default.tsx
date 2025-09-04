@@ -1,6 +1,8 @@
-import { Navbar } from "@/components/navbar";
 import { Link } from "@heroui/link";
+
 import { Head } from "./head";
+
+import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
   children,
@@ -22,7 +24,13 @@ export default function DefaultLayout({
           title="github homepage"
         >
           <span className="text-default-600">Powered by</span>
-          <p className={'font-bold text-inherit text-gradient from-[#6FEE8D] to-[#17c964]'}>{"BirdRa1n"}</p>
+          <p
+            className={
+              "font-bold text-inherit text-gradient from-[#6FEE8D] to-[#17c964]"
+            }
+          >
+            {"BirdRa1n"}
+          </p>
         </Link>
       </footer>
     </div>

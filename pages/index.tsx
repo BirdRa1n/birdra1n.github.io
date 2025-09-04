@@ -1,3 +1,7 @@
+import { Link } from "@heroui/link";
+import { button as buttonStyles } from "@heroui/theme";
+import { AnimatePresence, motion } from "framer-motion";
+
 import AnimatedBackground from "@/components/animations/background";
 import Certificates from "@/components/home/certificates";
 import FeaturedProjects from "@/components/home/featured-projects";
@@ -7,17 +11,16 @@ import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
 import { useReposContext } from "@/contexts/repos";
 import DefaultLayout from "@/layouts/default";
-import { Link } from "@heroui/link";
-import { button as buttonStyles } from "@heroui/theme";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function IndexPage() {
   const { repos, fetchingRepos } = useReposContext();
 
   // Typewriter effect configuration
-  const subtitleText = "I'm a tech enthusiast and developer with experience in front-end and back-end development. My focus is on creating exceptional digital solutions and improving the user experience.";
-  const words = subtitleText.split(" ").map(word => word.split("").concat(" ")); // Split into words, then characters, with space at the end
-  const characters = words.flat(); // Flatten to get character array with spaces
+  const subtitleText =
+    "I'm a tech enthusiast and developer with experience in front-end and back-end development. My focus is on creating exceptional digital solutions and improving the user experience.";
+  const words = subtitleText
+    .split(" ")
+    .map((word) => word.split("").concat(" ")); // Split into words, then characters, with space at the end
 
   const sentenceVariants = {
     hidden: {},
@@ -26,7 +29,11 @@ export default function IndexPage() {
 
   const letterVariants = {
     hidden: { opacity: 0, y: 10 }, // Slight y-offset for a subtle "typing" feel
-    visible: { opacity: 1, y: 0, transition: { opacity: { duration: 0 }, y: { duration: 0.1 } } }, // Smooth y transition
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { opacity: { duration: 0 }, y: { duration: 0.1 } },
+    }, // Smooth y transition
   };
 
   return (
@@ -34,26 +41,27 @@ export default function IndexPage() {
       <AnimatedBackground />
       <section className="relative flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block max-w-md text-center justify-center items-center">
-          <h1 className={title()}>
-            Hi! I'm,
-          </h1>
+          <h1 className={title()}>Hi! I&apos;m,</h1>
           <h1 className={title({ color: "green" })}> Dário Jr</h1>
 
           <motion.h2
-            className={subtitle({ class: "mt-4" })}
-            variants={sentenceVariants}
-            initial="hidden"
             animate="visible"
+            className={subtitle({ class: "mt-4" })}
+            initial="hidden"
             style={{ display: "inline-block", whiteSpace: "pre-wrap" }} // Preserve word boundaries
+            variants={sentenceVariants}
           >
             <AnimatePresence>
               {words.map((word, wordIndex) => (
-                <span key={`word-${wordIndex}`} style={{ display: "inline-block", whiteSpace: "pre" }}>
+                <span
+                  key={`word-${wordIndex}`}
+                  style={{ display: "inline-block", whiteSpace: "pre" }}
+                >
                   {word.map((char, charIndex) => (
                     <motion.span
                       key={`char-${wordIndex}-${charIndex}`}
-                      variants={letterVariants}
                       style={{ display: "inline-block" }}
+                      variants={letterVariants}
                     >
                       {char === " " ? "\u00A0" : char}
                     </motion.span>
@@ -69,16 +77,21 @@ export default function IndexPage() {
             className={buttonStyles({
               radius: "md",
               variant: "shadow",
-              className: 'bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white',
+              className:
+                "bg-gradient-to-b from-[#6FEE8D] to-[#17c964] text-white",
             })}
-            href={'#repositories'}
+            href={"#repositories"}
           >
             Repositories
           </Link>
           <div>
             <Link
               isExternal
-              className={buttonStyles({ variant: "bordered", radius: "md", className: "relative bg-white dark:bg-black" })}
+              className={buttonStyles({
+                radius: "md",
+                variant: "bordered",
+                className: "relative bg-white dark:bg-black",
+              })}
               href={siteConfig.links.github}
               rel="noopener noreferrer"
             >
@@ -86,9 +99,19 @@ export default function IndexPage() {
               <div className="flex mt-1 flex-col items-start">
                 <p>GitHub</p>
                 {fetchingRepos ? (
-                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">Loading...</p>
+                  <p
+                    className="ml-[1px] text-[7px]"
+                    style={{ marginTop: "-7px" }}
+                  >
+                    Loading...
+                  </p>
                 ) : (
-                  <p style={{ marginTop: '-7px' }} className="text-[7px] ml-[1px]">{repos.length} repositories</p>
+                  <p
+                    className="ml-[1px] text-[7px]"
+                    style={{ marginTop: "-7px" }}
+                  >
+                    {repos.length} repositories
+                  </p>
                 )}
               </div>
             </Link>

@@ -1,21 +1,14 @@
 import * as React from "react";
+import Image from "next/image";
 
 import { IconSvgProps } from "@/types";
-import Image from "next/image";
 
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,
   width,
   height,
   ...props
-}) => (
-  <Image
-    width={35}
-    height={35}
-    alt="NextUI hero Image"
-    src="/logo.gif"
-  />
-);
+}) => <Image alt="NextUI hero Image" height={35} src="/logo.gif" width={35} />;
 
 export const DiscordIcon: React.FC<IconSvgProps> = ({
   size = 24,

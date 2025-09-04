@@ -11,7 +11,7 @@ export const siteConfig = {
     {
       label: "Contact",
       href: "/contact",
-    }
+    },
   ],
   navMenuItems: [
     {
@@ -21,7 +21,7 @@ export const siteConfig = {
     {
       label: "Contact",
       href: "/contact",
-    }
+    },
   ],
   links: {
     github: "https://github.com/birdra1n",
