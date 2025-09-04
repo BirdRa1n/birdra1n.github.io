@@ -11,9 +11,11 @@ import { subtitle, title } from "@/components/primitives";
 import { siteConfig } from "@/config/site";
 import { useReposContext } from "@/contexts/repos";
 import DefaultLayout from "@/layouts/default";
+import { useCertificates } from "@/contexts/certificates";
 
 export default function IndexPage() {
   const { repos, fetchingRepos } = useReposContext();
+  const { certificates, fetchingCertificates } = useCertificates();
 
   // Typewriter effect configuration
   const subtitleText =
@@ -121,13 +123,28 @@ export default function IndexPage() {
         <div className="mt-8">
           <FeaturedProjects />
         </div>
-
-        <div className="mt-8">
-          <Certificates />
-        </div>
-        <div className="mt-8 pl-0 pr-0 md:pl-8 md:pr-8 lg:pl-8 lg:pr-8 xl:pl-8 xl:pr-8">
-          <Repositories />
-        </div>
+        {!fetchingCertificates ||
+          !fetchingRepos ||
+          certificates.length > 0 ||
+          repos.length > 0 ? (
+          <div>
+            <div className="mt-8">
+              <Certificates />
+            </div>
+            <div className="mt-8">
+              <Repositories />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="mt-8">
+              <Certificates />
+            </div>
+            <div className="mt-8">
+              <Repositories />
+            </div>
+          </div>
+        )}
       </section>
     </DefaultLayout>
   );

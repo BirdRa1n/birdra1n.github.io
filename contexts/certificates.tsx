@@ -14,6 +14,7 @@ interface CertificatesContextType {
   certificates: CERTIFICATES[];
   addCertificate: (certificate: CERTIFICATES) => void;
   removeCertificate: (id: string) => void;
+  fetchingCertificates: boolean;
 }
 
 const CertificatesContext = createContext<CertificatesContextType | undefined>(
@@ -22,6 +23,7 @@ const CertificatesContext = createContext<CertificatesContextType | undefined>(
 
 export function CertificatesProvider({ children }: { children: ReactNode }) {
   const [certificates, setCertificates] = useState<CERTIFICATES[]>([]);
+  const [fetchingCertificates, setFetchingCertificates] = useState(true);
 
   const addCertificate = (certificate: CERTIFICATES) => {
     setCertificates([...certificates, certificate]);
@@ -33,6 +35,7 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
 
   const handlerGetCertificates = useCallback(async () => {
     try {
+      setFetchingCertificates(true);
       const { data, error } = await supabase
         .from("certificates")
         .select("*,organization(*)")
@@ -45,6 +48,8 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.log(error);
       throw error;
+    } finally {
+      setFetchingCertificates(false);
     }
   }, []);
 
@@ -58,6 +63,7 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
         certificates,
         addCertificate,
         removeCertificate,
+        fetchingCertificates,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import { Card, CardHeader, Image, Spinner } from "@heroui/react";
 import { useEffect, useState } from "react";
-
+import { motion } from "framer-motion";
 import storage from "@/utils/storage";
 import supabase from "@/utils/supabase/client";
 
@@ -67,33 +67,40 @@ const FeaturedProjects = () => {
         .
       </p>
       <div className="flex flex-col items-center justify-center gap-2 xl:flex-row xl:gap-4 md:flex-row md:gap-4">
-        {projects.map((project) => (
-          <Card
+        {projects.map((project, index) => (
+          <motion.div
             key={project.id}
-            className="max-w-sm mb-4 min-h-[110px] hover:shadow-lg transition-shadow duration-300 ease-in-out"
-            radius="md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 + 0.4 }}
           >
-            <CardHeader className="flex flex-col gap-1 align-start items-start">
-              <div className="flex gap-3 items-center">
-                <Image
-                  isBlurred
-                  alt={project?.title}
-                  className="max-w-[140px] max-h-[80px] object-cover"
-                  isLoading={project?.thumbnail_url ? false : true}
-                  loading="lazy"
-                  src={project.thumbnail_url}
-                />
-                <div>
-                  <h3 className="font-bold text-xl text-default-600">
-                    {project?.title}
-                  </h3>
-                  <p className="text-default-500 text-[13px]">
-                    {project?.description}
-                  </p>
+            <Card
+              key={project.id}
+              className="max-w-sm mb-4 min-h-[110px] hover:shadow-lg transition-shadow duration-300 ease-in-out"
+              radius="md"
+            >
+              <CardHeader className="flex flex-col gap-1 align-start items-start">
+                <div className="flex gap-3 items-center">
+                  <Image
+                    isBlurred
+                    alt={project?.title}
+                    className="max-w-[140px] max-h-[80px] object-cover"
+                    isLoading={project?.thumbnail_url ? false : true}
+                    loading="lazy"
+                    src={project.thumbnail_url}
+                  />
+                  <div>
+                    <h3 className="font-bold text-xl text-default-600">
+                      {project?.title}
+                    </h3>
+                    <p className="text-default-500 text-[13px]">
+                      {project?.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-          </Card>
+              </CardHeader>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </>
