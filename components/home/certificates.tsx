@@ -1,96 +1,96 @@
-import { Avatar, Card, CardFooter, CardHeader, Chip } from "@heroui/react";
-import { FaCode } from "react-icons/fa6";
+import { Avatar, Card, CardBody, CardHeader, Chip, Divider } from "@heroui/react";
+import { FaCode, FaExternalLinkAlt } from "react-icons/fa";
 import { GoOrganization } from "react-icons/go";
-import { IoOpen } from "react-icons/io5";
 import { motion } from "framer-motion";
-
 import { useCertificates } from "@/contexts/certificates";
+import { CertificateSkeleton } from "@/components/ui/skeleton";
 
 const Certificates = () => {
-  const { certificates } = useCertificates();
+  const { certificates, fetchingCertificates } = useCertificates();
 
   return (
-    <div
-      id="certificates"
-      className="min-w-[100%] pl-0 pr-0 md:pl-8 md:pr-8 lg:pl-8 lg:pr-8 xl:pl-8 xl:pr-8"
-    >
-      <motion.p
+    <section id="certificates" className="w-full">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="font-bold text-xl text-default-600"
+        transition={{ duration: 0.5 }}
       >
-        Certificates
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="text-default-500 text-sm mb-4"
-      >
-        Here are some of my certificates. You can find more on my{" "}
-        <a
-          className="font-bold text-success"
-          href="https://www.credly.com/users/dario-rios-1998"
-        >
-          credly page
-        </a>
-        .
-      </motion.p>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-        {certificates.map((cert, index) => (
-          <motion.div
-            key={cert.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.4 }}
+        <h2 className="font-bold text-2xl text-default-700 mb-2">Certificates</h2>
+        <p className="text-default-500 text-sm mb-6">
+          Professional certifications and achievements.{" "}
+          <a
+            className="font-bold text-success hover:underline"
+            href="https://www.credly.com/users/dario-rios-1998"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <Card radius="sm">
-              <CardHeader className="flex flex-row w-full gap-2 justify-between items-start">
-                <div className="flex flex-col gap-2">
+            View all on Credly →
+          </a>
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {fetchingCertificates ? (
+          Array.from({ length: 6 }).map((_, i) => <CertificateSkeleton key={i} />)
+        ) : (
+          certificates.map((cert, index) => (
+            <motion.div
+              key={cert.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Card
+                isPressable
+                className="w-full h-[180px] hover:shadow-lg transition-all duration-300 border border-default-200 flex flex-col"
+                onPress={() => window.open(cert?.url, "_blank")}
+              >
+                <CardHeader className="flex gap-3 pb-3 flex-shrink-0">
                   <Avatar
-                    fallback={<GoOrganization size={23} />}
+                    isBordered
                     radius="sm"
+                    size="lg"
                     src={cert?.organization?.logo}
+                    fallback={<GoOrganization size={24} />}
+                    className="flex-shrink-0"
                   />
-                  <div className="gap-1 flex flex-col">
-                    <p className="text-lg font-medium">{cert.title}</p>
-                    <p className="text-xs">{cert.organization.name}</p>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <p className="font-semibold text-default-700 line-clamp-2 text-sm">
+                      {cert.title}
+                    </p>
+                    <p className="text-xs text-default-500 truncate">
+                      {cert.organization.name}
+                    </p>
                   </div>
-                </div>
-                <div>
-                  <IoOpen
-                    className="text-default-500 cursor-pointer"
-                    size={20}
-                    onClick={() => window.open(cert?.url)}
-                  />
-                </div>
-              </CardHeader>
-              <CardFooter className="gap-2 max-w-[99%] overflow-auto scrollbar-hide">
-                {cert.skills.map((skill) => (
-                  <Chip
-                    key={skill}
-                    avatar={
-                      <Avatar
-                        showFallback
-                        alt={skill}
-                        classNames={{ base: "bg-transparent" }}
-                        fallback={<FaCode />}
-                        src={`https://cdn.simpleicons.org/${skill.toLocaleLowerCase()}/17c964`}
-                      />
-                    }
-                    radius="sm"
-                    size="sm"
-                    variant="flat"
-                  >
-                    {skill}
-                  </Chip>
-                ))}
-              </CardFooter>
-            </Card>
-          </motion.div>
-        ))}
+                  <FaExternalLinkAlt className="text-default-400 flex-shrink-0" size={14} />
+                </CardHeader>
+                <Divider />
+                <CardBody className="pt-3 flex-1 overflow-hidden">
+                  <div className="flex flex-wrap gap-1.5">
+                    {cert.skills.slice(0, 4).map((skill) => (
+                      <Chip
+                        key={skill}
+                        size="sm"
+                        variant="flat"
+                        className="text-xs"
+                        startContent={<FaCode size={10} />}
+                      >
+                        {skill}
+                      </Chip>
+                    ))}
+                    {cert.skills.length > 4 && (
+                      <Chip size="sm" variant="flat" className="text-xs">
+                        +{cert.skills.length - 4}
+                      </Chip>
+                    )}
+                  </div>
+                </CardBody>
+              </Card>
+            </motion.div>
+          ))
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 

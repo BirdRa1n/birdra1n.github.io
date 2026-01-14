@@ -1,8 +1,10 @@
-import { Card, CardHeader, Image, Spinner } from "@heroui/react";
+import { Card, CardHeader, CardBody, Image, Divider } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { FaExternalLinkAlt } from "react-icons/fa";
 import storage from "@/utils/storage";
 import supabase from "@/utils/supabase/client";
+import { ProjectSkeleton } from "@/components/ui/skeleton";
 
 interface Project {
   id: string;
@@ -26,9 +28,11 @@ const FeaturedProjects = () => {
 
     if (cachedProjects) {
       const parsedProjects = JSON.parse(cachedProjects) as Project[];
-
-      return setProjects(parsedProjects);
+      setProjects(parsedProjects);
+      setIsLoading(false);
+      return;
     }
+    
     const { data } = await supabase
       .from("projects")
       .select("*")
@@ -36,74 +40,72 @@ const FeaturedProjects = () => {
       .limit(3);
 
     if (data) {
-      setIsLoading(false);
       storage.setItem("lastProjects", data);
-
-      return setProjects(data);
+      setProjects(data);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchLastProjects();
   }, []);
 
-  if (projects.length === 0) {
-    return (
-      <center>
-        <Spinner className="mt-20" color="success" size="sm" />
-        <p className="font-size-sm">getting latest projects...</p>
-      </center>
-    );
-  }
-
   return (
-    <>
-      <p className="font-bold text-xl text-default-600">Latest Projects</p>
-      <p className="text-default-500 text-sm mb-4">
-        Here are some of my latest projects. You can find more on my{" "}
-        <a className="font-bold text-success" href="/projects">
-          projects page
-        </a>
-        .
-      </p>
-      <div className="flex flex-col items-center justify-center gap-2 xl:flex-row xl:gap-4 md:flex-row md:gap-4">
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.4 }}
-          >
-            <Card
+    <section className="w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="font-bold text-2xl text-default-700 mb-2">Latest Projects</h2>
+        <p className="text-default-500 text-sm mb-6">
+          Recent work and side projects.{" "}
+          <a className="font-bold text-success hover:underline" href="/projects">
+            View all projects →
+          </a>
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => <ProjectSkeleton key={i} />)
+        ) : (
+          projects.map((project, index) => (
+            <motion.div
               key={project.id}
-              className="max-w-sm mb-4 min-h-[110px] hover:shadow-lg transition-shadow duration-300 ease-in-out"
-              radius="md"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1 }}
             >
-              <CardHeader className="flex flex-col gap-1 align-start items-start">
-                <div className="flex gap-3 items-center">
+              <Card
+                isPressable
+                className="w-full h-[120px] hover:shadow-lg transition-all duration-300 border border-default-200 flex flex-col"
+                radius="md"
+              >
+                <CardHeader className="flex gap-3 pb-0 flex-1 overflow-hidden">
                   <Image
                     isBlurred
                     alt={project?.title}
-                    className="max-w-[140px] max-h-[80px] object-cover"
-                    isLoading={project?.thumbnail_url ? false : true}
+                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
                     loading="lazy"
                     src={project.thumbnail_url}
                   />
-                  <div>
-                    <h3 className="font-bold text-xl text-default-600">
+                  <div className="flex flex-col flex-1 min-w-0 justify-center">
+                    <p className="font-semibold text-default-700 line-clamp-1 text-sm">
                       {project?.title}
-                    </h3>
-                    <p className="text-default-500 text-[13px]">
+                    </p>
+                    <p className="text-xs text-default-500 line-clamp-2 mt-1">
                       {project?.description}
                     </p>
                   </div>
-                </div>
-              </CardHeader>
-            </Card>
-          </motion.div>
-        ))}
+                  <FaExternalLinkAlt className="text-default-400 flex-shrink-0" size={14} />
+                </CardHeader>
+              </Card>
+            </motion.div>
+          ))
+        )}
       </div>
-    </>
+    </section>
   );
 };
 
