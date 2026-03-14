@@ -1,12 +1,16 @@
 // components/animations/background.tsx
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 
 const AnimatedBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
 
     if (!canvas) return;
@@ -23,7 +27,7 @@ const AnimatedBackground: React.FC = () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const isDark = theme === "dark";
+    const isDark = resolvedTheme === "dark";
     const cols = Math.floor(canvas.width / 20);
     const drops: number[] = Array(cols).fill(1);
 
@@ -74,7 +78,9 @@ const AnimatedBackground: React.FC = () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
     };
-  }, [theme]);
+  }, [theme, mounted]);
+
+  if (!mounted) return null;
 
   return (
     <canvas

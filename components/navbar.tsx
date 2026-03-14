@@ -45,7 +45,7 @@ const NavLogo = () => (
       </span>
       <span
         className="text-[9px] tracking-[0.3em] opacity-50"
-        style={{ fontFamily: "var(--font-mono)" }}
+        style={{ fontFamily: "var(--font-mono)", color: "var(--text-primary)" }}
       >
         DEV
       </span>
@@ -62,7 +62,7 @@ export const Navbar = () => {
       maxWidth="xl"
       position="sticky"
       style={{
-        background: "rgba(5, 8, 15, 0.85)",
+        background: "color-mix(in srgb, var(--bg-primary) 85%, transparent)",
         backdropFilter: "blur(20px)",
         borderColor: "var(--border)",
       }}
@@ -130,7 +130,7 @@ export const Navbar = () => {
 
       <NavbarMenu
         style={{
-          background: "rgba(5, 8, 15, 0.96)",
+          background: "color-mix(in srgb, var(--bg-primary) 96%, transparent)",
           backdropFilter: "blur(20px)",
         }}
       >
