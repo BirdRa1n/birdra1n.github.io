@@ -1,87 +1,37 @@
-import { SwitchProps, useSwitch } from "@heroui/switch";
-import { VisuallyHidden } from "@react-aria/visually-hidden";
-import clsx from "clsx";
+// components/theme-switch.tsx
 import { useTheme } from "next-themes";
 import { FC, useEffect, useState } from "react";
-
 import { MoonFilledIcon, SunFilledIcon } from "@/components/icons";
 
-export interface ThemeSwitchProps {
-  className?: string;
-  classNames?: SwitchProps["classNames"];
-}
-
-export const ThemeSwitch: FC<ThemeSwitchProps> = ({
-  className,
-  classNames,
-}) => {
+export const ThemeSwitch: FC = () => {
   const [isMounted, setIsMounted] = useState(false);
-
   const { theme, setTheme } = useTheme();
 
-  const onChange = () => {
-    theme === "light" ? setTheme("dark") : setTheme("light");
-  };
+  useEffect(() => setIsMounted(true), []);
+  if (!isMounted) return <div className="w-8 h-8" />;
 
-  const {
-    Component,
-    slots,
-    isSelected,
-    getBaseProps,
-    getInputProps,
-    getWrapperProps,
-  } = useSwitch({
-    isSelected: theme === "light",
-    onChange,
-  });
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, [isMounted]);
-
-  // Prevent Hydration Mismatch
-  if (!isMounted) return <div className="w-6 h-6" />;
+  const isDark = theme === "dark";
 
   return (
-    <Component
-      aria-label={isSelected ? "Switch to dark mode" : "Switch to light mode"}
-      {...getBaseProps({
-        className: clsx(
-          "px-px transition-opacity hover:opacity-80 cursor-pointer",
-          className,
-          classNames?.base,
-        ),
-      })}
+    <button
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="relative w-8 h-8 flex items-center justify-center rounded-sm transition-all duration-200 opacity-50 hover:opacity-100"
+      style={{
+        border: "1px solid var(--border)",
+        background: "transparent",
+        color: "var(--neon)",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "0 0 12px var(--neon-glow)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+        (e.currentTarget as HTMLElement).style.boxShadow = "none";
+      }}
     >
-      <VisuallyHidden>
-        <input {...getInputProps()} />
-      </VisuallyHidden>
-      <div
-        {...getWrapperProps()}
-        className={slots.wrapper({
-          class: clsx(
-            [
-              "w-auto h-auto",
-              "bg-transparent",
-              "rounded-lg",
-              "flex items-center justify-center",
-              "group-data-[selected=true]:bg-transparent",
-              "!text-default-500",
-              "pt-px",
-              "px-0",
-              "mx-0",
-              "mb-1",
-            ],
-            classNames?.wrapper,
-          ),
-        })}
-      >
-        {isSelected ? (
-          <MoonFilledIcon size={22} />
-        ) : (
-          <SunFilledIcon size={22} />
-        )}
-      </div>
-    </Component>
+      {isDark ? <SunFilledIcon size={14} /> : <MoonFilledIcon size={14} />}
+    </button>
   );
 };

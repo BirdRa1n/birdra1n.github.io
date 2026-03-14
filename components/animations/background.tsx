@@ -1,240 +1,81 @@
-// components/AnimatedBackground.tsx
+// components/animations/background.tsx
 import { useEffect, useRef, useState } from "react";
-
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-}
+import { useTheme } from "next-themes";
 
 const AnimatedBackground: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [numberOfParticles, setNumberOfParticles] = useState<number>(20); // Default to 20
-  const particlesRef = useRef<Particle[]>([]);
+  const { theme } = useTheme();
 
-  // Detect color mode
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const updateMode = () => {
-      const isDark =
-        mediaQuery.matches ||
-        document.documentElement.classList.contains("dark");
-
-      setIsDarkMode(isDark);
-    };
-
-    updateMode();
-    mediaQuery.addEventListener("change", updateMode);
-    const observer = new MutationObserver(updateMode);
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateMode);
-      observer.disconnect();
-    };
-  }, []);
-
-  // Set initial particle count based on device type
-  useEffect(() => {
-    // Only run on client side
-    if (typeof window !== "undefined") {
-      const isMobile = window.innerWidth <= 768;
-
-      setNumberOfParticles(isMobile ? 20 : 25);
-    }
-  }, []);
-
-  // Konami code
-  const konamiCode = [
-    "ArrowUp",
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-    "ArrowLeft",
-    "ArrowRight",
-    "b",
-    "a",
-  ];
-  const [konamiIndex, setKonamiIndex] = useState(0);
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (konamiCode[konamiIndex] === event.key) {
-      setKonamiIndex((prev) => prev + 1);
-      if (konamiIndex === konamiCode.length - 1) {
-        const input = prompt(
-          "Number of particles:",
-          numberOfParticles.toString(),
-        );
-        const newNumberOfParticles = Number(input);
-
-        if (!isNaN(newNumberOfParticles) && newNumberOfParticles > 0) {
-          setNumberOfParticles(newNumberOfParticles);
-        }
-        setKonamiIndex(0);
-      }
-    } else {
-      setKonamiIndex(0);
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("keydown", handleKeyDown);
-
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }
-  }, [konamiIndex]);
-
-  // Initialize particles
-  useEffect(() => {
-    const updateParticles = () => {
-      const width =
-        containerRef.current?.offsetWidth ||
-        (typeof window !== "undefined" ? window.innerWidth : 1024);
-      const height =
-        containerRef.current?.offsetHeight ||
-        (typeof window !== "undefined" ? window.innerHeight : 768);
-
-      particlesRef.current = Array.from(
-        { length: numberOfParticles },
-        (_, i) => ({
-          id: i,
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-        }),
-      );
-    };
-
-    updateParticles();
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", updateParticles);
-
-      return () => window.removeEventListener("resize", updateParticles);
-    }
-  }, [numberOfParticles]);
-
-  useEffect(() => {
-    const handleResize = debounce(() => {
-      const isMobile = window.innerWidth <= 768;
-
-      setNumberOfParticles((prev) =>
-        prev === 20 || prev === 120 ? (isMobile ? 20 : 120) : prev,
-      );
-    }, 200);
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Função de debounce
-  const debounce = (func: Function, wait: number) => {
-    let timeout: NodeJS.Timeout;
-
-    return (...args: any[]) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), wait);
-    };
-  };
-
-  // Animate particles with canvas
   useEffect(() => {
     const canvas = canvasRef.current;
-
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
-
     if (!ctx) return;
 
-    const width =
-      containerRef.current?.offsetWidth ||
-      (typeof window !== "undefined" ? window.innerWidth : 1024);
-    const height =
-      containerRef.current?.offsetHeight ||
-      (typeof window !== "undefined" ? window.innerHeight : 768);
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
 
-    canvas.width = width;
-    canvas.height = height;
+    const isDark = theme === "dark";
+    const cols = Math.floor(canvas.width / 20);
+    const drops: number[] = Array(cols).fill(1);
 
-    let animationFrameId: number;
-    const animate = () => {
-      ctx.clearRect(0, 0, width, height);
+    const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
 
-      // Update particle positions
-      particlesRef.current = particlesRef.current.map((p) => {
-        let newX = p.x + p.vx;
-        let newY = p.y + p.vy;
+    let frame = 0;
+    let animId: number;
 
-        // Bounce off edges
-        if (newX < 0 || newX > width) p.vx *= -1;
-        if (newY < 0 || newY > height) p.vy *= -1;
-        newX = Math.max(0, Math.min(newX, width));
-        newY = Math.max(0, Math.min(newY, height));
+    const draw = () => {
+      frame++;
+      if (frame % 3 !== 0) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
 
-        return { ...p, x: newX, y: newY };
-      });
+      ctx.fillStyle = isDark ? "rgba(5, 8, 15, 0.05)" : "rgba(248, 250, 252, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connections
-      const particleColor = isDarkMode ? "#ffffff" : "#1f2937";
-      const lineColor = isDarkMode
-        ? "rgba(255, 255, 255, "
-        : "rgba(55, 65, 81, ";
+      ctx.font = "14px 'Courier New', monospace";
 
-      particlesRef.current.forEach((p1, i) => {
-        particlesRef.current.slice(i + 1).forEach((p2) => {
-          const distance = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+      for (let i = 0; i < drops.length; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * 20;
+        const y = drops[i] * 20;
 
-          if (distance < 150) {
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `${lineColor}${1 - distance / 150})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        });
-      });
+        const alpha = Math.random() * 0.3 + 0.05;
+        ctx.fillStyle = isDark
+          ? `rgba(0, 255, 135, ${alpha})`
+          : `rgba(0, 180, 90, ${alpha})`;
+        ctx.fillText(char, x, y);
 
-      // Draw particles
-      ctx.fillStyle = particleColor;
-      particlesRef.current.forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fill();
-      });
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
 
-      animationFrameId = requestAnimationFrame(animate);
+      animId = requestAnimationFrame(draw);
     };
 
-    animate();
+    draw();
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isDarkMode, numberOfParticles]);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, [theme]);
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
-    >
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="absolute w-full h-full"
-        id="canvas"
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="fixed inset-0 z-0 pointer-events-none opacity-40"
+      style={{ mixBlendMode: "screen" }}
+    />
   );
 };
 

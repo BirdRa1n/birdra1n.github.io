@@ -1,61 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
-
 @config "../tailwind.config.js";
 
-/* Smooth scrolling */
+/* ─── Design Tokens ────────────────────────────────────────── */
+:root {
+  --neon:       #00FF87;
+  --neon-dim:   #00cc6a;
+  --neon-glow:  rgba(0, 255, 135, 0.25);
+  --acid:       #B8FF3C;
+  --cyan-neon:  #00E5FF;
+
+  /* Light theme */
+  --bg-primary:   #F7F9F4;
+  --bg-card:      #FFFFFF;
+  --bg-card-alt:  #EFF3EA;
+  --text-primary: #0A0F0A;
+  --text-muted:   #4A5568;
+  --border:       rgba(0, 0, 0, 0.08);
+
+  --font-display: 'Syne', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+  --font-body:    'Inter', sans-serif;
+}
+
+.dark {
+  --bg-primary:  #05080F;
+  --bg-card:     #0C1018;
+  --bg-card-alt: #111827;
+  --text-primary:#F0FFF4;
+  --text-muted:  #8B9E8B;
+  --border:      rgba(0, 255, 135, 0.1);
+}
+
+/* ─── Base ─────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  font-family: var(--font-body);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+/* ─── Custom Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--nextui-default-300));
-  border-radius: 4px;
+  background: var(--neon-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+
+/* ─── Utility Classes ──────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+
+.neon-text {
+  color: var(--neon);
+  text-shadow: 0 0 20px var(--neon-glow), 0 0 40px var(--neon-glow);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--nextui-default-400));
+.neon-border {
+  border: 1px solid var(--neon);
+  box-shadow: 0 0 12px var(--neon-glow), inset 0 0 12px rgba(0, 255, 135, 0.05);
 }
 
-/* Hide scrollbar utility */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.glass-card:hover {
+  border-color: var(--neon);
+  box-shadow: 0 8px 40px rgba(0, 255, 135, 0.12), 0 0 0 1px rgba(0, 255, 135, 0.15);
+  transform: translateY(-3px);
 }
 
-/* Gradient text */
-.text-gradient {
-  background: linear-gradient(to right, #6FEE8D, #17c964);
+.gradient-neon {
+  background: linear-gradient(135deg, var(--neon) 0%, var(--cyan-neon) 100%);
+}
+
+.gradient-text-neon {
+  background: linear-gradient(135deg, var(--neon), var(--cyan-neon));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Card hover effects */
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* ─── Glitch Effect ────────────────────────────────────────── */
+@keyframes glitch {
+  0%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  20% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 2px); }
+  40% { clip-path: inset(60% 0 10% 0); transform: translate(3px, -2px); }
+  60% { clip-path: inset(40% 0 30% 0); transform: translate(-2px, 1px); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(2px, -1px); }
 }
 
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+@keyframes glitch2 {
+  0%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  20% { clip-path: inset(70% 0 5% 0);  transform: translate(3px, -2px); color: var(--cyan-neon); }
+  40% { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 2px); }
+  60% { clip-path: inset(50% 0 20% 0); transform: translate(2px, -1px); color: var(--acid); }
+  80% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, 1px); }
 }
 
-/* Focus visible improvements */
+.glitch-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-wrapper::before,
+.glitch-wrapper::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.glitch-wrapper:hover::before {
+  opacity: 0.8;
+  color: var(--cyan-neon);
+  animation: glitch 0.4s steps(1) forwards;
+}
+
+.glitch-wrapper:hover::after {
+  opacity: 0.6;
+  color: var(--acid);
+  animation: glitch2 0.4s steps(1) forwards;
+}
+
+/* ─── Scanline Overlay ──────────────────────────────────────── */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* ─── Blink cursor ─────────────────────────────────────────── */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor-blink { animation: blink 1s step-end infinite; }
+
+/* ─── Section divider ──────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--neon);
+  opacity: 0.8;
+}
+
+/* ─── Tag chip ─────────────────────────────────────────────── */
+.tag-chip {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 2px 10px;
+  border-radius: 2px;
+  background: rgba(0, 255, 135, 0.08);
+  border: 1px solid rgba(0, 255, 135, 0.25);
+  color: var(--neon);
+  letter-spacing: 0.05em;
+  transition: background 0.2s, border-color 0.2s;
+}
+.tag-chip:hover {
+  background: rgba(0, 255, 135, 0.15);
+  border-color: var(--neon);
+}
+
+/* ─── Focus ─────────────────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid hsl(var(--nextui-success));
-  outline-offset: 2px;
+  outline: 2px solid var(--neon);
+  outline-offset: 3px;
 }
+
+/* ─── Fade-in utility ──────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.fade-up-delay-1 { animation-delay: 0.1s; }
+.fade-up-delay-2 { animation-delay: 0.2s; }
+.fade-up-delay-3 { animation-delay: 0.3s; }
+
+/* ─── Scrollbar hide ─────────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }

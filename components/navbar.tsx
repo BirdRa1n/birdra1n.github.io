@@ -1,4 +1,4 @@
-import { Input } from "@heroui/input";
+// components/navbar.tsx
 import { Link } from "@heroui/link";
 import {
   Navbar as HeroUINavbar,
@@ -9,96 +9,130 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@heroui/navbar";
-import { link as linkStyles } from "@heroui/theme";
 import clsx from "clsx";
 import NextLink from "next/link";
-import { DiscordIcon, GithubIcon, Logo, PatreonIcon, TwitterIcon } from "@/components/icons";
+import { useRouter } from "next/router";
+import { GithubIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
 
+const NavLogo = () => (
+  <div className="flex items-center gap-2 select-none">
+    <div className="relative w-8 h-8">
+      <div
+        className="w-8 h-8 rounded-sm flex items-center justify-center text-xs font-bold"
+        style={{
+          background: "var(--neon)",
+          color: "#05080F",
+          fontFamily: "var(--font-mono)",
+          boxShadow: "0 0 16px var(--neon-glow)",
+        }}
+      >
+        BR
+      </div>
+      <div
+        className="absolute -inset-[2px] rounded-sm opacity-50 animate-pulse"
+        style={{ border: "1px solid var(--neon)" }}
+      />
+    </div>
+    <div className="flex flex-col leading-none">
+      <span
+        className="font-bold text-sm tracking-widest"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+      >
+        BirdRa1n
+      </span>
+      <span
+        className="text-[9px] tracking-[0.3em] opacity-50"
+        style={{ fontFamily: "var(--font-mono)" }}
+      >
+        DEV
+      </span>
+    </div>
+  </div>
+);
+
 export const Navbar = () => {
+  const router = useRouter();
+
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky" isBordered>
+    <HeroUINavbar
+      maxWidth="xl"
+      position="sticky"
+      className="border-b"
+      style={{
+        background: "rgba(5, 8, 15, 0.85)",
+        backdropFilter: "blur(20px)",
+        borderColor: "var(--border)",
+      }}
+    >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
-          <NextLink className="flex justify-start items-center gap-2" href="/">
-            <Logo />
-            <p className="font-bold text-lg text-inherit">BirdRa1n</p>
+          <NextLink href="/">
+            <NavLogo />
           </NextLink>
         </NavbarBrand>
-        <div className="hidden lg:flex gap-6 justify-start ml-4">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <NextLink
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-success data-[active=true]:font-semibold hover:text-success transition-colors",
-                )}
-                href={item.href}
-              >
-                {item.label}
-              </NextLink>
-            </NavbarItem>
-          ))}
+
+        <div className="hidden lg:flex gap-8 justify-start ml-8">
+          {siteConfig.navItems.map((item) => {
+            const isActive = router.pathname === item.href;
+            return (
+              <NavbarItem key={item.href}>
+                <NextLink
+                  href={item.href}
+                  className={clsx(
+                    "text-xs tracking-widest uppercase transition-all duration-200",
+                    "hover:opacity-100",
+                    isActive
+                      ? "opacity-100"
+                      : "opacity-40 hover:opacity-70"
+                  )}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: isActive ? "var(--neon)" : "inherit",
+                    textShadow: isActive ? "0 0 12px var(--neon-glow)" : "none",
+                  }}
+                >
+                  {isActive && <span style={{ color: "var(--neon)", marginRight: 4 }}>▸</span>}
+                  {item.label}
+                </NextLink>
+              </NavbarItem>
+            );
+          })}
         </div>
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
-        <NavbarItem className="hidden sm:flex gap-3">
-          <Link
-            isExternal
-            href={siteConfig.links.twitter}
-            title="Twitter"
-            className="hover:opacity-80 transition-opacity"
-          >
-            <TwitterIcon className="text-default-500" />
-          </Link>
-          <Link
-            isExternal
-            href={siteConfig.links.discord}
-            title="Discord"
-            className="hover:opacity-80 transition-opacity"
-          >
-            <DiscordIcon className="text-default-500" />
-          </Link>
+        <NavbarItem className="flex items-center gap-4">
           <Link
             isExternal
             href={siteConfig.links.github}
             title="GitHub"
-            className="hover:opacity-80 transition-opacity"
+            className="opacity-50 hover:opacity-100 transition-opacity"
           >
-            <GithubIcon className="text-default-500" />
-          </Link>
-          <Link
-            isExternal
-            href={siteConfig.links.sponsor}
-            title="Patreon"
-            className="hover:opacity-80 transition-opacity"
-          >
-            <PatreonIcon className="text-default-500" />
+            <GithubIcon className="w-5 h-5" style={{ color: "var(--neon)" }} />
           </Link>
           <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
 
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-4">
+      <NavbarMenu
+        style={{ background: "rgba(5, 8, 15, 0.96)", backdropFilter: "blur(20px)" }}
+      >
+        <div className="mx-4 mt-8 flex flex-col gap-6">
           {siteConfig.navMenuItems.map((item, index) => (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color="foreground"
                 href={item.href}
-                size="lg"
-                className="w-full hover:text-success transition-colors"
+                className="text-sm tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
               >
+                <span className="mr-3 opacity-40">0{index + 1}.</span>
                 {item.label}
               </Link>
             </NavbarMenuItem>
