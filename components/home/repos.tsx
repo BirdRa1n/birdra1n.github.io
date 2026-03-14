@@ -1,6 +1,7 @@
 // components/home/repos.tsx
 import { motion } from "framer-motion";
 import { FaStar, FaCodeBranch } from "react-icons/fa";
+
 import { formatRepoName } from "@/utils/github/formatRepoName";
 import { useReposContext } from "@/contexts/repos";
 
@@ -13,27 +14,29 @@ const RepoSkeleton = () => (
 
 const RepoCard = ({ repo, index }: { repo: any; index: number }) => (
   <motion.a
-    href={repo.html_url}
-    target="_blank"
-    rel="noopener noreferrer"
-    initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.04, duration: 0.4 }}
     className="group relative flex flex-col p-4 rounded-sm overflow-hidden cursor-pointer"
+    href={repo.html_url}
+    initial={{ opacity: 0, y: 16 }}
+    rel="noopener noreferrer"
     style={{
       background: "var(--bg-card)",
       border: "1px solid var(--border)",
       transition: "border-color 0.25s, box-shadow 0.25s",
       height: 190,
     }}
+    target="_blank"
+    transition={{ delay: index * 0.04, duration: 0.4 }}
     whileHover={{ y: -3 }}
     onMouseEnter={(e) => {
       const el = e.currentTarget as HTMLElement;
+
       el.style.borderColor = "var(--neon)";
       el.style.boxShadow = "0 8px 32px rgba(0,255,135,0.1)";
     }}
     onMouseLeave={(e) => {
       const el = e.currentTarget as HTMLElement;
+
       el.style.borderColor = "var(--border)";
       el.style.boxShadow = "none";
     }}
@@ -118,7 +121,9 @@ const RepoCard = ({ repo, index }: { repo: any; index: number }) => (
     {repo.skills?.length > 0 && (
       <div className="flex flex-wrap gap-1 mt-3">
         {repo.skills.slice(0, 4).map((skill: string) => (
-          <span key={skill} className="tag-chip">{skill}</span>
+          <span key={skill} className="tag-chip">
+            {skill}
+          </span>
         ))}
         {repo.skills.length > 4 && (
           <span
@@ -142,17 +147,17 @@ const Repositories = () => {
         {fetchingRepos
           ? Array.from({ length: 6 }).map((_, i) => <RepoSkeleton key={i} />)
           : repos.map((repo, index) => (
-              <RepoCard key={repo.id} repo={repo} index={index} />
+              <RepoCard key={repo.id} index={index} repo={repo} />
             ))}
       </div>
 
       <div className="flex justify-end">
         <a
-          href="https://github.com/birdra1n?tab=repositories"
-          target="_blank"
-          rel="noopener noreferrer"
           className="flex items-center gap-2 text-xs tracking-widest transition-opacity hover:opacity-100 opacity-50"
+          href="https://github.com/birdra1n?tab=repositories"
+          rel="noopener noreferrer"
           style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+          target="_blank"
         >
           ALL_REPOS_ON_GITHUB
           <span>↗</span>

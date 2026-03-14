@@ -1,5 +1,5 @@
 // components/animations/background.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 
 const AnimatedBackground: React.FC = () => {
@@ -8,15 +8,18 @@ const AnimatedBackground: React.FC = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
+
     if (!ctx) return;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
+
     resize();
     window.addEventListener("resize", resize);
 
@@ -33,10 +36,13 @@ const AnimatedBackground: React.FC = () => {
       frame++;
       if (frame % 3 !== 0) {
         animId = requestAnimationFrame(draw);
+
         return;
       }
 
-      ctx.fillStyle = isDark ? "rgba(5, 8, 15, 0.05)" : "rgba(248, 250, 252, 0.05)";
+      ctx.fillStyle = isDark
+        ? "rgba(5, 8, 15, 0.05)"
+        : "rgba(248, 250, 252, 0.05)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.font = "14px 'Courier New', monospace";
@@ -47,6 +53,7 @@ const AnimatedBackground: React.FC = () => {
         const y = drops[i] * 20;
 
         const alpha = Math.random() * 0.3 + 0.05;
+
         ctx.fillStyle = isDark
           ? `rgba(0, 255, 135, ${alpha})`
           : `rgba(0, 180, 90, ${alpha})`;

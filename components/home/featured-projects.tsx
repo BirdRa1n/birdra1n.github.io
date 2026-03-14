@@ -1,6 +1,7 @@
 // components/home/featured-projects.tsx
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+
 import storage from "@/utils/storage";
 import supabase from "@/utils/supabase/client";
 
@@ -24,22 +25,29 @@ const ProjectCardSkeleton = () => (
   />
 );
 
-const ProjectCard = ({ project, index }: { project: Project; index: number }) => (
+const ProjectCard = ({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) => (
   <motion.a
+    animate={{ opacity: 1, y: 0 }}
+    className="group relative flex gap-4 p-4 rounded-sm cursor-pointer overflow-hidden"
     href={`/projects/${project.slug}`}
     initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.1, duration: 0.5 }}
-    className="group relative flex gap-4 p-4 rounded-sm cursor-pointer overflow-hidden"
     style={{
       background: "var(--bg-card)",
       border: "1px solid var(--border)",
       transition: "border-color 0.25s, box-shadow 0.25s, transform 0.25s",
     }}
+    transition={{ delay: index * 0.1, duration: 0.5 }}
     whileHover={{ y: -3 }}
     onMouseEnter={(e) => {
       (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)";
-      (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,255,135,0.1)";
+      (e.currentTarget as HTMLElement).style.boxShadow =
+        "0 8px 32px rgba(0,255,135,0.1)";
     }}
     onMouseLeave={(e) => {
       (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
@@ -53,7 +61,9 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
         background: "linear-gradient(135deg, var(--neon) 0%, transparent 70%)",
         opacity: 0,
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.opacity = "1";
+      }}
     />
 
     {/* Thumbnail */}
@@ -63,15 +73,19 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
     >
       {project.thumbnail_url ? (
         <img
-          src={project.thumbnail_url}
           alt={project.title}
           className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
           loading="lazy"
+          src={project.thumbnail_url}
         />
       ) : (
         <div
           className="w-full h-full flex items-center justify-center text-xs"
-          style={{ background: "var(--bg-card-alt)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}
+          style={{
+            background: "var(--bg-card-alt)",
+            color: "var(--neon)",
+            fontFamily: "var(--font-mono)",
+          }}
         >
           NO_IMG
         </div>
@@ -121,9 +135,11 @@ const FeaturedProjects = () => {
   useEffect(() => {
     const fetchLastProjects = async () => {
       const cachedProjects = storage.getItem("lastProjects");
+
       if (cachedProjects) {
         setProjects(JSON.parse(cachedProjects) as Project[]);
         setIsLoading(false);
+
         return;
       }
       const { data } = await supabase
@@ -131,12 +147,14 @@ const FeaturedProjects = () => {
         .select("*")
         .order("created_at", { ascending: false })
         .limit(3);
+
       if (data) {
         storage.setItem("lastProjects", data);
         setProjects(data);
       }
       setIsLoading(false);
     };
+
     fetchLastProjects();
   }, []);
 
@@ -144,16 +162,18 @@ const FeaturedProjects = () => {
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-6">
         {isLoading
-          ? Array.from({ length: 3 }).map((_, i) => <ProjectCardSkeleton key={i} />)
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))
           : projects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} index={index} />
+              <ProjectCard key={project.id} index={index} project={project} />
             ))}
       </div>
 
       <div className="flex justify-end">
         <a
-          href="/projects"
           className="flex items-center gap-2 text-xs tracking-widest transition-opacity hover:opacity-100 opacity-50"
+          href="/projects"
           style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
         >
           ALL_PROJECTS

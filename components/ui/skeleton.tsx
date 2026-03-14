@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardBody, Divider, Skeleton as HeroSkeleton } from "@heroui/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Divider,
+  Skeleton as HeroSkeleton,
+} from "@heroui/react";
 
 export const ProjectSkeleton = () => (
   <Card className="w-full h-[120px] border border-default-200" radius="md">

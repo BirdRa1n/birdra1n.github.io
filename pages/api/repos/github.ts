@@ -19,6 +19,7 @@ export default async function handler(
 
   if (req.method === "OPTIONS") {
     res.status(200).end();
+
     return;
   }
 
@@ -31,6 +32,7 @@ export default async function handler(
 
     res.status(200).json({ repos: data });
   } catch (err: any) {
+    // eslint-disable-next-line no-console
     console.error(err);
     res.status(500).json({ repos: [], error: err.message });
   }

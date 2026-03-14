@@ -1,6 +1,7 @@
 // pages/contact/index.tsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+
 import supabase from "@/utils/supabase/client";
 import DefaultLayout from "@/layouts/default";
 
@@ -43,8 +44,8 @@ const TerminalInput = ({
 }) => (
   <div className="flex flex-col gap-1.5">
     <label
-      htmlFor={name}
       className="text-[10px] tracking-[0.3em] uppercase opacity-50"
+      htmlFor={name}
       style={{ fontFamily: "var(--font-mono)" }}
     >
       {label}
@@ -52,17 +53,18 @@ const TerminalInput = ({
     <input
       id={name}
       name={name}
-      type={type}
       placeholder={placeholder}
       required={required}
       style={inputStyle}
-      onFocus={(e) => {
-        e.currentTarget.style.borderColor = "var(--neon)";
-        e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
-      }}
+      type={type}
       onBlur={(e) => {
         e.currentTarget.style.borderColor = "var(--border)";
         e.currentTarget.style.boxShadow = "none";
+      }}
+      onFocus={(e) => {
+        e.currentTarget.style.borderColor = "var(--neon)";
+        e.currentTarget.style.boxShadow =
+          "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
       }}
       {...props}
     />
@@ -84,7 +86,10 @@ export default function ContactPage() {
 
     const formData = new FormData(e.currentTarget);
     const { name, email, subject, message } = Object.fromEntries(formData) as {
-      name: string; email: string; subject: string; message: string;
+      name: string;
+      email: string;
+      subject: string;
+      message: string;
     };
 
     const { error } = await supabase
@@ -92,12 +97,19 @@ export default function ContactPage() {
       .insert({ name, email, subject, message });
 
     if (error) {
-      setSubmitStatus({ type: "error", message: "// Error: failed to send. Retry?" });
+      setSubmitStatus({
+        type: "error",
+        message: "// Error: failed to send. Retry?",
+      });
       setIsSubmitting(false);
+
       return;
     }
 
-    setSubmitStatus({ type: "success", message: "// Success: message queued. I'll respond soon." });
+    setSubmitStatus({
+      type: "success",
+      message: "// Success: message queued. I'll respond soon.",
+    });
     setIsSubmitting(false);
     (e.target as HTMLFormElement).reset();
     setSelectedSubject("");
@@ -108,9 +120,9 @@ export default function ContactPage() {
       <section className="max-w-2xl mx-auto py-12 md:py-20">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
+          initial={{ opacity: 0, y: 20 }}
         >
           <div className="flex items-center gap-4 mb-4">
             <span
@@ -119,7 +131,10 @@ export default function ContactPage() {
             >
               04
             </span>
-            <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+            <div
+              className="flex-1 h-px"
+              style={{ background: "var(--border)" }}
+            />
           </div>
 
           <h1
@@ -133,14 +148,14 @@ export default function ContactPage() {
             className="text-sm opacity-40"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            // Have a question or want to collaborate? Drop me a message.
+            {/* Have a question or want to collaborate? Drop me a message. */}
           </p>
         </motion.div>
 
         {/* Form */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 24 }}
           transition={{ delay: 0.2 }}
         >
           <div
@@ -155,9 +170,18 @@ export default function ContactPage() {
               className="flex items-center gap-2 mb-8 pb-4"
               style={{ borderBottom: "1px solid var(--border)" }}
             >
-              <div className="w-3 h-3 rounded-full" style={{ background: "#FF5F57" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "#FEBC2E" }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: "#28C840" }} />
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ background: "#FF5F57" }}
+              />
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ background: "#FEBC2E" }}
+              />
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ background: "#28C840" }}
+              />
               <span
                 className="ml-3 text-xs opacity-30"
                 style={{ fontFamily: "var(--font-mono)" }}
@@ -166,58 +190,73 @@ export default function ContactPage() {
               </span>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <TerminalInput label="Name" name="name" placeholder="John Doe" required />
-                <TerminalInput label="Email" name="email" type="email" placeholder="john@example.com" required />
+                <TerminalInput
+                  required
+                  label="Name"
+                  name="name"
+                  placeholder="John Doe"
+                />
+                <TerminalInput
+                  required
+                  label="Email"
+                  name="email"
+                  placeholder="john@example.com"
+                  type="email"
+                />
               </div>
 
               {/* Subject */}
               <div className="flex flex-col gap-1.5">
                 <label
-                  htmlFor="subject"
                   className="text-[10px] tracking-[0.3em] uppercase opacity-50"
+                  htmlFor="subject"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
                   Subject
                 </label>
                 {selectedSubject === "Other" ? (
                   <input
+                    required
                     id="subject"
                     name="subject"
-                    type="text"
                     placeholder="Enter your subject"
-                    required
                     style={inputStyle}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--neon)";
-                      e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
-                    }}
+                    type="text"
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = "var(--border)";
                       e.currentTarget.style.boxShadow = "none";
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = "var(--neon)";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
                     }}
                   />
                 ) : (
                   <select
+                    required
                     id="subject"
                     name="subject"
-                    required
-                    value={selectedSubject}
-                    onChange={(e) => setSelectedSubject(e.target.value)}
                     style={{ ...inputStyle, cursor: "pointer" }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = "var(--neon)";
-                      e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
-                    }}
+                    value={selectedSubject}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = "var(--border)";
                       e.currentTarget.style.boxShadow = "none";
                     }}
+                    onChange={(e) => setSelectedSubject(e.target.value)}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = "var(--neon)";
+                      e.currentTarget.style.boxShadow =
+                        "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
+                    }}
                   >
                     <option value="">Select a subject</option>
                     {subjects.map((s) => (
-                      <option key={s} value={s}>{s}</option>
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
                     ))}
                   </select>
                 )}
@@ -226,26 +265,27 @@ export default function ContactPage() {
               {/* Message */}
               <div className="flex flex-col gap-1.5">
                 <label
-                  htmlFor="message"
                   className="text-[10px] tracking-[0.3em] uppercase opacity-50"
+                  htmlFor="message"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
                   Message
                 </label>
                 <textarea
+                  required
                   id="message"
                   name="message"
-                  required
-                  rows={6}
                   placeholder="// Tell me about your project or question..."
+                  rows={6}
                   style={{ ...inputStyle, resize: "vertical", minHeight: 140 }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "var(--neon)";
-                    e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
-                  }}
                   onBlur={(e) => {
                     e.currentTarget.style.borderColor = "var(--border)";
                     e.currentTarget.style.boxShadow = "none";
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "var(--neon)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)";
                   }}
                 />
               </div>
@@ -253,9 +293,9 @@ export default function ContactPage() {
               {/* Status message */}
               {submitStatus.type && (
                 <motion.div
-                  initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="py-3 px-4 rounded-sm text-xs"
+                  initial={{ opacity: 0, y: -8 }}
                   style={{
                     fontFamily: "var(--font-mono)",
                     background:
@@ -275,17 +315,20 @@ export default function ContactPage() {
 
               {/* Submit */}
               <button
-                type="submit"
-                disabled={isSubmitting}
                 className="group flex items-center justify-center gap-3 py-3.5 font-semibold text-sm tracking-widest uppercase transition-all duration-300 disabled:opacity-50"
+                disabled={isSubmitting}
                 style={{
                   fontFamily: "var(--font-mono)",
                   background: isSubmitting ? "var(--neon-dim)" : "var(--neon)",
                   color: "#05080F",
-                  clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
-                  boxShadow: isSubmitting ? "none" : "0 0 24px rgba(0,255,135,0.35)",
+                  clipPath:
+                    "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
+                  boxShadow: isSubmitting
+                    ? "none"
+                    : "0 0 24px rgba(0,255,135,0.35)",
                   cursor: isSubmitting ? "not-allowed" : "pointer",
                 }}
+                type="submit"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
@@ -295,7 +338,9 @@ export default function ContactPage() {
                 ) : (
                   <>
                     SEND_MESSAGE
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    <span className="group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
                   </>
                 )}
               </button>

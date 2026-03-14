@@ -1,5 +1,6 @@
 // components/home/certificates.tsx
 import { motion } from "framer-motion";
+
 import { useCertificates } from "@/contexts/certificates";
 import CERTIFICATES from "@/types/certificates";
 
@@ -12,27 +13,29 @@ const CertSkeleton = () => (
 
 const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
   <motion.a
-    href={cert.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    initial={{ opacity: 0, scale: 0.97 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay: index * 0.05, duration: 0.4 }}
     className="group relative flex flex-col p-4 rounded-sm overflow-hidden cursor-pointer"
+    href={cert.url}
+    initial={{ opacity: 0, scale: 0.97 }}
+    rel="noopener noreferrer"
     style={{
       background: "var(--bg-card)",
       border: "1px solid var(--border)",
       transition: "border-color 0.25s, box-shadow 0.25s",
       minHeight: 140,
     }}
+    target="_blank"
+    transition={{ delay: index * 0.05, duration: 0.4 }}
     whileHover={{ y: -3 }}
     onMouseEnter={(e) => {
       const el = e.currentTarget as HTMLElement;
+
       el.style.borderColor = "var(--neon)";
       el.style.boxShadow = "0 8px 32px rgba(0,255,135,0.1)";
     }}
     onMouseLeave={(e) => {
       const el = e.currentTarget as HTMLElement;
+
       el.style.borderColor = "var(--border)";
       el.style.boxShadow = "none";
     }}
@@ -41,7 +44,8 @@ const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
     <div
       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
       style={{
-        background: "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,135,0.015) 3px, rgba(0,255,135,0.015) 4px)",
+        background:
+          "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,135,0.015) 3px, rgba(0,255,135,0.015) 4px)",
       }}
     />
 
@@ -49,13 +53,16 @@ const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
       {/* Logo */}
       <div
         className="w-10 h-10 rounded-sm flex-shrink-0 overflow-hidden"
-        style={{ border: "1px solid var(--border)", background: "var(--bg-card-alt)" }}
+        style={{
+          border: "1px solid var(--border)",
+          background: "var(--bg-card-alt)",
+        }}
       >
         {cert.organization?.logo ? (
           <img
-            src={cert.organization.logo}
             alt={cert.organization.name}
             className="w-full h-full object-contain p-1"
+            src={cert.organization.logo}
           />
         ) : (
           <div
@@ -95,7 +102,9 @@ const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
     {cert.skills.length > 0 && (
       <div className="flex flex-wrap gap-1 mt-3">
         {cert.skills.slice(0, 4).map((skill) => (
-          <span key={skill} className="tag-chip">{skill}</span>
+          <span key={skill} className="tag-chip">
+            {skill}
+          </span>
         ))}
         {cert.skills.length > 4 && (
           <span
@@ -125,11 +134,11 @@ const Certificates = () => {
 
       <div className="flex justify-end">
         <a
-          href="https://www.credly.com/users/dario-rios-1998"
-          target="_blank"
-          rel="noopener noreferrer"
           className="flex items-center gap-2 text-xs tracking-widest transition-opacity hover:opacity-100 opacity-50"
+          href="https://www.credly.com/users/dario-rios-1998"
+          rel="noopener noreferrer"
           style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+          target="_blank"
         >
           VIEW_ON_CREDLY
           <span>↗</span>
