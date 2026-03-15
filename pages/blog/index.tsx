@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
-import { FiClock, FiEye, FiTag } from "react-icons/fi";
+import { FiClock, FiEye, FiAlertTriangle } from "react-icons/fi";
 
 import DefaultLayout from "@/layouts/default";
 import supabase from "@/utils/supabase/client";
@@ -69,18 +69,34 @@ const PostCard = ({ post, index }: { post: BlogPost; index: number }) => (
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .schema("blog" as any)
-      .from("posts")
-      .select("*, tags:post_tags(tag:tags(*))")
-      .eq("status", "published")
-      .order("published_at", { ascending: false })
-      .then(({ data }) => {
+    const fetchPosts = async () => {
+      try {
+        const { data, error: queryError } = await supabase
+          .schema("blog" as any)
+          .from("posts")
+          .select("*, tags:post_tags(tag:tags(*))")
+          .eq("status", "published")
+          .order("published_at", { ascending: false });
+
+        if (queryError) {
+          console.error("[Blog] fetch error:", queryError.message);
+          setError(queryError.message);
+          return;
+        }
+
         setPosts((data || []) as any[]);
+      } catch (err: any) {
+        console.error("[Blog] fetch exception:", err);
+        setError(err?.message || "Erro inesperado");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (
@@ -104,6 +120,16 @@ export default function BlogPage() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-36 rounded-sm animate-pulse" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }} />
             ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center gap-3 py-24 opacity-50">
+            <FiAlertTriangle size={28} style={{ color: "#FF9500" }} />
+            <p className="text-sm text-center" style={{ fontFamily: "var(--font-mono)" }}>
+              {"// Erro ao carregar posts"}
+            </p>
+            <p className="text-xs opacity-60 text-center" style={{ fontFamily: "var(--font-mono)" }}>
+              {error}
+            </p>
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-24 opacity-30">

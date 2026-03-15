@@ -27,70 +27,115 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<Administrator | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchAdminRecord = async (userId: string) => {
-    const { data } = await supabase
-      .schema("admin" as any)
-      .from("administrators")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
+  const fetchAdminRecord = async (userId: string): Promise<Administrator | null> => {
+    try {
+      const { data, error } = await supabase
+        .schema("admin" as any)
+        .from("administrators")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
-    return data as Administrator | null;
+      if (error) {
+        console.error("[AdminAuth] fetchAdminRecord error:", error.message);
+        return null;
+      }
+
+      return data as Administrator | null;
+    } catch (err) {
+      console.error("[AdminAuth] fetchAdminRecord exception:", err);
+      return null;
+    }
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-      if (session?.user) {
-        setUser(session.user);
-        const adminRecord = await fetchAdminRecord(session.user.id);
+        if (sessionError) {
+          console.error("[AdminAuth] getSession error:", sessionError.message);
+        }
 
-        setAdmin(adminRecord);
+        if (mounted && session?.user) {
+          setUser(session.user);
+          const adminRecord = await fetchAdminRecord(session.user.id);
+          if (mounted) setAdmin(adminRecord);
+        }
+      } catch (err) {
+        console.error("[AdminAuth] init exception:", err);
+      } finally {
+        if (mounted) setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          const adminRecord = await fetchAdminRecord(session.user.id);
+        if (!mounted) return;
 
-          setAdmin(adminRecord);
-        } else {
-          setUser(null);
-          setAdmin(null);
+        try {
+          if (session?.user) {
+            setUser(session.user);
+            const adminRecord = await fetchAdminRecord(session.user.id);
+            if (mounted) setAdmin(adminRecord);
+          } else {
+            setUser(null);
+            setAdmin(null);
+          }
+        } catch (err) {
+          console.error("[AdminAuth] onAuthStateChange exception:", err);
+          if (mounted) {
+            setUser(null);
+            setAdmin(null);
+          }
+        } finally {
+          // Garante que isLoading resolve mesmo em eventos do listener
+          if (mounted) setIsLoading(false);
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) return { error: error.message };
-    if (data.user) {
-      const adminRecord = await fetchAdminRecord(data.user.id);
+      if (error) return { error: error.message };
 
-      if (!adminRecord) {
-        await supabase.auth.signOut();
+      if (data.user) {
+        const adminRecord = await fetchAdminRecord(data.user.id);
 
-        return { error: "Acesso não autorizado. Você não é um administrador." };
+        if (!adminRecord) {
+          await supabase.auth.signOut();
+          return { error: "Acesso não autorizado. Você não é um administrador." };
+        }
       }
-    }
 
-    return { error: null };
+      return { error: null };
+    } catch (err: any) {
+      console.error("[AdminAuth] signIn exception:", err);
+      return { error: err?.message || "Erro inesperado ao fazer login." };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setAdmin(null);
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error("[AdminAuth] signOut exception:", err);
+    } finally {
+      setUser(null);
+      setAdmin(null);
+    }
   };
 
   return (

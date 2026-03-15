@@ -6,20 +6,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FiHome, FiFolder, FiFileText, FiPackage, FiMail,
   FiAward, FiLogOut, FiMenu, FiX, FiUser, FiChevronRight,
-  FiSmartphone, FiTag,
+  FiSmartphone, FiTag, FiAlertTriangle,
 } from "react-icons/fi";
 
 import { useAdminAuth } from "@/contexts/admin-auth";
 import { ThemeSwitch } from "@/components/theme-switch";
 
 const NAV_ITEMS = [
-  { label: "Dashboard",    href: "/admin",                  icon: FiHome },
-  { label: "Projetos",     href: "/admin/projects",         icon: FiFolder },
-  { label: "Blog",         href: "/admin/blog",             icon: FiFileText },
-  { label: "Certificados", href: "/admin/certificates",     icon: FiAward },
-  { label: "Apps",         href: "/admin/apps",             icon: FiSmartphone },
-  { label: "Contato",      href: "/admin/contact",          icon: FiMail },
-  { label: "Tags",         href: "/admin/tags",             icon: FiTag },
+  { label: "Dashboard", href: "/admin", icon: FiHome },
+  { label: "Projetos", href: "/admin/projects", icon: FiFolder },
+  { label: "Blog", href: "/admin/blog", icon: FiFileText },
+  { label: "Certificados", href: "/admin/certificates", icon: FiAward },
+  { label: "Apps", href: "/admin/apps", icon: FiSmartphone },
+  { label: "Contato", href: "/admin/contact", icon: FiMail },
+  { label: "Tags", href: "/admin/tags", icon: FiTag },
 ];
 
 const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
@@ -124,10 +124,52 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   );
 };
 
+// Loading screen com timeout de segurança
+const LoadingScreen = ({ onTimeout }: { onTimeout: () => void }) => {
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+      onTimeout();
+    }, 8000); // 8 segundos de timeout
+
+    return () => clearTimeout(timer);
+  }, [onTimeout]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg-primary)" }}>
+      <div className="flex flex-col items-center gap-4 text-center px-4">
+        {timedOut ? (
+          <>
+            <FiAlertTriangle size={28} style={{ color: "#FF9500" }} />
+            <p className="text-sm opacity-60" style={{ fontFamily: "var(--font-mono)" }}>
+              Tempo limite excedido.<br />Verifique sua conexão ou o Supabase.
+            </p>
+            <a
+              href="/admin/login"
+              className="text-xs px-4 py-2 rounded-sm mt-2"
+              style={{ background: "rgba(0,255,135,0.1)", border: "1px solid var(--neon)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}
+            >
+              TENTAR NOVAMENTE →
+            </a>
+          </>
+        ) : (
+          <>
+            <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--neon)", borderTopColor: "transparent" }} />
+            <span className="text-xs opacity-40 tracking-widest" style={{ fontFamily: "var(--font-mono)" }}>LOADING...</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isAdmin, isLoading } = useAdminAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [forceRedirect, setForceRedirect] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAdmin && router.pathname !== "/admin/login") {
@@ -135,20 +177,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [isAdmin, isLoading, router]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg-primary)" }}>
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--neon)", borderTopColor: "transparent" }} />
-          <span className="text-xs opacity-40 tracking-widest" style={{ fontFamily: "var(--font-mono)" }}>LOADING...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAdmin && router.pathname !== "/admin/login") return null;
+  // Callback do timeout do LoadingScreen
+  const handleLoadingTimeout = () => {
+    setForceRedirect(true);
+    if (router.pathname !== "/admin/login") {
+      router.push("/admin/login");
+    }
+  };
 
   if (router.pathname === "/admin/login") return <>{children}</>;
+
+  if (isLoading && !forceRedirect) {
+    return <LoadingScreen onTimeout={handleLoadingTimeout} />;
+  }
+
+  if (!isAdmin) return null;
 
   return (
     <div className="min-h-screen flex" style={{ background: "var(--bg-primary)" }}>

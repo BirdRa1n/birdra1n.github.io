@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import { FiSave, FiPlus, FiX } from "react-icons/fi";
+import { FiSave, FiPlus, FiX, FiAlertTriangle } from "react-icons/fi";
 import dynamic from "next/dynamic";
 
 import AdminLayout from "@/layouts/admin";
@@ -20,7 +20,6 @@ function slugify(text: string) {
 
 function estimateReadTime(content: string): number {
   const words = content.split(/\s+/).length;
-
   return Math.max(1, Math.ceil(words / 200));
 }
 
@@ -31,6 +30,7 @@ export default function AdminBlogEditor() {
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
   const [allTags, setAllTags] = useState<BlogTag[]>([]);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
@@ -52,36 +52,52 @@ export default function AdminBlogEditor() {
 
   useEffect(() => {
     const init = async () => {
-      const [{ data: tags }, { data: projects }] = await Promise.all([
-        supabase.schema("blog" as any).from("tags").select("*").order("name"),
-        supabase.schema("portfolio" as any).from("projects").select("id,title").order("title"),
-      ]);
+      try {
+        // Busca tags e projetos em paralelo
+        const [{ data: tags, error: tagsError }, { data: projects, error: projectsError }] = await Promise.all([
+          supabase.schema("blog" as any).from("tags").select("*").order("name"),
+          supabase.schema("portfolio" as any).from("projects").select("id,title").order("title"),
+        ]);
 
-      setAllTags(tags || []);
-      setAllProjects((projects || []) as Project[]);
+        if (tagsError) console.error("[BlogEditor] tags error:", tagsError.message);
+        if (projectsError) console.error("[BlogEditor] projects error:", projectsError.message);
 
-      if (!isNew && id) {
-        const { data: post } = await supabase
-          .schema("blog" as any)
-          .from("posts")
-          .select("*, post_tags(tag_id), post_project_mentions(project_id)")
-          .eq("id", id)
-          .single();
+        setAllTags(tags || []);
+        setAllProjects((projects || []) as Project[]);
 
-        if (post) {
-          setForm({
-            title: post.title || "",
-            slug: post.slug || "",
-            excerpt: post.excerpt || "",
-            content: post.content || "",
-            cover_url: post.cover_url || "",
-            status: post.status || "draft",
-            featured: post.featured || false,
-            read_time_min: post.read_time_min || 1,
-          });
-          setSelectedTagIds(post.post_tags?.map((t: any) => t.tag_id) || []);
-          setSelectedProjectIds(post.post_project_mentions?.map((m: any) => m.project_id) || []);
+        if (!isNew && id) {
+          const { data: post, error: postError } = await supabase
+            .schema("blog" as any)
+            .from("posts")
+            .select("*, post_tags(tag_id), post_project_mentions(project_id)")
+            .eq("id", id)
+            .single();
+
+          if (postError) {
+            console.error("[BlogEditor] post error:", postError.message);
+            setInitError(postError.message);
+            return;
+          }
+
+          if (post) {
+            setForm({
+              title: post.title || "",
+              slug: post.slug || "",
+              excerpt: post.excerpt || "",
+              content: post.content || "",
+              cover_url: post.cover_url || "",
+              status: post.status || "draft",
+              featured: post.featured || false,
+              read_time_min: post.read_time_min || 1,
+            });
+            setSelectedTagIds(post.post_tags?.map((t: any) => t.tag_id) || []);
+            setSelectedProjectIds(post.post_project_mentions?.map((m: any) => m.project_id) || []);
+          }
         }
+      } catch (err: any) {
+        console.error("[BlogEditor] init exception:", err);
+        setInitError(err?.message || "Erro inesperado ao carregar o editor.");
+      } finally {
         setLoading(false);
       }
     };
@@ -106,66 +122,79 @@ export default function AdminBlogEditor() {
 
   const createAndAddTag = async () => {
     if (!newTagName.trim()) return;
-    const tagSlug = slugify(newTagName);
-    const { data, error } = await supabase
-      .schema("blog" as any)
-      .from("tags")
-      .insert({ name: newTagName.trim(), slug: tagSlug })
-      .select()
-      .single();
+    try {
+      const tagSlug = slugify(newTagName);
+      const { data, error } = await supabase
+        .schema("blog" as any)
+        .from("tags")
+        .insert({ name: newTagName.trim(), slug: tagSlug })
+        .select()
+        .single();
 
-    if (!error && data) {
-      setAllTags(t => [...t, data]);
-      setSelectedTagIds(ids => [...ids, data.id]);
-      setNewTagName("");
+      if (!error && data) {
+        setAllTags(t => [...t, data]);
+        setSelectedTagIds(ids => [...ids, data.id]);
+        setNewTagName("");
+      }
+    } catch (err) {
+      console.error("[BlogEditor] createTag exception:", err);
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const payload = {
-      ...form,
-      published_at: form.status === "published" ? new Date().toISOString() : null,
-      updated_at: new Date().toISOString(),
-    };
+    try {
+      const payload = {
+        ...form,
+        published_at: form.status === "published" ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      };
 
-    let postId = id as string;
-    let error: any;
+      let postId = id as string;
+      let error: any;
 
-    if (isNew) {
-      const res = await supabase.schema("blog" as any).from("posts").insert(payload).select().single();
-
-      error = res.error;
-      if (!error && res.data) {
-        postId = res.data.id;
-        router.replace(`/admin/blog/${postId}`);
-      }
-    } else {
-      const res = await supabase.schema("blog" as any).from("posts").update(payload).eq("id", postId);
-
-      error = res.error;
-    }
-
-    if (!error && postId) {
-      // Sync tags
-      await supabase.schema("blog" as any).from("post_tags").delete().eq("post_id", postId);
-      if (selectedTagIds.length > 0) {
-        await supabase.schema("blog" as any).from("post_tags").insert(selectedTagIds.map(tag_id => ({ post_id: postId, tag_id })));
+      if (isNew) {
+        const res = await supabase.schema("blog" as any).from("posts").insert(payload).select().single();
+        error = res.error;
+        if (!error && res.data) {
+          postId = res.data.id;
+          router.replace(`/admin/blog/${postId}`);
+        }
+      } else {
+        const res = await supabase.schema("blog" as any).from("posts").update(payload).eq("id", postId);
+        error = res.error;
       }
 
-      // Sync project mentions
-      await supabase.schema("blog" as any).from("post_project_mentions").delete().eq("post_id", postId);
-      if (selectedProjectIds.length > 0) {
-        await supabase.schema("blog" as any).from("post_project_mentions").insert(selectedProjectIds.map(project_id => ({ post_id: postId, project_id })));
+      if (error) {
+        setToast({ type: "error", msg: error.message });
+        return;
       }
-    }
 
-    setSaving(false);
-    if (error) {
-      setToast({ type: "error", msg: error.message });
-    } else {
+      if (postId) {
+        // Sync tags
+        await supabase.schema("blog" as any).from("post_tags").delete().eq("post_id", postId);
+        if (selectedTagIds.length > 0) {
+          await supabase.schema("blog" as any).from("post_tags").insert(
+            selectedTagIds.map(tag_id => ({ post_id: postId, tag_id }))
+          );
+        }
+
+        // Sync project mentions
+        await supabase.schema("blog" as any).from("post_project_mentions").delete().eq("post_id", postId);
+        if (selectedProjectIds.length > 0) {
+          await supabase.schema("blog" as any).from("post_project_mentions").insert(
+            selectedProjectIds.map(project_id => ({ post_id: postId, project_id }))
+          );
+        }
+      }
+
       setToast({ type: "success", msg: isNew ? "Post criado!" : "Post salvo!" });
       setTimeout(() => setToast(null), 3000);
+    } catch (err: any) {
+      console.error("[BlogEditor] save exception:", err);
+      setToast({ type: "error", msg: err?.message || "Erro inesperado ao salvar." });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -173,6 +202,25 @@ export default function AdminBlogEditor() {
     <AdminLayout>
       <div className="flex items-center justify-center h-64">
         <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: "var(--neon)", borderTopColor: "transparent" }} />
+      </div>
+    </AdminLayout>
+  );
+
+  if (initError) return (
+    <AdminLayout>
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <FiAlertTriangle size={28} style={{ color: "#FF9500" }} />
+        <p className="text-sm opacity-60" style={{ fontFamily: "var(--font-mono)" }}>
+          {"// Erro ao carregar editor"}
+        </p>
+        <p className="text-xs opacity-40" style={{ fontFamily: "var(--font-mono)" }}>{initError}</p>
+        <button
+          onClick={() => router.back()}
+          className="text-xs px-4 py-2 rounded-sm mt-2"
+          style={{ border: "1px solid var(--neon)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}
+        >
+          ← VOLTAR
+        </button>
       </div>
     </AdminLayout>
   );
@@ -273,9 +321,21 @@ export default function AdminBlogEditor() {
           {/* Cover image */}
           <AdminCard className="p-5 space-y-4">
             <p className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>Capa</p>
-            <AdminInput label="URL da Imagem de Capa" value={form.cover_url} onChange={e => set("cover_url", e.target.value)} placeholder="https://..." />
+            <AdminInput
+              label="URL da Imagem de Capa"
+              value={form.cover_url}
+              onChange={e => set("cover_url", e.target.value)}
+              placeholder="https://..."
+            />
             {form.cover_url && (
-              <img src={form.cover_url} alt="" className="w-full h-28 object-cover rounded-sm" style={{ border: "1px solid var(--border)" }} onError={e => (e.currentTarget.style.display = "none")} />
+              <img
+                src={form.cover_url}
+                alt=""
+                className="w-full h-28 object-cover rounded-sm"
+                style={{ border: "1px solid var(--border)" }}
+                onError={e => (e.currentTarget.style.display = "none")}
+                onLoad={e => (e.currentTarget.style.display = "block")}
+              />
             )}
           </AdminCard>
 
@@ -331,10 +391,7 @@ export default function AdminBlogEditor() {
             <p className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>Projetos Mencionados</p>
             <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
               {allProjects.map(project => (
-                <label
-                  key={project.id}
-                  className="flex items-center gap-2.5 cursor-pointer py-1 group"
-                >
+                <label key={project.id} className="flex items-center gap-2.5 cursor-pointer py-1 group">
                   <div
                     className="w-4 h-4 rounded-sm flex-shrink-0 flex items-center justify-center transition-all"
                     style={{

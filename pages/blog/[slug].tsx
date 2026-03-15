@@ -3,43 +3,94 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
-import { FiClock, FiEye, FiArrowLeft, FiShare2 } from "react-icons/fi";
+import { FiClock, FiEye, FiArrowLeft, FiShare2, FiAlertTriangle } from "react-icons/fi";
 import dynamic from "next/dynamic";
 
 import DefaultLayout from "@/layouts/default";
 import supabase from "@/utils/supabase/client";
 import { BlogPost } from "@/utils/supabase/typed-client";
 
-// Dynamic import of markdown preview only
-const MDPreview = dynamic(() => import("@uiw/react-md-editor").then(m => m.default.Markdown), { ssr: false });
+const MDPreview = dynamic(
+  () => import("@uiw/react-md-editor").then(m => m.default.Markdown),
+  { ssr: false }
+);
 
 export default function BlogPostPage() {
   const router = useRouter();
   const { slug } = router.query;
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [mentionedProjects, setMentionedProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;
 
-    supabase
-      .schema("blog" as any)
-      .from("posts")
-      .select("*, tags:post_tags(tag:tags(*)), mentioned_projects:post_project_mentions(project:portfolio.projects(id,title,slug,thumbnail_url))")
-      .eq("slug", slug)
-      .eq("status", "published")
-      .single()
-      .then(({ data }) => {
-        if (!data) { setNotFound(true); setLoading(false);
+    const fetchPost = async () => {
+      try {
+        // Query 1: post + tags (mesmo schema "blog")
+        const { data, error: queryError } = await supabase
+          .schema("blog" as any)
+          .from("posts")
+          .select("*, tags:post_tags(tag:tags(*))")
+          .eq("slug", slug)
+          .eq("status", "published")
+          .single();
 
- return; }
+        if (queryError) {
+          if (queryError.code === "PGRST116") {
+            setNotFound(true);
+          } else {
+            console.error("[BlogPost] fetch error:", queryError.message);
+            setError(queryError.message);
+          }
+          return;
+        }
+
+        if (!data) {
+          setNotFound(true);
+          return;
+        }
+
         setPost(data as any);
-        setLoading(false);
 
-        // Increment view count
-        supabase.rpc("increment_post_views", { post_slug: slug }).then(() => {});
-      });
+        // Query 2: busca os IDs dos projetos mencionados
+        const { data: mentions, error: mentionsError } = await supabase
+          .schema("blog" as any)
+          .from("post_project_mentions")
+          .select("project_id")
+          .eq("post_id", data.id);
+
+        if (!mentionsError && mentions && mentions.length > 0) {
+          const projectIds = mentions.map((m: any) => m.project_id);
+
+          // Query 3: busca os projetos no schema portfolio separadamente
+          const { data: projects, error: projectsError } = await supabase
+            .schema("portfolio" as any)
+            .from("projects")
+            .select("id, title, slug, thumbnail_url")
+            .in("id", projectIds);
+
+          if (!projectsError && projects) {
+            setMentionedProjects(projects);
+          }
+        }
+
+        // Incrementa views de forma silenciosa
+        Promise.resolve(
+          supabase.rpc("increment_post_views", { post_slug: slug })
+        ).catch(() => { });
+
+      } catch (err: any) {
+        console.error("[BlogPost] fetch exception:", err);
+        setError(err?.message || "Erro inesperado");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
   }, [slug]);
 
   if (loading) return (
@@ -52,19 +103,32 @@ export default function BlogPostPage() {
     </DefaultLayout>
   );
 
+  if (error) return (
+    <DefaultLayout>
+      <div className="max-w-3xl mx-auto py-20 text-center">
+        <FiAlertTriangle size={32} className="mx-auto mb-4" style={{ color: "#FF9500", opacity: 0.6 }} />
+        <p className="text-sm font-bold mb-2 opacity-60" style={{ fontFamily: "var(--font-mono)" }}>{"// Erro ao carregar post"}</p>
+        <p className="text-xs opacity-40 mb-6" style={{ fontFamily: "var(--font-mono)" }}>{error}</p>
+        <NextLink href="/blog" className="inline-block text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
+          ← VOLTAR AO BLOG
+        </NextLink>
+      </div>
+    </DefaultLayout>
+  );
+
   if (notFound) return (
     <DefaultLayout>
       <div className="max-w-3xl mx-auto py-20 text-center opacity-40">
         <p className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-mono)" }}>{"// 404"}</p>
         <p className="text-sm opacity-60" style={{ fontFamily: "var(--font-mono)" }}>Post não encontrado</p>
-        <NextLink href="/blog" className="inline-block mt-6 text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>← VOLTAR AO BLOG</NextLink>
+        <NextLink href="/blog" className="inline-block mt-6 text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
+          ← VOLTAR AO BLOG
+        </NextLink>
       </div>
     </DefaultLayout>
   );
 
   if (!post) return null;
-
-  const mentionedProjects = ((post as any).mentioned_projects as any[])?.map((m: any) => m.project).filter(Boolean);
 
   return (
     <DefaultLayout>
@@ -82,7 +146,6 @@ export default function BlogPostPage() {
 
         {/* Header */}
         <motion.header initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
-          {/* Tags */}
           {((post as any).tags as any[])?.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {((post as any).tags as any[]).map((t: any) => (
@@ -115,7 +178,7 @@ export default function BlogPostPage() {
             </span>
             <button
               className="ml-auto opacity-30 hover:opacity-60 transition-opacity"
-              onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}
+              onClick={() => navigator.share?.({ title: post.title ?? "", url: window.location.href })}
             >
               <FiShare2 size={14} />
             </button>
@@ -131,7 +194,7 @@ export default function BlogPostPage() {
             className="mb-10 rounded-sm overflow-hidden"
             style={{ border: "1px solid var(--border)" }}
           >
-            <img src={post.cover_url} alt={post.title} className="w-full h-64 object-cover" />
+            <img src={post.cover_url} alt={post.title ?? ""} className="w-full h-64 object-cover" />
           </motion.div>
         )}
 
@@ -149,7 +212,7 @@ export default function BlogPostPage() {
           } as any}
         >
           <MDPreview
-            source={post.content}
+            source={post.content ?? ""}
             style={{
               background: "transparent",
               color: "inherit",
@@ -161,7 +224,7 @@ export default function BlogPostPage() {
         </motion.div>
 
         {/* Mentioned projects */}
-        {mentionedProjects?.length > 0 && (
+        {mentionedProjects.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
