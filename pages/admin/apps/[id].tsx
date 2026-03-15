@@ -34,7 +34,9 @@ export default function AdminAppEditor() {
 
   useEffect(() => {
     if (!isNew && id) {
-      supabase.schema("store" as any).from("apps").select("*").eq("id", id).single()
+      Promise.resolve(
+        supabase.schema("store" as any).from("apps").select("*").eq("id", id).single()
+      )
         .then(({ data }) => {
           if (data) setForm({
             name: data.name || "", bundle_id: data.bundle_id || "", developer: data.developer || "BirdRa1n",
@@ -46,7 +48,9 @@ export default function AdminAppEditor() {
         .catch(() => {})
         .finally(() => setLoading(false));
 
-      supabase.schema("store" as any).from("app_versions").select("*").eq("app_id", id).order("published_at", { ascending: false })
+      Promise.resolve(
+        supabase.schema("store" as any).from("app_versions").select("*").eq("app_id", id).order("published_at", { ascending: false })
+      )
         .then(({ data }) => setVersions((data || []) as AppVersion[]))
         .catch(() => {});
     }

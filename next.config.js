@@ -1,19 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-
   transpilePackages: [
     "@uiw/react-md-editor",
     "@uiw/react-markdown-preview",
   ],
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   async headers() {
     return [
       {
@@ -22,7 +13,6 @@ const nextConfig = {
       },
     ];
   },
-
   async rewrites() {
     return [
       {

@@ -1,70 +1,72 @@
+// contexts/certificates.tsx
 import {
   createContext,
-  ReactNode,
-  useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
+  useMemo,
+  ReactNode,
 } from "react";
 
-import CERTIFICATES from "@/types/certificates";
+import type CERTIFICATES from "@/types/certificates";
 import supabase from "@/utils/supabase/client";
 
 interface CertificatesContextType {
   certificates: CERTIFICATES[];
-  addCertificate: (certificate: CERTIFICATES) => void;
-  removeCertificate: (id: string) => void;
   fetchingCertificates: boolean;
 }
 
-const CertificatesContext = createContext<CertificatesContextType | undefined>(
-  undefined,
-);
+const CertificatesContext = createContext<CertificatesContextType | undefined>(undefined);
 
 export function CertificatesProvider({ children }: { children: ReactNode }) {
   const [certificates, setCertificates] = useState<CERTIFICATES[]>([]);
   const [fetchingCertificates, setFetchingCertificates] = useState(true);
-
-  const addCertificate = (certificate: CERTIFICATES) => {
-    setCertificates([...certificates, certificate]);
-  };
-
-  const removeCertificate = (id: string) => {
-    setCertificates(certificates.filter((cert) => cert.id !== id));
-  };
-
-  const handlerGetCertificates = useCallback(async () => {
-    try {
-      setFetchingCertificates(true);
-      const { data, error } = await supabase
-        .from("certificates")
-        .select("*,organization(*)")
-        .order("emission", { ascending: false });
-
-      if (error) {
-        throw error;
-      }
-      setCertificates(data);
-    } catch {
-      // silently fail, fetchingCertificates resolved in finally
-    } finally {
-      setFetchingCertificates(false);
-    }
-  }, []);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    handlerGetCertificates();
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
+    let cancelled = false;
+
+    const controller = new AbortController();
+
+    Promise.resolve(
+      supabase
+        .from("certificates")
+        .select("*,organization(*)")
+        .order("emission", { ascending: false })
+        .abortSignal(controller.signal)
+    )
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error("[Certificates] fetch error:", error.message);
+          return;
+        }
+        setCertificates((data ?? []) as CERTIFICATES[]);
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("[Certificates] exception:", err);
+      })
+      .finally(() => {
+        if (!cancelled) setFetchingCertificates(false);
+      });
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, []);
 
+  const value = useMemo(
+    () => ({ certificates, fetchingCertificates }),
+    [certificates, fetchingCertificates]
+  );
+
   return (
-    <CertificatesContext.Provider
-      value={{
-        certificates,
-        addCertificate,
-        removeCertificate,
-        fetchingCertificates,
-      }}
-    >
+    <CertificatesContext.Provider value={value}>
       {children}
     </CertificatesContext.Provider>
   );
@@ -72,12 +74,6 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
 
 export function useCertificates() {
   const context = useContext(CertificatesContext);
-
-  if (context === undefined) {
-    throw new Error(
-      "useCertificates must be used within a CertificatesProvider",
-    );
-  }
-
+  if (!context) throw new Error("useCertificates must be used within CertificatesProvider");
   return context;
 }

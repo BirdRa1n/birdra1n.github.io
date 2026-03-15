@@ -23,6 +23,7 @@
     "@heroui/theme": "2.4.21",
     "@react-aria/visually-hidden": "3.8.27",
     "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.99.1",
     "@uiw/react-md-editor": "^4.0.11",
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",

@@ -3,13 +3,15 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
+  useMemo,
   ReactNode,
 } from "react";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 
 import supabase from "@/utils/supabase/client";
-import { Administrator } from "@/utils/supabase/typed-client";
+import type { Administrator } from "@/utils/supabase/typed-client";
 
 interface AdminAuthContextType {
   user: User | null;
@@ -22,107 +24,113 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+async function fetchAdminRecord(userId: string): Promise<Administrator | null> {
+  try {
+    const { data, error } = await supabase
+      .schema("admin" as any)
+      .from("administrators")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) return null;
+    return data as Administrator;
+  } catch {
+    return null;
+  }
+}
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [admin, setAdmin] = useState<Administrator | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchAdminRecord = async (userId: string): Promise<Administrator | null> => {
-    try {
-      const { data, error } = await supabase
-        .schema("admin" as any)
-        .from("administrators")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
-
-      if (error) {
-        console.error("[AdminAuth] fetchAdminRecord error:", error.message);
-        return null;
-      }
-
-      return data as Administrator | null;
-    } catch (err) {
-      console.error("[AdminAuth] fetchAdminRecord exception:", err);
-      return null;
-    }
-  };
+  // Ref para evitar setState em componente desmontado
+  const mountedRef = useRef(true);
+  // Ref para evitar fetch duplo quando o listener dispara logo após getSession
+  const initDoneRef = useRef(false);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
     const init = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
 
-        if (sessionError) {
-          console.error("[AdminAuth] getSession error:", sessionError.message);
-        }
+        if (!mountedRef.current) return;
 
-        if (mounted && session?.user) {
+        if (session?.user) {
           setUser(session.user);
           const adminRecord = await fetchAdminRecord(session.user.id);
-          if (mounted) setAdmin(adminRecord);
+          if (mountedRef.current) setAdmin(adminRecord);
         }
       } catch (err) {
-        console.error("[AdminAuth] init exception:", err);
+        console.error("[AdminAuth] init error:", err);
       } finally {
-        if (mounted) setIsLoading(false);
+        if (mountedRef.current) {
+          setIsLoading(false);
+          initDoneRef.current = true;
+        }
       }
     };
 
     init();
 
+    // O listener NÃO deve fazer fetch async pesado.
+    // Ele só atualiza o user e dispara um fetch leve de admin.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
+        if (!mountedRef.current) return;
 
-        try {
-          if (session?.user) {
-            setUser(session.user);
-            const adminRecord = await fetchAdminRecord(session.user.id);
-            if (mounted) setAdmin(adminRecord);
-          } else {
-            setUser(null);
-            setAdmin(null);
+        // Ignora o INITIAL_SESSION — já tratado no init() acima
+        if (event === "INITIAL_SESSION") return;
+
+        if (session?.user) {
+          setUser(session.user);
+
+          // Só faz o fetch de admin se o user mudou de fato
+          const adminRecord = await fetchAdminRecord(session.user.id);
+          if (mountedRef.current) {
+            setAdmin(adminRecord);
+            setIsLoading(false);
           }
-        } catch (err) {
-          console.error("[AdminAuth] onAuthStateChange exception:", err);
-          if (mounted) {
-            setUser(null);
-            setAdmin(null);
-          }
-        } finally {
-          // Garante que isLoading resolve mesmo em eventos do listener
-          if (mounted) setIsLoading(false);
+        } else {
+          setUser(null);
+          setAdmin(null);
+          setIsLoading(false);
         }
       }
     );
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       subscription.unsubscribe();
     };
   }, []);
 
-  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
+  const signIn = async (
+    email: string,
+    password: string
+  ): Promise<{ error: string | null }> => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (error) return { error: error.message };
 
       if (data.user) {
         const adminRecord = await fetchAdminRecord(data.user.id);
-
         if (!adminRecord) {
           await supabase.auth.signOut();
           return { error: "Acesso não autorizado. Você não é um administrador." };
         }
+        // Estado já será atualizado pelo onAuthStateChange
       }
 
       return { error: null };
     } catch (err: any) {
-      console.error("[AdminAuth] signIn exception:", err);
       return { error: err?.message || "Erro inesperado ao fazer login." };
     }
   };
@@ -130,18 +138,20 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-    } catch (err) {
-      console.error("[AdminAuth] signOut exception:", err);
     } finally {
       setUser(null);
       setAdmin(null);
     }
   };
 
+  // Memoize o value para evitar re-renders desnecessários nos consumers
+  const value = useMemo(
+    () => ({ user, admin, isAdmin: !!admin, isLoading, signIn, signOut }),
+    [user, admin, isLoading] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   return (
-    <AdminAuthContext.Provider
-      value={{ user, admin, isAdmin: !!admin, isLoading, signIn, signOut }}
-    >
+    <AdminAuthContext.Provider value={value}>
       {children}
     </AdminAuthContext.Provider>
   );
@@ -149,8 +159,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
 export function useAdminAuth() {
   const ctx = useContext(AdminAuthContext);
-
   if (!ctx) throw new Error("useAdminAuth must be used within AdminAuthProvider");
-
   return ctx;
 }

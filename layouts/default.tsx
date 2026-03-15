@@ -27,6 +27,7 @@ export default function DefaultLayout({
         <footer
           className="relative z-10 mt-24"
           style={{ borderTop: "1px solid var(--border)" }}
+          suppressHydrationWarning
         >
           <div className="container mx-auto max-w-7xl px-6 py-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
