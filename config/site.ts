@@ -1,27 +1,18 @@
+// config/site.ts
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "BirdRa1n",
-  description: "",
+  description: "Tech enthusiast and developer. Front-end, back-end and open source.",
   navItems: [
-    {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Contact",
-      href: "/contact",
-    },
+    { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contact", href: "/contact" },
   ],
   navMenuItems: [
-    {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Contact",
-      href: "/contact",
-    },
+    { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contact", href: "/contact" },
   ],
   links: {
     github: "https://github.com/birdra1n",
