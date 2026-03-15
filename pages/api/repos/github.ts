@@ -33,7 +33,7 @@ export default async function handler(
     res.status(200).json({ repos: data });
   } catch (err: any) {
     // eslint-disable-next-line no-console
-    console.error(err);
+    void err;
     res.status(500).json({ repos: [], error: err.message });
   }
 }

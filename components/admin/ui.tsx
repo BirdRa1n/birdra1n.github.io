@@ -162,6 +162,9 @@ export const AdminToggle = ({
         boxShadow: checked ? "0 0 10px var(--neon-glow)" : "none",
       }}
       onClick={() => onChange(!checked)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onChange(!checked); }}
     >
       <div
         className="absolute top-0.5 w-4 h-4 rounded-sm transition-all"
