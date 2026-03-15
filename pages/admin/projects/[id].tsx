@@ -70,6 +70,7 @@ export default function AdminProjectEditor() {
   const addTech = () => {
     if (!techInput.trim()) return;
     const items = techInput.split(",").map(s => s.trim()).filter(Boolean);
+
     set("tech_stack", [...form.tech_stack, ...items.filter(t => !form.tech_stack.includes(t))]);
     setTechInput("");
   };
@@ -84,12 +85,15 @@ export default function AdminProjectEditor() {
     };
 
     let error;
+
     if (isNew) {
       const res = await supabase.schema("portfolio" as any).from("projects").insert(payload).select().single();
+
       error = res.error;
       if (!error && res.data) router.replace(`/admin/projects/${res.data.id}`);
     } else {
       const res = await supabase.schema("portfolio" as any).from("projects").update(payload).eq("id", id);
+
       error = res.error;
     }
 

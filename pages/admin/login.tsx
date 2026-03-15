@@ -26,7 +26,10 @@ export default function AdminLoginPage() {
     setError("");
     setLoading(true);
     const { error } = await signIn(email, password);
-    if (error) { setError(error); setLoading(false); return; }
+
+    if (error) { setError(error); setLoading(false);
+
+ return; }
     router.push("/admin");
   };
 
@@ -89,19 +92,20 @@ export default function AdminLoginPage() {
                   Access Required
                 </h1>
                 <p className="text-xs opacity-40" style={{ fontFamily: "var(--font-mono)" }}>
-                  // authenticate to continue
+                  {"// authenticate to continue"}
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Email */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>
+                  <label htmlFor="login-email" className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>
                     Email
                   </label>
                   <div className="relative">
                     <FiMail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
                     <input
+                      id="login-email"
                       type="email"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
@@ -116,12 +120,13 @@ export default function AdminLoginPage() {
 
                 {/* Password */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>
+                  <label htmlFor="login-password" className="text-[10px] tracking-[0.3em] uppercase opacity-50" style={{ fontFamily: "var(--font-mono)" }}>
                     Password
                   </label>
                   <div className="relative">
                     <FiLock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" />
                     <input
+                      id="login-password"
                       type="password"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
@@ -142,7 +147,7 @@ export default function AdminLoginPage() {
                     className="px-4 py-3 rounded-sm text-xs"
                     style={{ background: "rgba(255,85,85,0.08)", border: "1px solid rgba(255,85,85,0.3)", color: "#ff5555", fontFamily: "var(--font-mono)" }}
                   >
-                    // Error: {error}
+                    {"// Error:"} {error}
                   </motion.div>
                 )}
 

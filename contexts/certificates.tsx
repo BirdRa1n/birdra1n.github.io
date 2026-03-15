@@ -46,7 +46,6 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
       }
       setCertificates(data);
     } catch (error) {
-      console.log(error);
       throw error;
     } finally {
       setFetchingCertificates(false);

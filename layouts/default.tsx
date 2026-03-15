@@ -1,5 +1,6 @@
 // layouts/default.tsx
 import { Head } from "./head";
+
 import { Navbar } from "@/components/navbar";
 import AnimatedBackground from "@/components/animations/background";
 

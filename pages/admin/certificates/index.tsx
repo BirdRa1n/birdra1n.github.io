@@ -26,6 +26,7 @@ export default function AdminCertificatesPage() {
       supabase.schema("portfolio" as any).from("certificates").select("*, organization:organizations(*)").order("emission", { ascending: false }),
       supabase.schema("portfolio" as any).from("organizations").select("*").order("name"),
     ]);
+
     setCerts((certsData || []) as Certificate[]);
     setOrgs((orgsData || []) as Organization[]);
     setLoading(false);
@@ -38,6 +39,7 @@ export default function AdminCertificatesPage() {
   const addSkill = () => {
     if (!form.skillInput.trim()) return;
     const skills = form.skillInput.split(",").map(s => s.trim()).filter(Boolean);
+
     set("skills", [...form.skills, ...skills.filter(s => !form.skills.includes(s))]);
     set("skillInput", "");
   };
@@ -47,7 +49,7 @@ export default function AdminCertificatesPage() {
     setForm({
       organization_id: cert.organization_id || "",
       title: cert.title,
-      emission: cert.emission,
+      emission: cert.emission ?? "",
       url: cert.url || "",
       skills: cert.skills || [],
       skillInput: "",
@@ -204,10 +206,10 @@ export default function AdminCertificatesPage() {
                 {new Date(cert.emission + "T00:00:00").toLocaleDateString("pt-BR", { year: "numeric", month: "long" })}
               </p>
 
-              {cert.skills.length > 0 && (
+              {(cert.skills ?? []).length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {cert.skills.slice(0, 4).map(skill => <span key={skill} className="tag-chip">{skill}</span>)}
-                  {cert.skills.length > 4 && <span className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>+{cert.skills.length - 4}</span>}
+                  {(cert.skills ?? []).slice(0, 4).map(skill => <span key={skill} className="tag-chip">{skill}</span>)}
+                  {(cert.skills ?? []).length > 4 && <span className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>+{(cert.skills ?? []).length - 4}</span>}
                 </div>
               )}
             </motion.div>

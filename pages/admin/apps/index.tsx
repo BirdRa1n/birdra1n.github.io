@@ -26,6 +26,7 @@ export default function AdminAppsPage() {
       .from("apps")
       .select("*, versions:app_versions(*)")
       .order("created_at", { ascending: false });
+
     setApps((data || []) as any[]);
     setLoading(false);
   };
@@ -93,7 +94,7 @@ export default function AdminAppsPage() {
       ) : apps.length === 0 ? (
         <div className="text-center py-24 opacity-30">
           <FiSmartphone size={32} className="mx-auto mb-4" />
-          <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Nenhum app ainda</p>
+          <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum app ainda"}</p>
           <NextLink href="/admin/apps/new" className="inline-block mt-4 text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
             + Adicionar primeiro app →
           </NextLink>
@@ -123,7 +124,7 @@ export default function AdminAppsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <h3 className="font-bold text-sm truncate" style={{ fontFamily: "var(--font-display)" }}>{app.name}</h3>
-                      <StatusBadge status={app.status} />
+                      <StatusBadge status={app.status ?? ""} />
                     </div>
                     <p className="text-[10px] opacity-40 truncate" style={{ fontFamily: "var(--font-mono)" }}>{app.bundle_id}</p>
                     {app.is_beta && (
@@ -141,9 +142,9 @@ export default function AdminAppsPage() {
                     <span className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>
                       iOS {app.min_ios_version}+
                     </span>
-                    {(app.versions as any[])?.length > 0 && (
+                    {((app as any).versions as any[])?.length > 0 && (
                       <span className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>
-                        v{(app.versions as any[])[0]?.version}
+                        v{((app as any).versions as any[])[0]?.version}
                       </span>
                     )}
                   </div>

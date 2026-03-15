@@ -87,11 +87,12 @@ export default function AdminDashboard() {
           recentMessages: recentMessages || [],
         });
       } catch (e) {
-        console.error(e);
+        void e;
       } finally {
         setLoading(false);
       }
     };
+
     fetchStats();
   }, []);
 
@@ -104,7 +105,7 @@ export default function AdminDashboard() {
       <div className="mb-10">
         <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
           <p className="text-xs tracking-[0.3em] mb-2" style={{ fontFamily: "var(--font-mono)", color: "var(--neon)", opacity: 0.6 }}>
-            // dashboard
+            {"// dashboard"}
           </p>
           <h1 className="text-4xl font-extrabold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
             {greeting}, {admin?.name?.split(" ")[0] || "Admin"} 👋
@@ -164,7 +165,7 @@ export default function AdminDashboard() {
               </div>
               <div className="space-y-2">
                 {stats?.recentPosts.length === 0 && (
-                  <p className="text-xs opacity-30 py-4 text-center" style={{ fontFamily: "var(--font-mono)" }}>// Nenhum post ainda</p>
+                  <p className="text-xs opacity-30 py-4 text-center" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum post ainda"}</p>
                 )}
                 {stats?.recentPosts.map((post: any) => (
                   <NextLink
@@ -202,7 +203,7 @@ export default function AdminDashboard() {
               </div>
               <div className="space-y-2">
                 {stats?.recentMessages.length === 0 && (
-                  <p className="text-xs opacity-30 py-4 text-center" style={{ fontFamily: "var(--font-mono)" }}>// Nenhuma mensagem ainda</p>
+                  <p className="text-xs opacity-30 py-4 text-center" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhuma mensagem ainda"}</p>
                 )}
                 {stats?.recentMessages.map((msg: any) => (
                   <NextLink

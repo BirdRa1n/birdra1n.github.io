@@ -17,8 +17,10 @@ export default function AdminContactPage() {
   const fetchMessages = async () => {
     setLoading(true);
     let query = supabase.schema("portfolio" as any).from("contact_messages").select("*").order("created_at", { ascending: false });
+
     if (filter !== "all") query = query.eq("status", filter);
     const { data } = await query;
+
     setMessages((data || []) as ContactMessage[]);
     setLoading(false);
   };
@@ -72,15 +74,23 @@ export default function AdminContactPage() {
           ) : messages.length === 0 ? (
             <div className="text-center py-16 opacity-30">
               <FiMail size={24} className="mx-auto mb-3" />
-              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Nenhuma mensagem</p>
+              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhuma mensagem"}</p>
             </div>
           ) : (
             messages.map(msg => (
               <div
                 key={msg.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   setSelected(msg);
                   if (msg.status === "new") updateStatus(msg.id, "read");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setSelected(msg);
+                    if (msg.status === "new") updateStatus(msg.id, "read");
+                  }
                 }}
                 className="px-4 py-3 rounded-sm cursor-pointer transition-all"
                 style={{
@@ -94,7 +104,7 @@ export default function AdminContactPage() {
                     <p className="text-xs font-semibold" style={{ fontFamily: "var(--font-body)" }}>{msg.name}</p>
                   </div>
                   <p className="text-[9px] opacity-30 flex-shrink-0" style={{ fontFamily: "var(--font-mono)" }}>
-                    {new Date(msg.created_at).toLocaleDateString("pt-BR")}
+                    {msg.created_at ? new Date(msg.created_at).toLocaleDateString("pt-BR") : "-"}
                   </p>
                 </div>
                 <p className="text-xs opacity-50 truncate mb-1" style={{ fontFamily: "var(--font-mono)" }}>{msg.subject}</p>
@@ -122,7 +132,7 @@ export default function AdminContactPage() {
                   <div>
                     <div className="flex items-center gap-3 mb-1">
                       <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-display)" }}>{selected.name}</h2>
-                      <StatusBadge status={selected.status} />
+                      <StatusBadge status={selected.status ?? ""} />
                     </div>
                     <p className="text-xs opacity-40" style={{ fontFamily: "var(--font-mono)" }}>{selected.email}</p>
                   </div>
@@ -145,7 +155,7 @@ export default function AdminContactPage() {
                 {/* Actions */}
                 <div className="px-6 py-4 flex items-center gap-3 flex-wrap" style={{ borderTop: "1px solid var(--border)" }}>
                   <p className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>
-                    {new Date(selected.created_at).toLocaleString("pt-BR")}
+                    {selected.created_at ? new Date(selected.created_at).toLocaleString("pt-BR") : "-"}
                   </p>
                   <div className="flex-1" />
                   {["new", "read", "replied", "archived"].map(status => (
@@ -191,7 +201,7 @@ export default function AdminContactPage() {
               >
                 <div className="text-center opacity-20">
                   <FiMail size={32} className="mx-auto mb-3" />
-                  <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Selecione uma mensagem</p>
+                  <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Selecione uma mensagem"}</p>
                 </div>
               </motion.div>
             )}

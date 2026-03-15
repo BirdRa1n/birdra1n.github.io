@@ -7,6 +7,7 @@ import {
   ReactNode,
 } from "react";
 import { User } from "@supabase/supabase-js";
+
 import supabase from "@/utils/supabase/client";
 import { Administrator } from "@/utils/supabase/typed-client";
 
@@ -33,19 +34,23 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       .select("*")
       .eq("user_id", userId)
       .single();
+
     return data as Administrator | null;
   };
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+
       if (session?.user) {
         setUser(session.user);
         const adminRecord = await fetchAdminRecord(session.user.id);
+
         setAdmin(adminRecord);
       }
       setIsLoading(false);
     };
+
     init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -53,6 +58,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           setUser(session.user);
           const adminRecord = await fetchAdminRecord(session.user.id);
+
           setAdmin(adminRecord);
         } else {
           setUser(null);
@@ -66,14 +72,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
     if (error) return { error: error.message };
     if (data.user) {
       const adminRecord = await fetchAdminRecord(data.user.id);
+
       if (!adminRecord) {
         await supabase.auth.signOut();
+
         return { error: "Acesso não autorizado. Você não é um administrador." };
       }
     }
+
     return { error: null };
   };
 
@@ -94,6 +104,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
 export function useAdminAuth() {
   const ctx = useContext(AdminAuthContext);
+
   if (!ctx) throw new Error("useAdminAuth must be used within AdminAuthProvider");
+
   return ctx;
 }

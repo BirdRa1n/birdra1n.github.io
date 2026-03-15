@@ -21,6 +21,7 @@ export default function AdminProjectsPage() {
       .from("projects")
       .select("*, category:categories(*)")
       .order("created_at", { ascending: false });
+
     setProjects((data || []) as Project[]);
     setLoading(false);
   };
@@ -68,7 +69,7 @@ export default function AdminProjectsPage() {
 
           {projects.length === 0 && (
             <div className="text-center py-16 opacity-30">
-              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Nenhum projeto encontrado</p>
+              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum projeto encontrado"}</p>
             </div>
           )}
 
@@ -98,10 +99,10 @@ export default function AdminProjectsPage() {
                   <p className="text-[10px] opacity-40 truncate" style={{ fontFamily: "var(--font-mono)" }}>/{project.slug}</p>
                 </div>
               </div>
-              <div className="col-span-2"><StatusBadge status={project.status} /></div>
+              <div className="col-span-2"><StatusBadge status={project.status ?? ""} /></div>
               <div className="col-span-2 text-xs opacity-50" style={{ fontFamily: "var(--font-mono)" }}>{project.views_count.toLocaleString()}</div>
               <div className="col-span-2 text-xs opacity-40" style={{ fontFamily: "var(--font-mono)" }}>
-                {new Date(project.created_at).toLocaleDateString("pt-BR")}
+                {project.created_at ? new Date(project.created_at).toLocaleDateString("pt-BR") : "-"}
               </div>
               <div className="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <NextLink href={`/projects/${project.slug}`} target="_blank" className="p-1 opacity-50 hover:opacity-100" title="Ver">

@@ -60,6 +60,7 @@ export default function AdminAppEditor() {
 
     if (isNew) {
       const res = await supabase.schema("store" as any).from("apps").insert(form).select().single();
+
       error = res.error;
       if (!error && res.data) {
         appId = res.data.id;
@@ -67,6 +68,7 @@ export default function AdminAppEditor() {
       }
     } else {
       const res = await supabase.schema("store" as any).from("apps").update({ ...form, updated_at: new Date().toISOString() }).eq("id", appId);
+
       error = res.error;
     }
 
@@ -91,6 +93,7 @@ export default function AdminAppEditor() {
       published_at: new Date().toISOString(),
     };
     const { error, data } = await supabase.schema("store" as any).from("app_versions").insert(payload).select().single();
+
     if (!error && data) {
       setVersions(v => [data as AppVersion, ...v]);
       setVersionForm({ version: "", build_number: 1, download_url: "", sha256: "", size_bytes: "", changelog: "", min_ios_version: "" });
@@ -193,7 +196,7 @@ export default function AdminAppEditor() {
               )}
 
               {versions.length === 0 ? (
-                <p className="text-xs opacity-30 text-center py-8" style={{ fontFamily: "var(--font-mono)" }}>// Nenhuma versão ainda</p>
+                <p className="text-xs opacity-30 text-center py-8" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhuma versão ainda"}</p>
               ) : (
                 <div className="space-y-3">
                   {versions.map((ver, i) => (

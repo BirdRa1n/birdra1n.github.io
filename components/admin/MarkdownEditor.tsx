@@ -3,7 +3,6 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 
-// Dynamic import to avoid SSR issues
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface MarkdownEditorProps {
@@ -24,17 +23,17 @@ export default function MarkdownEditor({
   return (
     <div
       data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-      style={{
-        "--color-canvas-default": "var(--bg-card-alt)",
-        "--color-border-default": "var(--border)",
-        "--color-fg-default": "var(--text-primary)",
-        "--color-accent-fg": "var(--neon)",
-        fontFamily: "var(--font-mono)",
-      } as React.CSSProperties}
+      style={
+        {
+          "--color-canvas-default": "var(--bg-card-alt)",
+          "--color-border-default": "var(--border)",
+          "--color-fg-default": "var(--text-primary)",
+          "--color-accent-fg": "var(--neon)",
+          fontFamily: "var(--font-mono)",
+        } as React.CSSProperties
+      }
     >
       <MDEditor
-        value={value}
-        onChange={(val) => onChange(val || "")}
         height={height}
         preview="live"
         style={{
@@ -50,6 +49,8 @@ export default function MarkdownEditor({
             fontSize: "13px",
           },
         }}
+        value={value}
+        onChange={(val) => onChange(val || "")}
       />
     </div>
   );

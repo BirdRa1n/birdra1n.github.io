@@ -34,7 +34,7 @@ const PostCard = ({ post, index }: { post: BlogPost; index: number }) => (
                 DESTAQUE
               </span>
             )}
-            {(post.tags as any[])?.slice(0, 3).map((t: any) => (
+            {((post as any).tags as any[])?.slice(0, 3).map((t: any) => (
               <span key={t.tag?.id} className="tag-chip">{t.tag?.name}</span>
             ))}
           </div>
@@ -95,7 +95,7 @@ export default function BlogPage() {
             Blog
           </h1>
           <p className="text-sm opacity-40" style={{ fontFamily: "var(--font-mono)" }}>
-            // Pensamentos, tutoriais e descobertas sobre dev
+            {"// Pensamentos, tutoriais e descobertas sobre dev"}
           </p>
         </motion.div>
 
@@ -107,7 +107,7 @@ export default function BlogPage() {
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-24 opacity-30">
-            <p className="text-sm" style={{ fontFamily: "var(--font-mono)" }}>// Nenhum post ainda — em breve!</p>
+            <p className="text-sm" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum post ainda — em breve!"}</p>
           </div>
         ) : (
           <div className="space-y-4">

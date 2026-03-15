@@ -22,6 +22,7 @@ export default function AdminTagsPage() {
   const fetch = async () => {
     setLoading(true);
     const { data } = await supabase.schema("blog" as any).from("tags").select("*").order("name");
+
     setTags((data || []) as BlogTag[]);
     setLoading(false);
   };
@@ -73,7 +74,7 @@ export default function AdminTagsPage() {
       ) : tags.length === 0 ? (
         <div className="text-center py-16 opacity-30">
           <FiTag size={24} className="mx-auto mb-3" />
-          <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Nenhuma tag ainda</p>
+          <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhuma tag ainda"}</p>
         </div>
       ) : (
         <div className="flex flex-wrap gap-3">

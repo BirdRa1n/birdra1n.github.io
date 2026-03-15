@@ -20,6 +20,7 @@ function slugify(text: string) {
 
 function estimateReadTime(content: string): number {
   const words = content.split(/\s+/).length;
+
   return Math.max(1, Math.ceil(words / 200));
 }
 
@@ -55,6 +56,7 @@ export default function AdminBlogEditor() {
         supabase.schema("blog" as any).from("tags").select("*").order("name"),
         supabase.schema("portfolio" as any).from("projects").select("id,title").order("title"),
       ]);
+
       setAllTags(tags || []);
       setAllProjects((projects || []) as Project[]);
 
@@ -83,6 +85,7 @@ export default function AdminBlogEditor() {
         setLoading(false);
       }
     };
+
     init();
   }, [id, isNew]);
 
@@ -110,6 +113,7 @@ export default function AdminBlogEditor() {
       .insert({ name: newTagName.trim(), slug: tagSlug })
       .select()
       .single();
+
     if (!error && data) {
       setAllTags(t => [...t, data]);
       setSelectedTagIds(ids => [...ids, data.id]);
@@ -130,6 +134,7 @@ export default function AdminBlogEditor() {
 
     if (isNew) {
       const res = await supabase.schema("blog" as any).from("posts").insert(payload).select().single();
+
       error = res.error;
       if (!error && res.data) {
         postId = res.data.id;
@@ -137,6 +142,7 @@ export default function AdminBlogEditor() {
       }
     } else {
       const res = await supabase.schema("blog" as any).from("posts").update(payload).eq("id", postId);
+
       error = res.error;
     }
 
@@ -335,7 +341,11 @@ export default function AdminBlogEditor() {
                       background: selectedProjectIds.includes(project.id) ? "var(--neon)" : "var(--bg-card-alt)",
                       border: `1px solid ${selectedProjectIds.includes(project.id) ? "var(--neon)" : "var(--border)"}`,
                     }}
+                    role="checkbox"
+                    aria-checked={selectedProjectIds.includes(project.id)}
+                    tabIndex={0}
                     onClick={() => toggleProject(project.id)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") toggleProject(project.id); }}
                   >
                     {selectedProjectIds.includes(project.id) && (
                       <svg width="8" height="8" viewBox="0 0 8 8" fill="none">

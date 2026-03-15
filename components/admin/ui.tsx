@@ -242,6 +242,7 @@ export const StatusBadge = ({ status }: { status: string }) => {
     replied: { bg: "rgba(0,255,135,0.1)", color: "var(--neon)", border: "rgba(0,255,135,0.2)" },
   };
   const c = colors[status] || colors.draft;
+
   return (
     <span
       className="text-[10px] px-2 py-0.5 rounded-sm"
@@ -267,6 +268,7 @@ export const ConfirmDialog = ({
   onCancel: () => void;
 }) => {
   if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
       <motion.div

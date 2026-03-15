@@ -31,7 +31,7 @@ export const ReposProvider = ({ children }: { children: ReactNode }) => {
         storage.setItem("repos", data);
       })
       .catch((error) => {
-        console.error("Error fetching repositories:", error);
+        void error;
         setFetchingRepos(false);
       });
   }, []);

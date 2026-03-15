@@ -21,6 +21,7 @@ export default function AdminBlogPage() {
       .from("posts")
       .select("*, tags:post_tags(tag:tags(*))")
       .order("created_at", { ascending: false });
+
     setPosts((data || []) as any[]);
     setLoading(false);
   };
@@ -67,7 +68,7 @@ export default function AdminBlogPage() {
 
           {posts.length === 0 && (
             <div className="text-center py-16 opacity-30">
-              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>// Nenhum post encontrado</p>
+              <p className="text-xs" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum post encontrado"}</p>
               <NextLink href="/admin/blog/new" className="inline-block mt-4 text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
                 + Criar primeiro post →
               </NextLink>
@@ -96,10 +97,10 @@ export default function AdminBlogPage() {
                   <p className="text-[10px] opacity-40 truncate" style={{ fontFamily: "var(--font-mono)" }}>/{post.slug}</p>
                 </div>
               </div>
-              <div className="col-span-2"><StatusBadge status={post.status} /></div>
+              <div className="col-span-2"><StatusBadge status={post.status ?? ""} /></div>
               <div className="col-span-2 text-xs opacity-50" style={{ fontFamily: "var(--font-mono)" }}>{post.views_count}</div>
               <div className="col-span-2 text-xs opacity-40" style={{ fontFamily: "var(--font-mono)" }}>
-                {new Date(post.created_at).toLocaleDateString("pt-BR")}
+                {post.created_at ? new Date(post.created_at).toLocaleDateString("pt-BR") : "-"}
               </div>
               <div className="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 {post.status === "published" && (

@@ -7,7 +7,7 @@ export const Logo: React.FC<IconSvgProps> = ({
   size: _size = 36,
   width: _width,
   height: _height,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   ...props
 }) => <Image alt="NextUI hero Image" height={35} src="/logo.gif" width={35} />;
 

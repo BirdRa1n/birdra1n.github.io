@@ -74,6 +74,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
             const isActive = router.pathname === href || (href !== "/admin" && router.pathname.startsWith(href));
+
             return (
               <NextLink
                 key={href}

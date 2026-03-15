@@ -31,7 +31,9 @@ export default function BlogPostPage() {
       .eq("status", "published")
       .single()
       .then(({ data }) => {
-        if (!data) { setNotFound(true); setLoading(false); return; }
+        if (!data) { setNotFound(true); setLoading(false);
+
+ return; }
         setPost(data as any);
         setLoading(false);
 
@@ -53,7 +55,7 @@ export default function BlogPostPage() {
   if (notFound) return (
     <DefaultLayout>
       <div className="max-w-3xl mx-auto py-20 text-center opacity-40">
-        <p className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-mono)" }}>// 404</p>
+        <p className="text-xl font-bold mb-2" style={{ fontFamily: "var(--font-mono)" }}>{"// 404"}</p>
         <p className="text-sm opacity-60" style={{ fontFamily: "var(--font-mono)" }}>Post não encontrado</p>
         <NextLink href="/blog" className="inline-block mt-6 text-xs" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>← VOLTAR AO BLOG</NextLink>
       </div>
@@ -62,7 +64,7 @@ export default function BlogPostPage() {
 
   if (!post) return null;
 
-  const mentionedProjects = (post.mentioned_projects as any[])?.map((m: any) => m.project).filter(Boolean);
+  const mentionedProjects = ((post as any).mentioned_projects as any[])?.map((m: any) => m.project).filter(Boolean);
 
   return (
     <DefaultLayout>
@@ -81,9 +83,9 @@ export default function BlogPostPage() {
         {/* Header */}
         <motion.header initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
           {/* Tags */}
-          {(post.tags as any[])?.length > 0 && (
+          {((post as any).tags as any[])?.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {(post.tags as any[]).map((t: any) => (
+              {((post as any).tags as any[]).map((t: any) => (
                 <span key={t.tag?.id} className="tag-chip">{t.tag?.name}</span>
               ))}
             </div>
@@ -168,7 +170,7 @@ export default function BlogPostPage() {
             style={{ borderTop: "1px solid var(--border)" }}
           >
             <h3 className="text-xs tracking-widest uppercase mb-4 opacity-50" style={{ fontFamily: "var(--font-mono)" }}>
-              // Projetos Mencionados
+              {"// Projetos Mencionados"}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {mentionedProjects.map((project: any) => (
