@@ -134,25 +134,35 @@ const FeaturedProjects = () => {
 
   useEffect(() => {
     const fetchLastProjects = async () => {
-      const cachedProjects = storage.getItem("lastProjects");
+      try {
+        const cachedProjects = storage.getItem("lastProjects");
 
-      if (cachedProjects) {
-        setProjects(JSON.parse(cachedProjects) as Project[]);
+        if (cachedProjects) {
+          setProjects(JSON.parse(cachedProjects) as Project[]);
+          return;
+        }
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+
+        const { data } = await supabase
+          .from("projects")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(3)
+          .abortSignal(controller.signal);
+
+        clearTimeout(timeout);
+
+        if (data) {
+          storage.setItem("lastProjects", data);
+          setProjects(data);
+        }
+      } catch {
+        // silently fail, show empty state
+      } finally {
         setIsLoading(false);
-
-        return;
       }
-      const { data } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(3);
-
-      if (data) {
-        storage.setItem("lastProjects", data);
-        setProjects(data);
-      }
-      setIsLoading(false);
     };
 
     fetchLastProjects();

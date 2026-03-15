@@ -42,26 +42,31 @@ export default function AdminProjectEditor() {
   const [techInput, setTechInput] = useState("");
 
   useEffect(() => {
-    supabase.schema("portfolio" as any).from("categories").select("*").then(({ data }) => setCategories(data || []));
+    supabase.schema("portfolio" as any).from("categories").select("*")
+      .then(({ data }) => setCategories(data || []))
+      .catch(() => {});
+
     if (!isNew && id) {
-      supabase.schema("portfolio" as any).from("projects").select("*").eq("id", id).single().then(({ data }) => {
-        if (data) {
-          setForm({
-            title: data.title || "",
-            slug: data.slug || "",
-            description: data.description || "",
-            content: data.content || "",
-            thumbnail_url: data.thumbnail_url || "",
-            demo_url: data.demo_url || "",
-            repo_url: data.repo_url || "",
-            tech_stack: data.tech_stack || [],
-            category_id: data.category_id || "",
-            featured: data.featured || false,
-            status: data.status || "draft",
-          });
-        }
-        setLoading(false);
-      });
+      supabase.schema("portfolio" as any).from("projects").select("*").eq("id", id).single()
+        .then(({ data }) => {
+          if (data) {
+            setForm({
+              title: data.title || "",
+              slug: data.slug || "",
+              description: data.description || "",
+              content: data.content || "",
+              thumbnail_url: data.thumbnail_url || "",
+              demo_url: data.demo_url || "",
+              repo_url: data.repo_url || "",
+              tech_stack: data.tech_stack || [],
+              category_id: data.category_id || "",
+              featured: data.featured || false,
+              status: data.status || "draft",
+            });
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
     }
   }, [id, isNew]);
 

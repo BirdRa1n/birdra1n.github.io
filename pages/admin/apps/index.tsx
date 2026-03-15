@@ -21,14 +21,17 @@ export default function AdminAppsPage() {
 
   const fetchApps = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .schema("store" as any)
-      .from("apps")
-      .select("*, versions:app_versions(*)")
-      .order("created_at", { ascending: false });
-
-    setApps((data || []) as any[]);
-    setLoading(false);
+    try {
+      const { data } = await supabase
+        .schema("store" as any)
+        .from("apps")
+        .select("*, versions:app_versions(*)")
+        .order("created_at", { ascending: false });
+      setApps((data || []) as any[]);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchApps(); }, []);

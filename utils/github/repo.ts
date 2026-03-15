@@ -6,7 +6,13 @@ export interface GitHubRepoWithSkills extends GitHubRepo {
 
 const getRepos = async (): Promise<any[]> => {
   const baseUrl = process.env.NODE_ENV === 'production' ? "https://birdra1n.vercel.app" : "";
-  const response = await fetch(`${baseUrl}/api/repos/github`);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
+  const response = await fetch(`${baseUrl}/api/repos/github`, { signal: controller.signal });
+
+  clearTimeout(timeout);
 
   if (!response.ok) {
     throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);

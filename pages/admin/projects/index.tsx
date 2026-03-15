@@ -16,14 +16,17 @@ export default function AdminProjectsPage() {
 
   const fetchProjects = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .schema("portfolio" as any)
-      .from("projects")
-      .select("*, category:categories(*)")
-      .order("created_at", { ascending: false });
-
-    setProjects((data || []) as Project[]);
-    setLoading(false);
+    try {
+      const { data } = await supabase
+        .schema("portfolio" as any)
+        .from("projects")
+        .select("*, category:categories(*)")
+        .order("created_at", { ascending: false });
+      setProjects((data || []) as Project[]);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchProjects(); }, []);

@@ -22,14 +22,17 @@ export default function AdminCertificatesPage() {
 
   const fetch = async () => {
     setLoading(true);
-    const [{ data: certsData }, { data: orgsData }] = await Promise.all([
-      supabase.schema("portfolio" as any).from("certificates").select("*, organization:organizations(*)").order("emission", { ascending: false }),
-      supabase.schema("portfolio" as any).from("organizations").select("*").order("name"),
-    ]);
-
-    setCerts((certsData || []) as Certificate[]);
-    setOrgs((orgsData || []) as Organization[]);
-    setLoading(false);
+    try {
+      const [{ data: certsData }, { data: orgsData }] = await Promise.all([
+        supabase.schema("portfolio" as any).from("certificates").select("*, organization:organizations(*)").order("emission", { ascending: false }),
+        supabase.schema("portfolio" as any).from("organizations").select("*").order("name"),
+      ]);
+      setCerts((certsData || []) as Certificate[]);
+      setOrgs((orgsData || []) as Organization[]);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetch(); }, []);

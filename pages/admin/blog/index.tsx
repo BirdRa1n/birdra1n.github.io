@@ -16,14 +16,17 @@ export default function AdminBlogPage() {
 
   const fetchPosts = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .schema("blog" as any)
-      .from("posts")
-      .select("*, tags:post_tags(tag:tags(*))")
-      .order("created_at", { ascending: false });
-
-    setPosts((data || []) as any[]);
-    setLoading(false);
+    try {
+      const { data } = await supabase
+        .schema("blog" as any)
+        .from("posts")
+        .select("*, tags:post_tags(tag:tags(*))")
+        .order("created_at", { ascending: false });
+      setPosts((data || []) as any[]);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchPosts(); }, []);
