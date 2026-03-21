@@ -2,6 +2,7 @@
   "name": "next-pages-template",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -29,7 +30,7 @@
     "framer-motion": "11.18.2",
     "highlight.js": "^11.11.1",
     "intl-messageformat": "10.7.16",
-    "next": "^15.5.9",
+    "next": "16.1.6",
     "next-themes": "0.4.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -41,8 +42,8 @@
     "@eslint/js": "9.25.1",
     "@tailwindcss/postcss": "4.1.11",
     "@types/node": "20.5.7",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.34.1",
     "@typescript-eslint/parser": "8.34.1",
     "eslint": "^9.39.2",
@@ -60,5 +61,9 @@
     "tailwind-variants": "3.1.0",
     "tailwindcss": "4.1.11",
     "typescript": "5.6.3"
+  },
+  "overrides": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
   }
 }
