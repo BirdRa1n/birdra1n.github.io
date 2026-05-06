@@ -55,74 +55,127 @@ function FeaturedCard({ project }: { project: Project }) {
       href={`/projects/${project.slug}`}
       initial={{ opacity: 0, y: 28 }}
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border)",
+        background: "#09080F",
+        border: "1px solid rgba(167,139,250,0.15)",
         height: 380,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
         transition: "border-color 0.25s ease, box-shadow 0.25s ease",
       }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -4 }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = "var(--neon-dim)";
-        el.style.boxShadow =
-          "0 0 0 1px var(--neon-glow), 0 20px 56px var(--neon-glow), 0 4px 24px rgba(0,0,0,0.25)";
+        el.style.borderColor = "rgba(167,139,250,0.45)";
+        el.style.boxShadow   = "0 0 0 1px rgba(167,139,250,0.2), 0 20px 56px rgba(167,139,250,0.15), 0 4px 24px rgba(0,0,0,0.4)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = "var(--border)";
-        el.style.boxShadow = "0 4px 24px rgba(0,0,0,0.2)";
+        el.style.borderColor = "rgba(167,139,250,0.15)";
+        el.style.boxShadow   = "0 4px 24px rgba(0,0,0,0.35)";
       }}
     >
       {/* Accent line */}
       <div
         className="absolute top-0 inset-x-0 h-0.5 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 z-10"
-        style={{ background: "linear-gradient(90deg, var(--neon), var(--cyan))" }}
+        style={{ background: "linear-gradient(90deg, #A78BFA, #E879F9)" }}
       />
 
-      {/* Full-bleed image */}
-      <div className="absolute inset-0">
+      {/* Blurred icon as ambient background */}
+      <div className="absolute inset-0 overflow-hidden">
         {project.thumbnail_url ? (
-          <img
-            alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            loading="lazy"
-            src={project.thumbnail_url}
-          />
+          <>
+            <img
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover"
+              src={project.thumbnail_url}
+              style={{ filter: "blur(48px) saturate(1.4)", transform: "scale(1.6)", opacity: 0.35 }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.25) 0%, rgba(9,8,15,0.55) 100%)" }}
+            />
+          </>
         ) : (
           <div
-            className="w-full h-full flex flex-col items-center justify-center gap-2"
-            style={{ background: "var(--bg-card-alt)" }}
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(135deg, #1A1726 0%, #09080F 100%)" }}
+          />
+        )}
+        {/* Bottom fade to solid so text is always legible */}
+        <div
+          className="absolute inset-x-0 bottom-0"
+          style={{ height: "55%", background: "linear-gradient(to top, #09080F 60%, transparent)" }}
+        />
+      </div>
+
+      {/* App icon — centered in the upper area */}
+      <div className="absolute inset-x-0 top-0 flex items-center justify-center" style={{ height: "62%" }}>
+        {project.thumbnail_url ? (
+          <div className="relative">
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{ borderRadius: 22, boxShadow: "0 0 0 1px rgba(167,139,250,0.4), 0 0 40px rgba(167,139,250,0.25)" }}
+            />
+            <img
+              alt={project.title}
+              className="relative z-10 group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+              src={project.thumbnail_url}
+              style={{
+                width: 96, height: 96,
+                borderRadius: 22,
+                objectFit: "cover",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4)",
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 96, height: 96, borderRadius: 22,
+              background: "linear-gradient(135deg, #2D2640, #1A1726)",
+              border: "1px solid rgba(167,139,250,0.2)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
           >
-            <span
-              className="text-9xl font-extrabold select-none leading-none"
-              style={{ fontFamily: "var(--font-display)", color: "var(--neon)", opacity: 0.12 }}
-            >
+            <span style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 800, color: "#A78BFA", opacity: 0.5, lineHeight: 1 }}>
               {project.title.slice(0, 1).toUpperCase()}
             </span>
           </div>
         )}
       </div>
 
-      {/* Gradient overlay — always-dark so text is legible regardless of theme */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(to top, rgba(9,8,15,0.96) 0%, rgba(9,8,15,0.55) 50%, transparent 100%)" }}
-      />
+      {/* Content at bottom */}
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-3 z-10">
+        <div className="flex items-center gap-2 mb-2">
+          <p
+            className="text-[10px] font-bold tracking-[0.2em] uppercase"
+            style={{ fontFamily: "var(--font-mono)", color: "#A78BFA", opacity: 0.7 }}
+          >
+            featured project
+          </p>
+          {project.status && (
+            <span
+              className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded"
+              style={{
+                fontFamily: "var(--font-mono)",
+                background: "rgba(167,139,250,0.15)",
+                border: "1px solid rgba(167,139,250,0.3)",
+                color: "#A78BFA",
+                backdropFilter: "blur(6px)",
+              }}
+            >
+              {project.status}
+            </span>
+          )}
+        </div>
 
-      {/* Content anchored to bottom */}
-      <div className="absolute inset-x-0 bottom-0 p-5 z-10">
         <div className="flex items-end justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <p
-              className="text-[10px] font-bold tracking-[0.2em] uppercase mb-1.5"
-              style={{ fontFamily: "var(--font-mono)", color: "#A78BFA", opacity: 0.8 }}
-            >
-              featured project
-            </p>
             <h3
-              className="text-xl font-bold leading-snug mb-1.5 transition-colors duration-200 group-hover:text-[#A78BFA]"
+              className="text-xl font-bold leading-snug mb-1.5 transition-colors duration-200 group-hover:text-[#C4B5FD]"
               style={{ fontFamily: "var(--font-display)", color: "#EDE9FE" }}
             >
               {project.title}
@@ -133,7 +186,7 @@ function FeaturedCard({ project }: { project: Project }) {
             {(project.views_count ?? 0) > 0 && (
               <p
                 className="mt-2 text-[10px]"
-                style={{ fontFamily: "var(--font-mono)", color: "#7C7A9A", opacity: 0.6 }}
+                style={{ fontFamily: "var(--font-mono)", color: "#7C7A9A", opacity: 0.5 }}
               >
                 {project.views_count} views
               </p>
@@ -181,15 +234,15 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         style={{ background: "linear-gradient(90deg, var(--neon), var(--cyan))" }}
       />
 
-      {/* Thumbnail */}
+      {/* App icon thumbnail */}
       <div
-        className="w-16 h-16 rounded-lg flex-shrink-0 overflow-hidden"
-        style={{ border: "1px solid var(--border)", background: "var(--bg-card-alt)" }}
+        className="w-14 h-14 flex-shrink-0 overflow-hidden"
+        style={{ borderRadius: 14, background: "var(--bg-card-alt)", border: "1px solid var(--border)" }}
       >
         {project.thumbnail_url ? (
           <img
             alt={project.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
             src={project.thumbnail_url}
           />
