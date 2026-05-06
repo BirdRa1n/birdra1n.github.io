@@ -89,11 +89,15 @@ function FeaturedCard({ project }: { project: Project }) {
               aria-hidden
               className="absolute inset-0 w-full h-full object-cover"
               src={project.thumbnail_url}
-              style={{ filter: "blur(48px) saturate(1.4)", transform: "scale(1.6)", opacity: 0.35 }}
+              style={{ filter: "blur(48px) saturate(1.2)", transform: "scale(1.6)", opacity: 0.15 }}
             />
             <div
               className="absolute inset-0"
-              style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.25) 0%, rgba(9,8,15,0.55) 100%)" }}
+              style={{ background: "rgba(9,8,15,0.72)" }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.18) 0%, transparent 60%)" }}
             />
           </>
         ) : (
