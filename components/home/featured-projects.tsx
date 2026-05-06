@@ -111,24 +111,6 @@ function FeaturedCard({ project }: { project: Project }) {
         style={{ background: "linear-gradient(to top, rgba(9,8,15,0.96) 0%, rgba(9,8,15,0.55) 50%, transparent 100%)" }}
       />
 
-      {/* Status badge */}
-      {project.status && (
-        <div className="absolute top-4 left-4 z-10">
-          <span
-            className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded"
-            style={{
-              fontFamily: "var(--font-mono)",
-              background: "rgba(167,139,250,0.18)",
-              border: "1px solid rgba(167,139,250,0.35)",
-              color: "#A78BFA",
-              backdropFilter: "blur(6px)",
-            }}
-          >
-            {project.status}
-          </span>
-        </div>
-      )}
-
       {/* Content anchored to bottom */}
       <div className="absolute inset-x-0 bottom-0 p-5 z-10">
         <div className="flex items-end justify-between gap-3">
@@ -240,19 +222,6 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         <p className="text-[11px] leading-relaxed line-clamp-2" style={{ color: "var(--text-muted)" }}>
           {project.description}
         </p>
-        {project.status && (
-          <span
-            className="mt-1.5 inline-block w-fit text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
-            style={{
-              fontFamily: "var(--font-mono)",
-              background: "var(--neon-glow)",
-              border: "1px solid var(--neon-dim)",
-              color: "var(--neon)",
-            }}
-          >
-            {project.status}
-          </span>
-        )}
       </div>
     </motion.a>
   );
