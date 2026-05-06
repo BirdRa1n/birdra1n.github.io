@@ -1,8 +1,11 @@
 // layouts/default.tsx
+import NextLink from "next/link";
+
 import { Head } from "./head";
 
 import { Navbar } from "@/components/navbar";
 import AnimatedBackground from "@/components/animations/background";
+import { siteConfig } from "@/config/site";
 
 export default function DefaultLayout({
   children,
@@ -25,39 +28,133 @@ export default function DefaultLayout({
         </main>
 
         <footer
-          className="relative z-10 mt-24"
+          className="relative z-10 mt-16"
           style={{ borderTop: "1px solid var(--border)" }}
           suppressHydrationWarning
         >
-          <div className="container mx-auto max-w-7xl px-6 py-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="flex items-center gap-3">
-                <span
-                  className="text-xs tracking-widest opacity-40"
-                  style={{ fontFamily: "var(--font-mono)" }}
+          <div className="container mx-auto max-w-7xl px-6 pt-8 pb-10">
+            {/* Terminal header bar */}
+            <div
+              className="terminal-header rounded-lg mb-8"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <div className="terminal-dots">
+                <div className="terminal-dot" style={{ background: "#FF5F57" }} />
+                <div className="terminal-dot" style={{ background: "#FEBC2E" }} />
+                <div className="terminal-dot" style={{ background: "#28C840" }} />
+              </div>
+              <span
+                className="text-xs"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+              >
+                ~/footer
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+              {/* Brand */}
+              <div>
+                <div
+                  className="font-bold text-base mb-1"
+                  style={{ fontFamily: "var(--font-display)", color: "var(--neon)" }}
                 >
-                  BUILT BY
-                </span>
-                <span
-                  className="text-sm font-bold"
-                  style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+                  BirdRa1n
+                </div>
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
                 >
-                  DÁRIO JR
-                </span>
+                  Full-Stack Developer
+                  <br />
+                  Building things for the web &amp; beyond.
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-xs opacity-30"
-                  style={{ fontFamily: "var(--font-mono)" }}
+              {/* Navigation */}
+              <div>
+                <p
+                  className="text-[10px] font-bold uppercase tracking-widest mb-4"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
                 >
-                  © {new Date().getFullYear()} — ALL RIGHTS RESERVED
-                </span>
-                <span
-                  className="w-1.5 h-1.5 rounded-full cursor-blink"
-                  style={{ background: "var(--neon)", boxShadow: "0 0 6px var(--neon)" }}
-                />
+                  Navigation
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  {siteConfig.navItems.map((item) => (
+                    <NextLink
+                      key={item.href}
+                      className="text-xs transition-colors duration-200"
+                      href={item.href}
+                      style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = "var(--neon)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+                      }}
+                    >
+                      &gt; {item.label.toLowerCase()}
+                    </NextLink>
+                  ))}
+                </div>
               </div>
+
+              {/* Connect */}
+              <div>
+                <p
+                  className="text-[10px] font-bold uppercase tracking-widest mb-4"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+                >
+                  Connect
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  {[
+                    { label: "github", href: siteConfig.links.github },
+                    { label: "twitter/x", href: siteConfig.links.twitter },
+                    { label: "discord", href: siteConfig.links.discord },
+                  ].map(({ label, href }) => (
+                    <a
+                      key={label}
+                      className="text-xs transition-colors duration-200"
+                      href={href}
+                      rel="noopener noreferrer"
+                      style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+                      target="_blank"
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = "var(--neon)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
+                      }}
+                    >
+                      &gt; {label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div
+              className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3"
+              style={{ borderTop: "1px solid var(--border)" }}
+              suppressHydrationWarning
+            >
+              <p
+                className="text-[10px]"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+                suppressHydrationWarning
+              >
+                <span style={{ color: "var(--neon)", opacity: 0.5 }}># </span>
+                &copy; {new Date().getFullYear()} Dário Jr — All rights
+                reserved
+              </p>
+              <p
+                className="text-[10px]"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+              >
+                <span style={{ color: "var(--neon)", opacity: 0.5 }}># </span>
+                Built with Next.js · Supabase · Framer Motion
+              </p>
             </div>
           </div>
         </footer>

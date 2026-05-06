@@ -1,18 +1,19 @@
 // pages/index.tsx
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useRef, useEffect, useState, useCallback } from "react";
 import NextLink from "next/link";
 
 import { GithubIcon } from "@/components/icons";
 import Certificates from "@/components/home/certificates";
 import FeaturedProjects from "@/components/home/featured-projects";
 import Repositories from "@/components/home/repos";
+import SkillsGlobe from "@/components/home/skills-globe";
 import { siteConfig } from "@/config/site";
 import { useReposContext } from "@/contexts/repos";
 import DefaultLayout from "@/layouts/default";
 
-// Typewriter hook
-function useTypewriter(texts: string[], speed = 80, pause = 2000) {
+/* ─── Hooks ──────────────────────────────────────────────────── */
+function useTypewriter(texts: string[], speed = 70, pause = 2200) {
   const [displayed, setDisplayed] = useState("");
   const [textIndex, setTextIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
@@ -24,11 +25,8 @@ function useTypewriter(texts: string[], speed = 80, pause = 2000) {
       () => {
         if (!deleting) {
           setDisplayed(current.slice(0, charIndex + 1));
-          if (charIndex + 1 === current.length) {
-            setTimeout(() => setDeleting(true), pause);
-          } else {
-            setCharIndex((c) => c + 1);
-          }
+          if (charIndex + 1 === current.length) setTimeout(() => setDeleting(true), pause);
+          else setCharIndex((c) => c + 1);
         } else {
           setDisplayed(current.slice(0, charIndex - 1));
           if (charIndex - 1 === 0) {
@@ -42,73 +40,192 @@ function useTypewriter(texts: string[], speed = 80, pause = 2000) {
       },
       deleting ? speed / 2 : speed,
     );
-
     return () => clearTimeout(timeout);
   }, [charIndex, deleting, textIndex, texts, speed, pause]);
 
   return displayed;
 }
 
-// Section wrapper with reveal animation
-const Section = ({
-  children,
-  id,
-}: {
-  children: React.ReactNode;
-  id?: string;
-}) => {
+function useCounter(end: number, duration = 1200) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const start = useCallback(() => setStarted(true), []);
+
+  useEffect(() => {
+    if (!started || end === 0) return;
+    let t0: number;
+    const step = (ts: number) => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / duration, 1);
+      setCount(Math.floor((1 - Math.pow(1 - p, 3)) * end));
+      if (p < 1) requestAnimationFrame(step);
+      else setCount(end);
+    };
+    requestAnimationFrame(step);
+  }, [started, end, duration]);
+
+  return { count, start };
+}
+
+/* ─── Always-dark panel tokens (code blocks) ─────────────────── */
+// Code panels must always render dark regardless of light/dark mode
+const PANEL: React.CSSProperties = {
+  ["--bg-card" as any]:     "#110F1A",
+  ["--bg-card-alt" as any]: "#1A1726",
+  ["--border" as any]:      "#2D2640",
+  ["--text-primary" as any]:"#EDE9FE",
+  ["--text-muted" as any]:  "#7C7A9A",
+};
+
+// Code syntax colors — designed for dark background
+const C = {
+  kw:  "#FF7B72",   // keywords
+  var: "#79C0FF",   // variables
+  str: "#A5D6FF",   // strings
+  num: "#F8C555",   // numbers
+  cmt: "#6A737D",   // comments
+  neon:"#A78BFA",   // special (true, Infinity)
+  def: "#E6EDF3",   // default text
+};
+
+/* ─── Hero code block (always dark) ─────────────────────────── */
+const HeroCodeBlock = ({ repoCount }: { repoCount: number }) => (
+  <motion.div
+    animate={{ opacity: 1, x: 0 }}
+    className="terminal-window w-full"
+    initial={{ opacity: 0, x: 40 }}
+    style={PANEL}
+    transition={{ delay: 0.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+  >
+    <div className="terminal-header">
+      <div className="terminal-dots">
+        <div className="terminal-dot" style={{ background: "#FF5F57" }} />
+        <div className="terminal-dot" style={{ background: "#FEBC2E" }} />
+        <div className="terminal-dot" style={{ background: "#28C840" }} />
+      </div>
+      <span className="text-xs" style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>
+        developer.config.ts
+      </span>
+    </div>
+    <div className="p-5 overflow-x-auto">
+      <pre className="text-[11px] sm:text-xs leading-[1.8]" style={{ fontFamily: "var(--font-mono)", margin: 0 }}>
+        <span style={{ color: C.cmt }}>{"// BirdRa1n — Dev Config\n"}</span>
+        <span style={{ color: C.kw }}>{"const "}</span><span style={{ color: C.var }}>{"developer"}</span><span style={{ color: C.def }}>{" = {\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"name"}</span><span style={{ color: C.def }}>{":     "}</span><span style={{ color: C.str }}>{'"Dário Jr"'}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"alias"}</span><span style={{ color: C.def }}>{":    "}</span><span style={{ color: C.str }}>{'"BirdRa1n"'}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"location"}</span><span style={{ color: C.def }}>{": "}</span><span style={{ color: C.str }}>{'"Brazil 🇧🇷"'}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"stack"}</span><span style={{ color: C.def }}>{":    ["}</span>
+        <span style={{ color: C.str }}>{'"React"'}</span><span style={{ color: C.def }}>{", "}</span>
+        <span style={{ color: C.str }}>{'"Next.js"'}</span><span style={{ color: C.def }}>{", "}</span>
+        <span style={{ color: C.str }}>{'"TypeScript"'}</span><span style={{ color: C.def }}>{"],\n"}</span>
+        <span style={{ color: C.def }}>{"             ["}</span>
+        <span style={{ color: C.str }}>{'"Node.js"'}</span><span style={{ color: C.def }}>{", "}</span>
+        <span style={{ color: C.str }}>{'"Supabase"'}</span><span style={{ color: C.def }}>{", "}</span>
+        <span style={{ color: C.str }}>{'"Swift"'}</span><span style={{ color: C.def }}>{"],\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"repos"}</span><span style={{ color: C.def }}>{":    "}</span><span style={{ color: C.num }}>{repoCount || "..."}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"available"}</span><span style={{ color: C.def }}>{": "}</span><span style={{ color: C.neon }}>{"true"}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"  "}</span><span style={{ color: C.var }}>{"coffee"}</span><span style={{ color: C.def }}>{":   "}</span><span style={{ color: C.num }}>{"Infinity"}</span><span style={{ color: C.def }}>{",\n"}</span>
+        <span style={{ color: C.def }}>{"}\n\n"}</span>
+        <span style={{ color: C.kw }}>{"export default "}</span><span style={{ color: C.var }}>{"developer"}</span><span style={{ color: C.def }}>{";"}</span>
+      </pre>
+    </div>
+  </motion.div>
+);
+
+
+/* ─── Section reveal wrapper ─────────────────────────────────── */
+const Section = ({ children, id }: { children: React.ReactNode; id?: string }) => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <motion.section
       ref={ref}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      className="w-full"
       id={id}
-      initial={{ opacity: 0, y: 40 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full"
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0, y: 48 }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.section>
   );
 };
 
-// Section heading component
+/* ─── Section heading — clean, no terminal chrome ────────────── */
 const SectionHeading = ({
-  index,
+  eyebrow,
   title,
-  subtitle,
+  description,
 }: {
-  index: string;
+  eyebrow: string;
   title: string;
-  subtitle: string;
+  description: string;
 }) => (
-  <div className="mb-10">
-    <div className="flex items-center gap-4 mb-3">
-      <span
-        className="text-xs tracking-[0.3em] opacity-50"
-        style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+  <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div>
+      <p
+        className="text-[10px] font-bold tracking-[0.25em] uppercase mb-3"
+        style={{ color: "var(--neon)" }}
       >
-        {index}
-      </span>
-      <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+        {eyebrow}
+      </p>
+      <h2
+        className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        {title}
+      </h2>
     </div>
-    <h2
-      className="text-3xl font-bold tracking-tight mb-2"
-      style={{ fontFamily: "var(--font-display)" }}
-    >
-      {title}
-    </h2>
     <p
-      className="text-sm opacity-50"
-      style={{ fontFamily: "var(--font-mono)" }}
+      className="text-sm leading-relaxed sm:text-right sm:max-w-xs"
+      style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
     >
-      {subtitle}
+      {description}
     </p>
   </div>
 );
 
+/* ─── Stat box ───────────────────────────────────────────────── */
+const StatBox = ({ value, label }: { value: string | number; label: string }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const isNum = typeof value === "number";
+  const { count, start } = useCounter(isNum ? (value as number) : 0);
+
+  useEffect(() => { if (inView && isNum) start(); }, [inView, isNum, start]);
+
+  return (
+    <div
+      ref={ref}
+      className="flex flex-col items-center justify-center px-4 py-3 rounded-lg"
+      style={{ border: "1px solid var(--border)", background: "var(--bg-card)", minWidth: 80 }}
+    >
+      <span
+        className="text-xl font-bold leading-none"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
+      >
+        {isNum ? count : value}
+      </span>
+      <span
+        className="text-[9px] mt-1 tracking-widest uppercase"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+      >
+        {label}
+      </span>
+    </div>
+  );
+};
+
+/* ─── Boot sequence lines ────────────────────────────────────── */
+const BOOT_LINES = [
+  { text: "> init.BirdRa1n()",                  delay: 0.05 },
+  { text: "> loading.modules() ...............", delay: 0.3,  ok: true },
+  { text: "> mounting.portfolio() ............", delay: 0.55, ok: true },
+  { text: "> status: ONLINE",                   delay: 0.8,  neon: true },
+];
+
+/* ─── Page ───────────────────────────────────────────────────── */
 export default function IndexPage() {
   const { repos, fetchingRepos } = useReposContext();
   const roles = [
@@ -118,154 +235,137 @@ export default function IndexPage() {
     "Open Source Contributor",
   ];
   const role = useTypewriter(roles, 70, 2200);
+  const { scrollYProgress } = useScroll();
+  const heroY       = useTransform(scrollYProgress, [0, 0.35], [0, -60]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3],  [1, 0.4]);
 
   return (
     <DefaultLayout>
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section className="relative flex flex-col justify-center min-h-[80vh] py-16">
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(var(--neon) 1px, transparent 1px), linear-gradient(90deg, var(--neon) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
+      {/* ── HERO ───────────────────────────────────────────────── */}
+      <section className="relative min-h-[90vh] flex items-center py-20">
+        <div className="grid lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px] gap-12 xl:gap-16 items-center w-full">
 
-        <div className="relative z-10 max-w-4xl">
-          {/* Pre-title */}
-          <motion.div
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 mb-6"
-            initial={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span
-              className="text-xs tracking-[0.4em] uppercase"
-              style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
-            >
-              Hello, World
-            </span>
-            <span
-              className="inline-block w-8 h-px"
-              style={{
-                background: "var(--neon)",
-                boxShadow: "0 0 8px var(--neon)",
-              }}
-            />
-          </motion.div>
-
-          {/* Name */}
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 30 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-          >
-            <h1
-              className="text-6xl sm:text-7xl lg:text-8xl font-extrabold leading-none tracking-tighter mb-2"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Dário Jr
-            </h1>
-            <div
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-none tracking-tighter"
-              style={{
-                fontFamily: "var(--font-display)",
-                WebkitTextStroke: "2px var(--neon)",
-                color: "transparent",
-                textShadow: "0 0 40px rgba(0,255,135,0.15)",
-              }}
-            >
-              BirdRa1n
+          {/* Left */}
+          <motion.div style={{ y: heroY, opacity: heroOpacity }}>
+            {/* Boot lines */}
+            <div className="mb-7 space-y-1.5">
+              {BOOT_LINES.map((line) => (
+                <motion.div
+                  key={line.text}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex items-center gap-2 text-xs"
+                  initial={{ opacity: 0, x: -12 }}
+                  style={{ fontFamily: "var(--font-mono)" }}
+                  transition={{ delay: line.delay, duration: 0.35 }}
+                >
+                  <span style={{ color: line.neon ? "var(--neon)" : "var(--text-muted)" }}>
+                    {line.text}
+                  </span>
+                  {line.ok && (
+                    <span className="font-bold" style={{ color: "var(--neon)" }}>[OK]</span>
+                  )}
+                </motion.div>
+              ))}
             </div>
-          </motion.div>
 
-          {/* Typewriter role */}
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="mt-6 flex items-center gap-2"
-            initial={{ opacity: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <span
-              className="text-lg sm:text-xl"
-              style={{
-                fontFamily: "var(--font-mono)",
-                color: "var(--neon)",
-                opacity: 0.7,
-              }}
+            {/* Name */}
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 24 }}
+              transition={{ delay: 0.95, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             >
-              ~$
-            </span>
-            <span
-              className="text-lg sm:text-xl"
-              style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
-            >
-              {role}
-              <span className="cursor-blink opacity-80">▌</span>
-            </span>
-          </motion.div>
+              <p
+                className="text-sm mb-2"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
+              >
+                Hello, World. I&apos;m
+              </p>
+              <h1
+                className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-none"
+                style={{ fontFamily: "var(--font-display)", color: "var(--neon)" }}
+              >
+                Dário Jr
+              </h1>
+            </motion.div>
 
-          {/* Bio */}
-          <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-8 text-base leading-relaxed max-w-2xl opacity-60"
-            initial={{ opacity: 0, y: 20 }}
-            style={{ fontFamily: "var(--font-body)" }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            Tech enthusiast and developer with experience in front-end and
-            back-end development. Focused on creating exceptional digital
-            solutions and improving the user experience through clean code and
-            thoughtful design.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-wrap gap-4 mt-10"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-          >
-            <NextLink
-              className="group flex items-center gap-3 px-6 py-3 font-semibold text-sm tracking-wider transition-all duration-300"
-              href="#repositories"
-              style={{
-                fontFamily: "var(--font-mono)",
-                background: "var(--neon)",
-                color: "#05080F",
-                clipPath:
-                  "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
-                boxShadow: "0 0 24px rgba(0,255,135,0.4)",
-              }}
+            {/* Typewriter */}
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="mt-4 mb-6 flex items-center gap-2"
+              initial={{ opacity: 0 }}
+              transition={{ delay: 1.15 }}
             >
-              VIEW_WORK
-              <span className="group-hover:translate-x-1 transition-transform">
-                →
+              <span className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                &gt;{" "}
               </span>
-            </NextLink>
+              <span
+                className="text-base sm:text-lg font-medium"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--text-primary)" }}
+              >
+                {role}
+                <span className="cursor-blink ml-0.5" style={{ color: "var(--neon)" }}>▌</span>
+              </span>
+            </motion.div>
 
-            <a
-              className="group flex items-center gap-3 px-6 py-3 text-sm tracking-wider transition-all duration-300"
-              href={siteConfig.links.github}
-              rel="noopener noreferrer"
-              style={{
-                fontFamily: "var(--font-mono)",
-                border: "1px solid var(--neon)",
-                color: "var(--neon)",
-                clipPath:
-                  "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
-              }}
-              target="_blank"
+            {/* Bio */}
+            <motion.p
+              animate={{ opacity: 1, y: 0 }}
+              className="text-sm leading-[1.85] max-w-xl mb-8"
+              initial={{ opacity: 0, y: 14 }}
+              style={{ color: "var(--text-muted)" }}
+              transition={{ delay: 1.25, duration: 0.55 }}
             >
-              <GithubIcon size={16} />
-              GITHUB
-              {!fetchingRepos && (
-                <span className="text-xs opacity-50">[{repos.length}]</span>
-              )}
-            </a>
+              Tech enthusiast and developer with experience in front-end and back-end development.
+              Focused on building exceptional digital solutions through clean code and thoughtful design.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-wrap gap-3 mb-8"
+              initial={{ opacity: 0, y: 14 }}
+              transition={{ delay: 1.38, duration: 0.5 }}
+            >
+              <NextLink className="btn-primary" href="#repositories">
+                Initialize_Portfolio()
+              </NextLink>
+              <a
+                className="btn-outline"
+                href={siteConfig.links.github}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <GithubIcon size={14} />
+                GitHub
+                {!fetchingRepos && repos.length > 0 && (
+                  <span
+                    className="ml-1 text-[10px] px-1.5 py-0.5 rounded"
+                    style={{ background: "var(--neon-glow)", border: "1px solid var(--neon-dim)" }}
+                  >
+                    {repos.length}
+                  </span>
+                )}
+              </a>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="flex flex-wrap gap-2"
+              initial={{ opacity: 0 }}
+              transition={{ delay: 1.5 }}
+            >
+              <StatBox label="YRS EXP"  value="3+"  />
+              <StatBox label="REPOS"    value={fetchingRepos ? 0 : repos.length} />
+              <StatBox label="CERTS"    value="15+" />
+              <StatBox label="CAFFEINE" value="∞ ☕" />
+            </motion.div>
           </motion.div>
+
+          {/* Right — code block */}
+          <div className="hidden lg:block">
+            <HeroCodeBlock repoCount={repos.length} />
+          </div>
         </div>
 
         {/* Scroll indicator */}
@@ -273,29 +373,38 @@ export default function IndexPage() {
           animate={{ opacity: 1 }}
           className="absolute bottom-8 left-0 flex flex-col items-center gap-2"
           initial={{ opacity: 0 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 2.0 }}
         >
-          <span
-            className="text-[9px] tracking-[0.4em] uppercase opacity-30 rotate-90 mb-6"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            Scroll
-          </span>
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            className="w-px h-10 opacity-30"
-            style={{ background: "linear-gradient(var(--neon), transparent)" }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-          />
+            className="w-5 h-9 rounded-full flex items-start justify-center pt-1.5"
+            style={{ border: "1.5px solid var(--border)" }}
+          >
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              className="w-1 h-1.5 rounded-full"
+              style={{ background: "var(--neon)" }}
+              transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+            />
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* ── CONTENT SECTIONS ────────────────────────────── */}
-      <div className="space-y-28 pb-24">
+      {/* ── SKILLS ─────────────────────────────────────────────── */}
+      <div className="mb-28">
+        <SectionHeading
+          description="Technologies and tools I work with daily."
+          eyebrow="Stack"
+          title="Skills & Tools"
+        />
+        <SkillsGlobe />
+      </div>
+
+      {/* ── CONTENT SECTIONS ───────────────────────────────────── */}
+      <div className="space-y-28 pb-28">
         <Section>
           <SectionHeading
-            index="01"
-            subtitle="// recent_work.ts"
+            description="Selected work and experiments I've been building."
+            eyebrow="Work"
             title="Latest Projects"
           />
           <FeaturedProjects />
@@ -303,8 +412,8 @@ export default function IndexPage() {
 
         <Section id="certificates">
           <SectionHeading
-            index="02"
-            subtitle="// professional_credentials.ts"
+            description="Professional certifications and credentials."
+            eyebrow="Credentials"
             title="Certifications"
           />
           <Certificates />
@@ -312,8 +421,8 @@ export default function IndexPage() {
 
         <Section id="repositories">
           <SectionHeading
-            index="03"
-            subtitle="// open_source.ts"
+            description="Public projects and open-source work on GitHub."
+            eyebrow="Open Source"
             title="Repositories"
           />
           <Repositories />

@@ -9,7 +9,6 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@heroui/navbar";
-import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 
@@ -17,37 +16,37 @@ import { GithubIcon } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
 
+const FILE_LABELS: Record<string, string> = {
+  "/": "~/home",
+  "/blog": "blog.md",
+  "/contact": "contact.sh",
+};
+
 const NavLogo = () => (
-  <div className="flex items-center gap-2 select-none">
-    <div className="relative w-8 h-8">
-      <div
-        className="w-8 h-8 rounded-sm flex items-center justify-center text-xs font-bold"
-        style={{
-          background: "var(--neon)",
-          color: "#05080F",
-          fontFamily: "var(--font-mono)",
-          boxShadow: "0 0 16px var(--neon-glow)",
-        }}
-      >
-        BR
-      </div>
-      <div
-        className="absolute -inset-[2px] rounded-sm opacity-50 animate-pulse"
-        style={{ border: "1px solid var(--neon)" }}
-      />
+  <div className="flex items-center gap-2.5 select-none">
+    <div
+      className="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
+      style={{
+        background: "var(--neon)",
+        color: "#000",
+        fontFamily: "var(--font-mono)",
+        boxShadow: "0 0 14px var(--neon-glow)",
+      }}
+    >
+      BR
     </div>
-    <div className="flex flex-col leading-none">
+    <div className="leading-none">
       <span
-        className="font-bold text-sm tracking-widest"
+        className="font-bold text-sm block"
         style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
       >
         BirdRa1n
       </span>
       <span
-        className="text-[9px] tracking-[0.3em] opacity-50"
-        style={{ fontFamily: "var(--font-mono)", color: "var(--text-primary)" }}
+        className="text-[9px] block"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
       >
-        DEV
+        dev portfolio
       </span>
     </div>
   </div>
@@ -62,7 +61,8 @@ export const Navbar = () => {
       maxWidth="xl"
       position="sticky"
       style={{
-        background: "color-mix(in srgb, var(--bg-primary) 85%, transparent)",
+        background:
+          "color-mix(in srgb, var(--bg-primary) 88%, transparent)",
         backdropFilter: "blur(20px)",
         borderColor: "var(--border)",
       }}
@@ -74,31 +74,28 @@ export const Navbar = () => {
           </NextLink>
         </NavbarBrand>
 
-        <div className="hidden lg:flex gap-8 justify-start ml-8">
+        <div className="hidden lg:flex gap-6 justify-start ml-10">
           {siteConfig.navItems.map((item) => {
             const isActive = router.pathname === item.href;
+            const label = FILE_LABELS[item.href] ?? item.label;
 
             return (
               <NavbarItem key={item.href}>
                 <NextLink
-                  className={clsx(
-                    "text-xs tracking-widest uppercase transition-all duration-200",
-                    "hover:opacity-100",
-                    isActive ? "opacity-100" : "opacity-40 hover:opacity-70",
-                  )}
+                  className="relative text-xs font-medium tracking-wide transition-all duration-200 flex items-center gap-1"
                   href={item.href}
                   style={{
                     fontFamily: "var(--font-mono)",
-                    color: isActive ? "var(--neon)" : "inherit",
-                    textShadow: isActive ? "0 0 12px var(--neon-glow)" : "none",
+                    color: isActive ? "var(--neon)" : "var(--text-muted)",
+                    textShadow: isActive
+                      ? "0 0 10px var(--neon-glow)"
+                      : "none",
                   }}
                 >
                   {isActive && (
-                    <span style={{ color: "var(--neon)", marginRight: 4 }}>
-                      ▸
-                    </span>
+                    <span style={{ color: "var(--neon)" }}>▸</span>
                   )}
-                  {item.label}
+                  {label}
                 </NextLink>
               </NavbarItem>
             );
@@ -113,11 +110,15 @@ export const Navbar = () => {
         <NavbarItem className="flex items-center gap-4">
           <Link
             isExternal
-            className="opacity-50 hover:opacity-100 transition-opacity"
+            className="transition-all hover:opacity-100"
             href={siteConfig.links.github}
+            style={{ opacity: 0.45 }}
             title="GitHub"
           >
-            <GithubIcon className="w-5 h-5" style={{ color: "var(--neon)" }} />
+            <GithubIcon
+              className="w-5 h-5"
+              style={{ color: "var(--text-primary)" }}
+            />
           </Link>
           <ThemeSwitch />
         </NavbarItem>
@@ -130,23 +131,32 @@ export const Navbar = () => {
 
       <NavbarMenu
         style={{
-          background: "color-mix(in srgb, var(--bg-primary) 96%, transparent)",
+          background:
+            "color-mix(in srgb, var(--bg-primary) 96%, transparent)",
           backdropFilter: "blur(20px)",
         }}
       >
-        <div className="mx-4 mt-8 flex flex-col gap-6">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                className="text-sm tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity"
-                href={item.href}
-                style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
-              >
-                <span className="mr-3 opacity-40">0{index + 1}.</span>
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
+        <div className="mx-4 mt-10 flex flex-col gap-5">
+          {siteConfig.navMenuItems.map((item, index) => {
+            const isActive = router.pathname === item.href;
+            const label = FILE_LABELS[item.href] ?? item.label;
+
+            return (
+              <NavbarMenuItem key={`${item}-${index}`}>
+                <Link
+                  className="text-sm font-medium transition-colors"
+                  href={item.href}
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: isActive ? "var(--neon)" : "var(--text-muted)",
+                  }}
+                >
+                  {isActive && "▸ "}
+                  {label}
+                </Link>
+              </NavbarMenuItem>
+            );
+          })}
         </div>
       </NavbarMenu>
     </HeroUINavbar>

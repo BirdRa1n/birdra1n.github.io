@@ -18,7 +18,7 @@ export default function AdminProjectsPage() {
     setLoading(true);
     try {
       const { data } = await supabase
-        .schema("portfolio" as any)
+        .schema("portfolio")
         .from("projects")
         .select("*, category:categories(*)")
         .order("created_at", { ascending: false });
@@ -33,7 +33,7 @@ export default function AdminProjectsPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await supabase.schema("portfolio" as any).from("projects").delete().eq("id", deleteId);
+    await supabase.schema("portfolio").from("projects").delete().eq("id", deleteId);
     setDeleteId(null);
     fetchProjects();
   };

@@ -68,7 +68,7 @@ export default function AdminProjectEditor() {
     if (!isNew && id) {
       Promise.resolve(
         supabase
-          .schema("portfolio" as any)
+          .schema("portfolio")
           .from("projects")
           .select("*")
           .eq("id", id)
@@ -112,7 +112,7 @@ export default function AdminProjectEditor() {
 
       if (isNew) {
         const { data, error } = await supabase
-          .schema("portfolio" as any)
+          .schema("portfolio")
           .from("projects")
           .insert(payload)
           .select()
@@ -122,7 +122,7 @@ export default function AdminProjectEditor() {
         showToast("success", "Projeto criado!");
       } else {
         const { error } = await supabase
-          .schema("portfolio" as any)
+          .schema("portfolio")
           .from("projects")
           .update(payload)
           .eq("id", id);

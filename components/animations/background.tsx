@@ -3,92 +3,94 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 
 const AnimatedBackground: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!mounted) return;
-    const canvas = canvasRef.current;
+    const el = spotlightRef.current;
+    if (!el) return;
 
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) return;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const handleMouseMove = (e: MouseEvent) => {
+      el.style.background = `radial-gradient(650px at ${e.clientX}px ${e.clientY}px, rgba(139,92,246,0.07), transparent 80%)`;
     };
 
-    resize();
-    window.addEventListener("resize", resize);
-
-    const isDark = resolvedTheme === "dark";
-    const cols = Math.floor(canvas.width / 20);
-    const drops: number[] = Array(cols).fill(1);
-
-    const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
-
-    let frame = 0;
-    let animId: number;
-
-    const draw = () => {
-      frame++;
-      if (frame % 3 !== 0) {
-        animId = requestAnimationFrame(draw);
-
-        return;
-      }
-
-      ctx.fillStyle = isDark
-        ? "rgba(5, 8, 15, 0.05)"
-        : "rgba(248, 250, 252, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.font = "14px 'Courier New', monospace";
-
-      for (let i = 0; i < drops.length; i++) {
-        const char = chars[Math.floor(Math.random() * chars.length)];
-        const x = i * 20;
-        const y = drops[i] * 20;
-
-        const alpha = Math.random() * 0.3 + 0.05;
-
-        ctx.fillStyle = isDark
-          ? `rgba(0, 255, 135, ${alpha})`
-          : `rgba(0, 180, 90, ${alpha})`;
-        ctx.fillText(char, x, y);
-
-        if (y > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, [theme, mounted]);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mounted]);
 
   if (!mounted) return null;
 
+  const isDark = resolvedTheme === "dark";
+
   return (
-    <canvas
-      ref={canvasRef}
+    <div
       aria-hidden="true"
-      className="fixed inset-0 z-0 pointer-events-none opacity-40"
-      style={{ mixBlendMode: "screen" }}
-    />
+      className="fixed inset-0 z-0 pointer-events-none overflow-hidden dot-grid"
+    >
+      {/* Mouse spotlight */}
+      <div ref={spotlightRef} className="absolute inset-0" />
+
+      {/* Neon orb — top left */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-8%",
+          left: "-8%",
+          width: "45vw",
+          height: "45vw",
+          maxWidth: 620,
+          maxHeight: 620,
+          borderRadius: "50%",
+          background: isDark
+            ? "radial-gradient(circle, rgba(139,92,246,0.13) 0%, transparent 68%)"
+            : "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 68%)",
+          animation: "orbA 24s ease-in-out infinite",
+        }}
+      />
+
+      {/* Neon orb — bottom right */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "-8%",
+          right: "-8%",
+          width: "50vw",
+          height: "50vw",
+          maxWidth: 700,
+          maxHeight: 700,
+          borderRadius: "50%",
+          background: isDark
+            ? "radial-gradient(circle, rgba(232,121,249,0.09) 0%, transparent 68%)"
+            : "radial-gradient(circle, rgba(168,85,247,0.05) 0%, transparent 68%)",
+          animation: "orbB 30s ease-in-out infinite",
+        }}
+      />
+
+      {/* Base background overlay to tint the dot grid in dark mode */}
+      {isDark && (
+        <div
+          className="absolute inset-0"
+          style={{ background: "var(--bg-primary)" }}
+        />
+      )}
+
+      <style>{`
+        @keyframes orbA {
+          0%,100% { transform: translate(0,0) scale(1); }
+          33%      { transform: translate(40px,-30px) scale(1.06); }
+          66%      { transform: translate(-20px,25px) scale(0.95); }
+        }
+        @keyframes orbB {
+          0%,100% { transform: translate(0,0) scale(1); }
+          33%      { transform: translate(-50px,35px) scale(1.08); }
+          66%      { transform: translate(30px,-40px) scale(0.94); }
+        }
+      `}</style>
+    </div>
   );
 };
 
