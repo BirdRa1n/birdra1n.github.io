@@ -16,7 +16,7 @@ export default function AdminContactPage() {
 
   const fetchMessages = async () => {
     setLoading(true);
-    let query = supabase.schema("portfolio" as any).from("contact_messages").select("*").order("created_at", { ascending: false });
+    let query = supabase.schema("portfolio").from("contact_messages").select("*").order("created_at", { ascending: false });
 
     if (filter !== "all") query = query.eq("status", filter);
     const { data } = await query;
@@ -28,13 +28,13 @@ export default function AdminContactPage() {
   useEffect(() => { fetchMessages(); }, [filter]);
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.schema("portfolio" as any).from("contact_messages").update({ status }).eq("id", id);
+    await supabase.schema("portfolio").from("contact_messages").update({ status }).eq("id", id);
     setMessages(msgs => msgs.map(m => m.id === id ? { ...m, status: status as any } : m));
     if (selected?.id === id) setSelected(s => s ? { ...s, status: status as any } : null);
   };
 
   const statusColor: Record<string, string> = {
-    new: "var(--cyan-neon)",
+    new: "var(--cyan)",
     read: "#888",
     replied: "var(--neon)",
     archived: "#555",
@@ -53,7 +53,7 @@ export default function AdminContactPage() {
             className="text-[10px] px-3 py-1.5 rounded-sm tracking-widest uppercase transition-all"
             style={{
               fontFamily: "var(--font-mono)",
-              background: filter === f ? "rgba(0,255,135,0.1)" : "var(--bg-card)",
+              background: filter === f ? "color-mix(in srgb, var(--neon) 10%, transparent)" : "var(--bg-card)",
               border: `1px solid ${filter === f ? "var(--neon)" : "var(--border)"}`,
               color: filter === f ? "var(--neon)" : "inherit",
               opacity: filter === f ? 1 : 0.5,
@@ -94,13 +94,13 @@ export default function AdminContactPage() {
                 }}
                 className="px-4 py-3 rounded-sm cursor-pointer transition-all"
                 style={{
-                  background: selected?.id === msg.id ? "rgba(0,255,135,0.06)" : "var(--bg-card)",
+                  background: selected?.id === msg.id ? "color-mix(in srgb, var(--neon) 6%, transparent)" : "var(--bg-card)",
                   border: `1px solid ${selected?.id === msg.id ? "var(--neon)" : "var(--border)"}`,
                 }}
               >
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2">
-                    {msg.status === "new" && <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--cyan-neon)", boxShadow: "0 0 6px var(--cyan-neon)" }} />}
+                    {msg.status === "new" && <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--cyan)", boxShadow: "0 0 6px var(--cyan)" }} />}
                     <p className="text-xs font-semibold" style={{ fontFamily: "var(--font-body)" }}>{msg.name}</p>
                   </div>
                   <p className="text-[9px] opacity-30 flex-shrink-0" style={{ fontFamily: "var(--font-mono)" }}>
@@ -165,7 +165,7 @@ export default function AdminContactPage() {
                       className="text-[10px] px-3 py-1.5 rounded-sm tracking-widest uppercase transition-all"
                       style={{
                         fontFamily: "var(--font-mono)",
-                        background: selected.status === status ? "rgba(0,255,135,0.1)" : "var(--bg-card-alt)",
+                        background: selected.status === status ? "color-mix(in srgb, var(--neon) 10%, transparent)" : "var(--bg-card-alt)",
                         border: `1px solid ${selected.status === status ? "var(--neon)" : "var(--border)"}`,
                         color: selected.status === status ? "var(--neon)" : "inherit",
                         opacity: selected.status === status ? 1 : 0.5,

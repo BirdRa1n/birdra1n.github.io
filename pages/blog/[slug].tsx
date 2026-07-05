@@ -31,7 +31,7 @@ export default function BlogPostPage() {
       try {
         // Query 1: post + tags (mesmo schema "blog")
         const { data, error: queryError } = await supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("posts")
           .select("*, tags:post_tags(tag:tags(*))")
           .eq("slug", slug)
@@ -57,7 +57,7 @@ export default function BlogPostPage() {
 
         // Query 2: busca os IDs dos projetos mencionados
         const { data: mentions, error: mentionsError } = await supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("post_project_mentions")
           .select("project_id")
           .eq("post_id", data.id);
@@ -67,7 +67,7 @@ export default function BlogPostPage() {
 
           // Query 3: busca os projetos no schema portfolio separadamente
           const { data: projects, error: projectsError } = await supabase
-            .schema("portfolio" as any)
+            .schema("portfolio")
             .from("projects")
             .select("id, title, slug, thumbnail_url")
             .in("id", projectIds);
@@ -78,8 +78,11 @@ export default function BlogPostPage() {
         }
 
         // Incrementa views de forma silenciosa
+        // (a função vive no schema "blog" — chamar no schema default falha)
         Promise.resolve(
-          supabase.rpc("increment_post_views", { post_slug: slug })
+          supabase
+            .schema("blog")
+            .rpc("increment_post_views", { post_slug: String(slug) })
         ).catch(() => { });
 
       } catch (err: any) {

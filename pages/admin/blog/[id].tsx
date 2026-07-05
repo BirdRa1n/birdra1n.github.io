@@ -68,9 +68,9 @@ export default function AdminBlogEditor() {
     const init = async () => {
       try {
         const [{ data: tags }, { data: projects }] = await Promise.all([
-          supabase.schema("blog" as any).from("tags").select("*").order("name"),
+          supabase.schema("blog").from("tags").select("*").order("name"),
           supabase
-            .schema("portfolio" as any)
+            .schema("portfolio")
             .from("projects")
             .select("id,title")
             .order("title"),
@@ -81,7 +81,7 @@ export default function AdminBlogEditor() {
 
         if (!isNew && id) {
           const { data: post, error } = await supabase
-            .schema("blog" as any)
+            .schema("blog")
             .from("posts")
             .select("*, post_tags(tag_id), post_project_mentions(project_id)")
             .eq("id", id)
@@ -139,7 +139,7 @@ export default function AdminBlogEditor() {
   const createAndAddTag = async () => {
     if (!newTagName.trim()) return;
     const { data, error } = await supabase
-      .schema("blog" as any)
+      .schema("blog")
       .from("tags")
       .insert({ name: newTagName.trim(), slug: slugify(newTagName) })
       .select()
@@ -165,7 +165,7 @@ export default function AdminBlogEditor() {
 
       if (isNew) {
         const { data, error } = await supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("posts")
           .insert(payload)
           .select()
@@ -175,7 +175,7 @@ export default function AdminBlogEditor() {
         router.replace(`/admin/blog/${postId}`);
       } else {
         const { error } = await supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("posts")
           .update(payload)
           .eq("id", postId);
@@ -185,14 +185,14 @@ export default function AdminBlogEditor() {
       // Sync tags & project mentions em paralelo
       await Promise.all([
         supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("post_tags")
           .delete()
           .eq("post_id", postId)
           .then(() =>
             selectedTagIds.length > 0
               ? supabase
-                  .schema("blog" as any)
+                  .schema("blog")
                   .from("post_tags")
                   .insert(
                     selectedTagIds.map((tag_id) => ({ post_id: postId, tag_id }))
@@ -200,14 +200,14 @@ export default function AdminBlogEditor() {
               : null
           ),
         supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("post_project_mentions")
           .delete()
           .eq("post_id", postId)
           .then(() =>
             selectedProjectIds.length > 0
               ? supabase
-                  .schema("blog" as any)
+                  .schema("blog")
                   .from("post_project_mentions")
                   .insert(
                     selectedProjectIds.map((project_id) => ({
@@ -426,8 +426,8 @@ export default function AdminBlogEditor() {
                 onClick={createAndAddTag}
                 className="px-3 py-2 rounded-sm"
                 style={{
-                  background: "rgba(0,255,135,0.1)",
-                  border: "1px solid rgba(0,255,135,0.2)",
+                  background: "color-mix(in srgb, var(--neon) 10%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)",
                   color: "var(--neon)",
                 }}
               >
@@ -443,7 +443,7 @@ export default function AdminBlogEditor() {
                   style={{
                     fontFamily: "var(--font-mono)",
                     background: selectedTagIds.includes(tag.id)
-                      ? "rgba(0,255,135,0.12)"
+                      ? "color-mix(in srgb, var(--neon) 12%, transparent)"
                       : "var(--bg-card-alt)",
                     border: `1px solid ${
                       selectedTagIds.includes(tag.id)

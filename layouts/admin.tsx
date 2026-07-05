@@ -103,9 +103,10 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
                 href={href}
                 onClick={onClose}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm transition-all"
+                aria-current={isActive ? "page" : undefined}
                 style={{
                   fontFamily: "var(--font-mono)",
-                  background: isActive ? "rgba(0,255,135,0.1)" : "transparent",
+                  background: isActive ? "var(--neon-glow)" : "transparent",
                   borderLeft: isActive
                     ? "2px solid var(--neon)"
                     : "2px solid transparent",
@@ -130,8 +131,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             <div
               className="w-7 h-7 rounded-sm flex items-center justify-center"
               style={{
-                background: "rgba(0,255,135,0.1)",
-                border: "1px solid rgba(0,255,135,0.2)",
+                background: "var(--neon-glow)",
+                border: "1px solid color-mix(in srgb, var(--neon) 25%, transparent)",
               }}
             >
               <FiUser size={13} style={{ color: "var(--neon)" }} />
@@ -154,7 +155,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           <button
             onClick={signOut}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-xs tracking-wider opacity-50 hover:opacity-100 transition-opacity"
-            style={{ fontFamily: "var(--font-mono)", color: "#ff5555" }}
+            style={{ fontFamily: "var(--font-mono)", color: "var(--red)" }}
           >
             <FiLogOut size={13} />
             SIGN_OUT

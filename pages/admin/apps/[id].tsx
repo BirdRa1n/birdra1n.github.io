@@ -35,7 +35,7 @@ export default function AdminAppEditor() {
   useEffect(() => {
     if (!isNew && id) {
       Promise.resolve(
-        supabase.schema("store" as any).from("apps").select("*").eq("id", id).single()
+        supabase.schema("store").from("apps").select("*").eq("id", id).single()
       )
         .then(({ data }) => {
           if (data) setForm({
@@ -49,7 +49,7 @@ export default function AdminAppEditor() {
         .finally(() => setLoading(false));
 
       Promise.resolve(
-        supabase.schema("store" as any).from("app_versions").select("*").eq("app_id", id).order("published_at", { ascending: false })
+        supabase.schema("store").from("app_versions").select("*").eq("app_id", id).order("published_at", { ascending: false })
       )
         .then(({ data }) => setVersions((data || []) as AppVersion[]))
         .catch(() => {});
@@ -65,7 +65,7 @@ export default function AdminAppEditor() {
     let appId = id as string;
 
     if (isNew) {
-      const res = await supabase.schema("store" as any).from("apps").insert(form).select().single();
+      const res = await supabase.schema("store").from("apps").insert(form).select().single();
 
       error = res.error;
       if (!error && res.data) {
@@ -73,7 +73,7 @@ export default function AdminAppEditor() {
         router.replace(`/admin/apps/${appId}`);
       }
     } else {
-      const res = await supabase.schema("store" as any).from("apps").update({ ...form, updated_at: new Date().toISOString() }).eq("id", appId);
+      const res = await supabase.schema("store").from("apps").update({ ...form, updated_at: new Date().toISOString() }).eq("id", appId);
 
       error = res.error;
     }
@@ -98,7 +98,7 @@ export default function AdminAppEditor() {
       min_ios_version: versionForm.min_ios_version || null,
       published_at: new Date().toISOString(),
     };
-    const { error, data } = await supabase.schema("store" as any).from("app_versions").insert(payload).select().single();
+    const { error, data } = await supabase.schema("store").from("app_versions").insert(payload).select().single();
 
     if (!error && data) {
       setVersions(v => [data as AppVersion, ...v]);
@@ -109,7 +109,7 @@ export default function AdminAppEditor() {
 
   const handleDeleteVersion = async () => {
     if (!deleteVersionId) return;
-    await supabase.schema("store" as any).from("app_versions").delete().eq("id", deleteVersionId);
+    await supabase.schema("store").from("app_versions").delete().eq("id", deleteVersionId);
     setVersions(v => v.filter(ver => ver.id !== deleteVersionId));
     setDeleteVersionId(null);
   };
@@ -133,7 +133,7 @@ export default function AdminAppEditor() {
           className="fixed top-6 right-6 z-50 px-5 py-3 rounded-sm text-xs"
           style={{
             fontFamily: "var(--font-mono)",
-            background: toast.type === "success" ? "rgba(0,255,135,0.12)" : "rgba(255,85,85,0.12)",
+            background: toast.type === "success" ? "color-mix(in srgb, var(--neon) 12%, transparent)" : "var(--red-glow)",
             border: `1px solid ${toast.type === "success" ? "var(--neon)" : "#ff5555"}`,
             color: toast.type === "success" ? "var(--neon)" : "#ff5555",
           }}
@@ -177,7 +177,7 @@ export default function AdminAppEditor() {
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="rounded-sm p-5 mb-4 space-y-4"
-                  style={{ background: "var(--bg-card-alt)", border: "1px solid var(--neon)", boxShadow: "0 0 20px rgba(0,255,135,0.05)" }}
+                  style={{ background: "var(--bg-card-alt)", border: "1px solid var(--neon)", boxShadow: "0 0 20px color-mix(in srgb, var(--neon) 5%, transparent)" }}
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-bold" style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}>+ Nova Versão</p>
@@ -215,7 +215,7 @@ export default function AdminAppEditor() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-bold" style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}>v{ver.version}</span>
                           <span className="text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>build {ver.build_number}</span>
-                          {i === 0 && <span className="text-[9px] px-1.5 py-0.5 rounded-sm" style={{ background: "rgba(0,255,135,0.1)", border: "1px solid rgba(0,255,135,0.2)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}>LATEST</span>}
+                          {i === 0 && <span className="text-[9px] px-1.5 py-0.5 rounded-sm" style={{ background: "color-mix(in srgb, var(--neon) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}>LATEST</span>}
                         </div>
                         {ver.changelog && <p className="text-xs opacity-40 line-clamp-1" style={{ fontFamily: "var(--font-body)" }}>{ver.changelog}</p>}
                         <p className="text-[10px] opacity-20 mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>

@@ -18,7 +18,7 @@ const PostCard = ({ post, index }: { post: BlogPost; index: number }) => (
       href={`/blog/${post.slug}`}
       className="group flex flex-col md:flex-row gap-5 p-5 rounded-sm cursor-pointer overflow-hidden"
       style={{ background: "var(--bg-card)", border: "1px solid var(--border)", transition: "border-color 0.25s, box-shadow 0.25s" }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,255,135,0.08)"; }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px color-mix(in srgb, var(--neon) 8%, transparent)"; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
     >
       {post.cover_url && (
@@ -30,7 +30,7 @@ const PostCard = ({ post, index }: { post: BlogPost; index: number }) => (
         <div>
           <div className="flex items-center gap-2 mb-2">
             {post.featured && (
-              <span className="text-[9px] px-2 py-0.5 tracking-widest" style={{ fontFamily: "var(--font-mono)", background: "rgba(0,255,135,0.08)", border: "1px solid rgba(0,255,135,0.2)", color: "var(--neon)" }}>
+              <span className="text-[9px] px-2 py-0.5 tracking-widest" style={{ fontFamily: "var(--font-mono)", background: "color-mix(in srgb, var(--neon) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)", color: "var(--neon)" }}>
                 DESTAQUE
               </span>
             )}
@@ -75,7 +75,7 @@ export default function BlogPage() {
     const fetchPosts = async () => {
       try {
         const { data, error: queryError } = await supabase
-          .schema("blog" as any)
+          .schema("blog")
           .from("posts")
           .select("*, tags:post_tags(tag:tags(*))")
           .eq("status", "published")

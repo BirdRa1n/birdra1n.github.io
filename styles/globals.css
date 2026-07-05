@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
-@config "../tailwind.config.js";
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
+/* Fontes: carregadas via next/font (config/fonts.ts) que define
+   --font-display / --font-mono / --font-body no <body>.          */
 :root {
   /* Light mode accent — deep violet, reads as professional "ink" */
   --neon:       #6D28D9;
@@ -11,6 +11,8 @@
   --cyan:       #7C3AED;
   --cyan-glow:  rgba(124, 58, 237, 0.12);
   --yellow:     #D97706;
+  --red:        #DC2626;
+  --red-glow:   rgba(220, 38, 38, 0.12);
   --red-dot:    #EF4444;
   --yellow-dot: #F59E0B;
   --green-dot:  #10B981;
@@ -22,10 +24,6 @@
   --text-primary: #111827;
   --text-muted:   #6B7280;
   --border:       rgba(0, 0, 0, 0.09);
-
-  --font-display: 'Syne', sans-serif;
-  --font-mono:    'JetBrains Mono', 'Courier New', monospace;
-  --font-body:    'Inter', sans-serif;
 }
 
 .dark {
@@ -36,6 +34,8 @@
   --cyan:       #E879F9;
   --cyan-glow:  rgba(232, 121, 249, 0.12);
   --yellow:     #F8C555;
+  --red:        #FF5555;
+  --red-glow:   rgba(255, 85, 85, 0.12);
   --red-dot:    #FF5F57;
   --yellow-dot: #FEBC2E;
   --green-dot:  #28C840;
@@ -51,13 +51,26 @@
 /* ─── Base ──────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
-  font-family: var(--font-body);
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-body, 'Inter', sans-serif);
   transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ─── Reduced motion (a11y) ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────── */
@@ -229,3 +242,199 @@ body {
   scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ════════════════════════════════════════════════════════════
+   Design System — componentes base (components/ui)
+   ════════════════════════════════════════════════════════════ */
+
+/* ─── Label ─────────────────────────────────────────────────── */
+.ui-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ─── Inputs / Textarea / Select ────────────────────────────── */
+.ui-field {
+  width: 100%;
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: inherit;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ui-field:focus,
+.ui-field:focus-visible {
+  border-color: var(--neon);
+  box-shadow: 0 0 0 1px var(--neon), 0 0 16px var(--neon-glow);
+  outline: none;
+}
+.ui-field::placeholder { color: var(--text-muted); opacity: 0.6; }
+select.ui-field { cursor: pointer; }
+textarea.ui-field { resize: vertical; }
+
+/* ─── Buttons ───────────────────────────────────────────────── */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.ui-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.ui-btn-primary {
+  background: var(--neon);
+  color: var(--bg-primary);
+  box-shadow: 0 4px 16px var(--neon-glow);
+}
+.ui-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 28px var(--neon-glow);
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.ui-btn-outline {
+  background: transparent;
+  color: var(--neon);
+  border: 1px solid var(--neon);
+}
+.ui-btn-outline:hover:not(:disabled) {
+  background: var(--neon-glow);
+  box-shadow: 0 4px 16px var(--neon-glow);
+}
+
+.ui-btn-danger {
+  background: var(--red-glow);
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
+}
+.ui-btn-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--red) 18%, transparent);
+  box-shadow: 0 4px 16px var(--red-glow);
+}
+
+.ui-btn-ghost-muted {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.ui-btn-ghost-muted:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+/* ─── Card ──────────────────────────────────────────────────── */
+.ui-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.ui-card-hover {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.ui-card-hover:hover {
+  border-color: var(--neon-dim);
+  box-shadow: 0 12px 40px var(--neon-glow);
+}
+
+/* ─── Badge ─────────────────────────────────────────────────── */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.ui-badge-success {
+  background: color-mix(in srgb, var(--green-dot) 12%, transparent);
+  color: var(--green-dot);
+  border-color: color-mix(in srgb, var(--green-dot) 25%, transparent);
+}
+.ui-badge-warning {
+  background: color-mix(in srgb, var(--yellow-dot) 12%, transparent);
+  color: var(--yellow);
+  border-color: color-mix(in srgb, var(--yellow-dot) 25%, transparent);
+}
+.ui-badge-danger {
+  background: var(--red-glow);
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 25%, transparent);
+}
+.ui-badge-info {
+  background: var(--cyan-glow);
+  color: var(--cyan);
+  border-color: color-mix(in srgb, var(--cyan) 25%, transparent);
+}
+.ui-badge-neutral {
+  background: var(--bg-card-alt);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+.ui-badge-accent {
+  background: var(--neon-glow);
+  color: var(--neon);
+  border-color: color-mix(in srgb, var(--neon) 25%, transparent);
+}
+
+/* ─── Skeleton ──────────────────────────────────────────────── */
+.ui-skeleton {
+  background: var(--bg-card-alt);
+  border-radius: 4px;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ─── Link com hover neon (substitui handlers JS) ───────────── */
+.ui-link-muted {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+.ui-link-muted:hover { color: var(--neon); }
+
+/* ─── Botão de ícone (theme switch, ações discretas) ────────── */
+.ui-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--neon);
+  opacity: 0.55;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ui-icon-btn:hover {
+  opacity: 1;
+  border-color: var(--neon);
+  box-shadow: 0 0 12px var(--neon-glow);
+}
+

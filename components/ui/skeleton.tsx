@@ -1,63 +1,27 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Divider,
-  Skeleton as HeroSkeleton,
-} from "@heroui/react";
+// components/ui/skeleton.tsx — blocos de loading padronizados
+import React from "react";
 
-export const ProjectSkeleton = () => (
-  <Card className="w-full h-[120px] border border-default-200" radius="md">
-    <CardHeader className="flex flex-col gap-1 align-start items-start">
-      <div className="flex gap-3 items-center w-full">
-        <HeroSkeleton className="rounded-lg w-20 h-20" />
-        <div className="flex flex-col gap-2 flex-1">
-          <HeroSkeleton className="h-4 w-3/4 rounded-lg" />
-          <HeroSkeleton className="h-3 w-full rounded-lg" />
-        </div>
-      </div>
-    </CardHeader>
-  </Card>
+export interface SkeletonProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const Skeleton = ({ className = "", style }: SkeletonProps) => (
+  <div aria-hidden className={`ui-skeleton ${className}`} style={style} />
 );
 
-export const CertificateSkeleton = () => (
-  <Card className="w-full h-[180px] border border-default-200 flex flex-col">
-    <CardHeader className="flex gap-3 pb-3 flex-shrink-0">
-      <HeroSkeleton className="rounded-lg w-12 h-12 flex-shrink-0" />
-      <div className="flex flex-col gap-2 flex-1">
-        <HeroSkeleton className="h-4 w-3/4 rounded-lg" />
-        <HeroSkeleton className="h-3 w-1/2 rounded-lg" />
+/** Skeleton de card genérico (lista do admin, grids públicos). */
+export const CardSkeleton = ({ lines = 2 }: { lines?: number }) => (
+  <div className="ui-card p-4">
+    <div className="flex gap-3 mb-3">
+      <Skeleton className="w-10 h-10 flex-shrink-0" />
+      <div className="flex-1 flex flex-col gap-2 pt-1">
+        <Skeleton className="h-3 w-3/4" />
+        <Skeleton className="h-2.5 w-1/2" />
       </div>
-      <HeroSkeleton className="rounded-lg w-4 h-4 flex-shrink-0" />
-    </CardHeader>
-    <Divider />
-    <CardBody className="pt-3 flex-1 overflow-hidden">
-      <div className="flex flex-wrap gap-1.5">
-        <HeroSkeleton className="h-6 w-16 rounded-full" />
-        <HeroSkeleton className="h-6 w-20 rounded-full" />
-        <HeroSkeleton className="h-6 w-16 rounded-full" />
-      </div>
-    </CardBody>
-  </Card>
-);
-
-export const RepoSkeleton = () => (
-  <Card className="w-full h-[220px] border border-default-200 flex flex-col">
-    <CardHeader className="flex gap-3 pb-3 flex-shrink-0">
-      <HeroSkeleton className="rounded-lg w-12 h-12 flex-shrink-0" />
-      <div className="flex flex-col gap-2 flex-1">
-        <HeroSkeleton className="h-4 w-3/4 rounded-lg" />
-        <HeroSkeleton className="h-3 w-1/2 rounded-lg" />
-      </div>
-    </CardHeader>
-    <Divider />
-    <CardBody className="pt-3 pb-3 flex-1 flex flex-col overflow-hidden">
-      <HeroSkeleton className="h-4 w-full rounded-lg mb-2" />
-      <HeroSkeleton className="h-4 w-5/6 rounded-lg mb-3" />
-      <div className="flex flex-wrap gap-1.5 mt-auto">
-        <HeroSkeleton className="h-6 w-16 rounded-full" />
-        <HeroSkeleton className="h-6 w-20 rounded-full" />
-      </div>
-    </CardBody>
-  </Card>
+    </div>
+    {Array.from({ length: lines }).map((_, i) => (
+      <Skeleton key={i} className="h-2.5 w-full mb-2" />
+    ))}
+  </div>
 );

@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
               <div className="mb-8 text-center">
                 <div
                   className="inline-flex w-14 h-14 rounded-sm items-center justify-center mb-4"
-                  style={{ background: "rgba(0,255,135,0.08)", border: "1px solid rgba(0,255,135,0.2)" }}
+                  style={{ background: "color-mix(in srgb, var(--neon) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)" }}
                 >
                   <FiLock size={22} style={{ color: "var(--neon)" }} />
                 </div>
@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
                       placeholder="admin@example.com"
                       required
                       style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = "var(--neon)"; e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)"; }}
+                      onFocus={e => { e.currentTarget.style.borderColor = "var(--neon)"; e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px color-mix(in srgb, var(--neon) 10%, transparent)"; }}
                       onBlur={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
                     />
                   </div>
@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
                       placeholder="••••••••"
                       required
                       style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = "var(--neon)"; e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)"; }}
+                      onFocus={e => { e.currentTarget.style.borderColor = "var(--neon)"; e.currentTarget.style.boxShadow = "0 0 0 1px var(--neon), 0 0 16px color-mix(in srgb, var(--neon) 10%, transparent)"; }}
                       onBlur={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
                     />
                   </div>
@@ -160,7 +160,7 @@ export default function AdminLoginPage() {
                     background: "var(--neon)",
                     color: "#05080F",
                     clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
-                    boxShadow: loading ? "none" : "0 0 24px rgba(0,255,135,0.35)",
+                    boxShadow: loading ? "none" : "0 0 24px color-mix(in srgb, var(--neon) 35%, transparent)",
                     cursor: loading ? "not-allowed" : "pointer",
                   }}
                 >

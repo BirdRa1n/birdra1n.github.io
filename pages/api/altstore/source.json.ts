@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { data: apps, error } = await supabase
-      .schema("store" as any)
+      .schema("store")
       .from("apps")
       .select("*, versions:app_versions(*)")
       .eq("status", "published")

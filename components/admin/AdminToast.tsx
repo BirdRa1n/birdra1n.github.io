@@ -17,8 +17,8 @@ export function AdminToast({ type, msg }: Props) {
         fontFamily: "var(--font-mono)",
         background:
           type === "success"
-            ? "rgba(0,255,135,0.12)"
-            : "rgba(255,85,85,0.12)",
+            ? "color-mix(in srgb, var(--neon) 12%, transparent)"
+            : "var(--red-glow)",
         border: `1px solid ${type === "success" ? "var(--neon)" : "#ff5555"}`,
         color: type === "success" ? "var(--neon)" : "#ff5555",
       }}
