@@ -12,8 +12,11 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 
+import rehypeSanitize from "rehype-sanitize";
+
 import DefaultLayout from "@/layouts/default";
 import supabase from "@/utils/supabase/client";
+import { safeUrl } from "@/utils/safe-url";
 import type { Project } from "@/utils/supabase/typed-client";
 
 const MDPreview = dynamic(
@@ -214,20 +217,20 @@ export default function ProjectPage() {
               borderBottom: "1px solid var(--border)",
             }}
           >
-            {project.demo_url && (
+            {safeUrl(project.demo_url) && (
               <a
                 className="ui-btn ui-btn-primary"
-                href={project.demo_url}
+                href={safeUrl(project.demo_url)}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 <FiExternalLink size={13} /> DEMO
               </a>
             )}
-            {project.repo_url && (
+            {safeUrl(project.repo_url) && (
               <a
                 className="ui-btn ui-btn-outline"
-                href={project.repo_url}
+                href={safeUrl(project.repo_url)}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -276,6 +279,7 @@ export default function ProjectPage() {
           transition={{ delay: 0.25 }}
         >
           <MDPreview
+            rehypePlugins={[rehypeSanitize]}
             source={project.content ?? ""}
             style={{
               background: "transparent",

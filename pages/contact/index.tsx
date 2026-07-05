@@ -163,8 +163,8 @@ export default function ContactPage() {
 
             <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <TerminalInput required label="Name" name="name" placeholder="John Doe" />
-                <TerminalInput required label="Email" name="email" type="email" placeholder="john@example.com" />
+                <TerminalInput required label="Name" maxLength={120} name="name" placeholder="John Doe" />
+                <TerminalInput required label="Email" maxLength={254} name="email" type="email" placeholder="john@example.com" />
               </div>
 
               {/* Subject */}
@@ -180,6 +180,7 @@ export default function ContactPage() {
                   <input
                     required
                     id="subject"
+                    maxLength={200}
                     name="subject"
                     placeholder="Enter your subject"
                     style={inputStyle}
@@ -217,6 +218,7 @@ export default function ContactPage() {
                 <textarea
                   required
                   id="message"
+                  maxLength={5000}
                   name="message"
                   rows={6}
                   placeholder="// Tell me about your project or question..."

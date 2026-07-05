@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 
 import { useCertificates } from "@/contexts/certificates";
+import { safeUrl } from "@/utils/safe-url";
 import type { Certificate } from "@/types/database";
 
 const CertSkeleton = () => (
@@ -33,7 +34,7 @@ const CertCard = ({ cert, index }: { cert: Certificate; index: number }) => (
   <motion.a
     animate={{ opacity: 1, y: 0 }}
     className="group relative rounded-xl block cursor-pointer p-4"
-    href={cert.url ?? undefined}
+    href={safeUrl(cert.url)}
     initial={{ opacity: 0, y: 20 }}
     rel="noopener noreferrer"
     style={{

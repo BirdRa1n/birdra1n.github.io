@@ -6,6 +6,8 @@ import NextLink from "next/link";
 import { FiClock, FiEye, FiArrowLeft, FiShare2, FiAlertTriangle } from "react-icons/fi";
 import dynamic from "next/dynamic";
 
+import rehypeSanitize from "rehype-sanitize";
+
 import DefaultLayout from "@/layouts/default";
 import supabase from "@/utils/supabase/client";
 import { BlogPost } from "@/utils/supabase/typed-client";
@@ -215,6 +217,7 @@ export default function BlogPostPage() {
           } as any}
         >
           <MDPreview
+            rehypePlugins={[rehypeSanitize]}
             source={post.content ?? ""}
             style={{
               background: "transparent",
