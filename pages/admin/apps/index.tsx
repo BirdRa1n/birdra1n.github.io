@@ -23,7 +23,7 @@ export default function AdminAppsPage() {
     setLoading(true);
     try {
       const { data } = await supabase
-        .schema("store" as any)
+        .schema("store")
         .from("apps")
         .select("*, versions:app_versions(*)")
         .order("created_at", { ascending: false });
@@ -38,7 +38,7 @@ export default function AdminAppsPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await supabase.schema("store" as any).from("apps").delete().eq("id", deleteId);
+    await supabase.schema("store").from("apps").delete().eq("id", deleteId);
     setDeleteId(null);
     fetchApps();
   };
@@ -68,10 +68,10 @@ export default function AdminAppsPage() {
         className="flex items-center gap-4 px-5 py-4 rounded-sm mb-6"
         style={{ background: "rgba(0,229,255,0.05)", border: "1px solid rgba(0,229,255,0.2)" }}
       >
-        <FiSmartphone size={16} style={{ color: "var(--cyan-neon)", flexShrink: 0 }} />
+        <FiSmartphone size={16} style={{ color: "var(--cyan)", flexShrink: 0 }} />
         <div className="flex-1 min-w-0">
           <p className="text-[10px] tracking-widest uppercase opacity-50 mb-0.5" style={{ fontFamily: "var(--font-mono)" }}>AltStore Source URL</p>
-          <p className="text-xs truncate" style={{ fontFamily: "var(--font-mono)", color: "var(--cyan-neon)" }}>{sourceUrl}</p>
+          <p className="text-xs truncate" style={{ fontFamily: "var(--font-mono)", color: "var(--cyan)" }}>{sourceUrl}</p>
         </div>
         <button
           onClick={copySourceUrl}
@@ -80,7 +80,7 @@ export default function AdminAppsPage() {
             fontFamily: "var(--font-mono)",
             background: "rgba(0,229,255,0.1)",
             border: "1px solid rgba(0,229,255,0.2)",
-            color: "var(--cyan-neon)",
+            color: "var(--cyan)",
           }}
         >
           {copied ? <FiCheck size={12} /> : <FiCopy size={12} />}
@@ -112,7 +112,7 @@ export default function AdminAppsPage() {
               transition={{ delay: i * 0.06 }}
               className="rounded-sm overflow-hidden group"
               style={{ background: "var(--bg-card)", border: "1px solid var(--border)", transition: "border-color 0.25s, box-shadow 0.25s" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,255,135,0.08)"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px color-mix(in srgb, var(--neon) 8%, transparent)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
             >
               <div className="p-5">
@@ -121,7 +121,7 @@ export default function AdminAppsPage() {
                     <img src={app.icon_url} alt={app.name} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" style={{ border: "1px solid var(--border)" }} />
                   ) : (
                     <div className="w-14 h-14 rounded-xl flex-shrink-0 flex items-center justify-center" style={{ background: "rgba(0,229,255,0.1)", border: "1px solid rgba(0,229,255,0.2)" }}>
-                      <FiSmartphone size={22} style={{ color: "var(--cyan-neon)" }} />
+                      <FiSmartphone size={22} style={{ color: "var(--cyan)" }} />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ export default function AdminAppsPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <NextLink href={`/admin/apps/${app.id}`} className="p-1.5 rounded-sm opacity-60 hover:opacity-100 transition-opacity" style={{ background: "rgba(0,255,135,0.08)" }}>
+                    <NextLink href={`/admin/apps/${app.id}`} className="p-1.5 rounded-sm opacity-60 hover:opacity-100 transition-opacity" style={{ background: "color-mix(in srgb, var(--neon) 8%, transparent)" }}>
                       <FiEdit2 size={13} style={{ color: "var(--neon)" }} />
                     </NextLink>
                     <button className="p-1.5 rounded-sm opacity-60 hover:opacity-100 transition-opacity" style={{ background: "rgba(255,85,85,0.08)" }} onClick={() => setDeleteId(app.id)}>

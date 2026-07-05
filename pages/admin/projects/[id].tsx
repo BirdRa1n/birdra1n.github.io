@@ -60,7 +60,7 @@ export default function AdminProjectEditor() {
   useEffect(() => {
     Promise.resolve(
       supabase
-        .schema("portfolio" as any)
+        .schema("portfolio")
         .from("categories")
         .select("*")
     ).then(({ data }) => setCategories(data || []));
@@ -316,8 +316,8 @@ export default function AdminProjectEditor() {
                 onClick={addTech}
                 className="px-3 py-2 rounded-sm"
                 style={{
-                  background: "rgba(0,255,135,0.1)",
-                  border: "1px solid rgba(0,255,135,0.2)",
+                  background: "color-mix(in srgb, var(--neon) 10%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)",
                   color: "var(--neon)",
                 }}
               >

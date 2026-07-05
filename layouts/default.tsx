@@ -1,5 +1,7 @@
 // layouts/default.tsx
 import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 
 import { Head } from "./head";
 
@@ -12,6 +14,8 @@ export default function DefaultLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+
   return (
     <div
       className="relative flex flex-col min-h-screen"
@@ -23,9 +27,15 @@ export default function DefaultLayout({
       <div className="relative z-10 flex flex-col min-h-screen">
         <Navbar />
 
-        <main className="container mx-auto max-w-7xl px-6 flex-grow pt-12">
+        <motion.main
+          key={router.pathname}
+          animate={{ opacity: 1, y: 0 }}
+          className="container mx-auto max-w-7xl px-6 flex-grow pt-12"
+          initial={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        >
           {children}
-        </main>
+        </motion.main>
 
         <footer
           className="relative z-10 mt-16"
@@ -82,15 +92,8 @@ export default function DefaultLayout({
                   {siteConfig.navItems.map((item) => (
                     <NextLink
                       key={item.href}
-                      className="text-xs transition-colors duration-200"
+                      className="text-xs ui-link-muted"
                       href={item.href}
-                      style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = "var(--neon)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                      }}
                     >
                       &gt; {item.label.toLowerCase()}
                     </NextLink>
@@ -114,17 +117,10 @@ export default function DefaultLayout({
                   ].map(({ label, href }) => (
                     <a
                       key={label}
-                      className="text-xs transition-colors duration-200"
+                      className="text-xs ui-link-muted"
                       href={href}
                       rel="noopener noreferrer"
-                      style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
                       target="_blank"
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = "var(--neon)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                      }}
                     >
                       &gt; {label}
                     </a>

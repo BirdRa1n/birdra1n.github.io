@@ -27,7 +27,7 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 async function fetchAdminRecord(userId: string): Promise<Administrator | null> {
   try {
     const { data, error } = await supabase
-      .schema("admin" as any)
+      .schema("admin")
       .from("administrators")
       .select("*")
       .eq("user_id", userId)

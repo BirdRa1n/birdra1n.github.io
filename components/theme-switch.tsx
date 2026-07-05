@@ -15,23 +15,9 @@ export const ThemeSwitch: FC = () => {
 
   return (
     <button
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="relative w-8 h-8 flex items-center justify-center rounded-sm transition-all duration-200 opacity-50 hover:opacity-100"
-      style={{
-        border: "1px solid var(--border)",
-        background: "transparent",
-        color: "var(--neon)",
-      }}
+      aria-label={isDark ? "Ativar modo claro" : "Ativar modo escuro"}
+      className="ui-icon-btn"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)";
-        (e.currentTarget as HTMLElement).style.boxShadow =
-          "0 0 12px var(--neon-glow)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-        (e.currentTarget as HTMLElement).style.boxShadow = "none";
-      }}
     >
       {isDark ? <SunFilledIcon size={14} /> : <MoonFilledIcon size={14} />}
     </button>

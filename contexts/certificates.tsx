@@ -9,18 +9,18 @@ import {
   ReactNode,
 } from "react";
 
-import type CERTIFICATES from "@/types/certificates";
+import type { Certificate } from "@/types/database";
 import supabase from "@/utils/supabase/client";
 
 interface CertificatesContextType {
-  certificates: CERTIFICATES[];
+  certificates: Certificate[];
   fetchingCertificates: boolean;
 }
 
 const CertificatesContext = createContext<CertificatesContextType | undefined>(undefined);
 
 export function CertificatesProvider({ children }: { children: ReactNode }) {
-  const [certificates, setCertificates] = useState<CERTIFICATES[]>([]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [fetchingCertificates, setFetchingCertificates] = useState(true);
   const fetchedRef = useRef(false);
 
@@ -34,8 +34,9 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
 
     Promise.resolve(
       supabase
+        .schema("portfolio")
         .from("certificates")
-        .select("*,organization(*)")
+        .select("*, organization:organizations(*)")
         .order("emission", { ascending: false })
         .abortSignal(controller.signal)
     )
@@ -45,7 +46,7 @@ export function CertificatesProvider({ children }: { children: ReactNode }) {
           console.error("[Certificates] fetch error:", error.message);
           return;
         }
-        setCertificates((data ?? []) as CERTIFICATES[]);
+        setCertificates((data ?? []) as unknown as Certificate[]);
       })
       .catch((err) => {
         if (!cancelled) console.error("[Certificates] exception:", err);

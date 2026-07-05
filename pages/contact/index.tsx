@@ -29,7 +29,7 @@ const inputStyle: React.CSSProperties = {
 
 const focusStyle = {
   borderColor: "var(--neon)",
-  boxShadow: "0 0 0 1px var(--neon), 0 0 16px rgba(0,255,135,0.1)",
+  boxShadow: "0 0 0 1px var(--neon), 0 0 16px color-mix(in srgb, var(--neon) 10%, transparent)",
 };
 const blurStyle = { borderColor: "var(--border)", boxShadow: "none" };
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
 
     // Usa o schema correto — portfolio.contact_messages
     const { error } = await supabase
-      .schema("portfolio" as any)
+      .schema("portfolio")
       .from("contact_messages")
       .insert({ name, email, subject, message, status: "new" });
 
@@ -235,7 +235,7 @@ export default function ContactPage() {
                     fontFamily: "var(--font-mono)",
                     background:
                       submitStatus.type === "success"
-                        ? "rgba(0, 255, 135, 0.08)"
+                        ? "color-mix(in srgb, var(--neon) 8%, transparent)"
                         : "rgba(255, 80, 80, 0.08)",
                     border: `1px solid ${
                       submitStatus.type === "success"
@@ -259,7 +259,7 @@ export default function ContactPage() {
                   background: isSubmitting ? "var(--neon-dim)" : "var(--neon)",
                   color: "#05080F",
                   clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
-                  boxShadow: isSubmitting ? "none" : "0 0 24px rgba(0,255,135,0.35)",
+                  boxShadow: isSubmitting ? "none" : "0 0 24px color-mix(in srgb, var(--neon) 35%, transparent)",
                   cursor: isSubmitting ? "not-allowed" : "pointer",
                 }}
               >

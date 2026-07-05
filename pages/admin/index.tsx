@@ -64,14 +64,14 @@ export default function AdminDashboard() {
           { data: recentMessages },
           { data: viewsData },
         ] = await Promise.all([
-          supabase.schema("portfolio" as any).from("projects").select("*", { count: "exact", head: true }),
-          supabase.schema("blog" as any).from("posts").select("*", { count: "exact", head: true }),
-          supabase.schema("portfolio" as any).from("contact_messages").select("*", { count: "exact", head: true }).eq("status", "new"),
-          supabase.schema("portfolio" as any).from("certificates").select("*", { count: "exact", head: true }),
-          supabase.schema("store" as any).from("apps").select("*", { count: "exact", head: true }),
-          supabase.schema("blog" as any).from("posts").select("id,title,slug,status,created_at").order("created_at", { ascending: false }).limit(5),
-          supabase.schema("portfolio" as any).from("contact_messages").select("id,name,email,subject,status,created_at").order("created_at", { ascending: false }).limit(5),
-          supabase.schema("portfolio" as any).from("projects").select("views_count"),
+          supabase.schema("portfolio").from("projects").select("*", { count: "exact", head: true }),
+          supabase.schema("blog").from("posts").select("*", { count: "exact", head: true }),
+          supabase.schema("portfolio").from("contact_messages").select("*", { count: "exact", head: true }).eq("status", "new"),
+          supabase.schema("portfolio").from("certificates").select("*", { count: "exact", head: true }),
+          supabase.schema("store").from("apps").select("*", { count: "exact", head: true }),
+          supabase.schema("blog").from("posts").select("id,title,slug,status,created_at").order("created_at", { ascending: false }).limit(5),
+          supabase.schema("portfolio").from("contact_messages").select("id,name,email,subject,status,created_at").order("created_at", { ascending: false }).limit(5),
+          supabase.schema("portfolio").from("projects").select("views_count"),
         ]);
 
         const totalViews = (viewsData || []).reduce((acc: number, p: any) => acc + (p.views_count || 0), 0);
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
             <StatCard label="Projetos" value={stats?.projects} icon={FiFolder} href="/admin/projects" delay={0} />
             <StatCard label="Posts" value={stats?.posts} icon={FiFileText} href="/admin/blog" delay={0.05} />
             <StatCard label="Mensagens" value={stats?.newMessages} icon={FiMail} href="/admin/contact" color="#FF9500" delay={0.1} />
-            <StatCard label="Certificados" value={stats?.certificates} icon={FiAward} href="/admin/certificates" color="var(--cyan-neon)" delay={0.15} />
+            <StatCard label="Certificados" value={stats?.certificates} icon={FiAward} href="/admin/certificates" color="var(--cyan)" delay={0.15} />
             <StatCard label="Apps" value={stats?.apps} icon={FiSmartphone} href="/admin/apps" color="var(--acid)" delay={0.2} />
           </div>
 
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
             className="flex items-center gap-4 px-6 py-4 rounded-sm mb-10"
-            style={{ background: "rgba(0,255,135,0.05)", border: "1px solid rgba(0,255,135,0.15)" }}
+            style={{ background: "color-mix(in srgb, var(--neon) 5%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 15%, transparent)" }}
           >
             <FiEye size={18} style={{ color: "var(--neon)" }} />
             <span className="text-sm" style={{ fontFamily: "var(--font-mono)" }}>
@@ -180,9 +180,9 @@ export default function AdminDashboard() {
                     <span className="flex-1 text-xs truncate" style={{ fontFamily: "var(--font-body)" }}>{post.title}</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-sm`} style={{
                       fontFamily: "var(--font-mono)",
-                      background: post.status === "published" ? "rgba(0,255,135,0.1)" : "rgba(255,149,0,0.1)",
+                      background: post.status === "published" ? "color-mix(in srgb, var(--neon) 10%, transparent)" : "rgba(255,149,0,0.1)",
                       color: post.status === "published" ? "var(--neon)" : "#FF9500",
-                      border: `1px solid ${post.status === "published" ? "rgba(0,255,135,0.2)" : "rgba(255,149,0,0.2)"}`,
+                      border: `1px solid ${post.status === "published" ? "color-mix(in srgb, var(--neon) 20%, transparent)" : "rgba(255,149,0,0.2)"}`,
                     }}>
                       {post.status}
                     </span>
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"}
                   >
-                    <div className="w-7 h-7 rounded-sm flex items-center justify-center flex-shrink-0 text-[10px] font-bold" style={{ background: "rgba(0,255,135,0.08)", border: "1px solid rgba(0,255,135,0.15)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
+                    <div className="w-7 h-7 rounded-sm flex items-center justify-center flex-shrink-0 text-[10px] font-bold" style={{ background: "color-mix(in srgb, var(--neon) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 15%, transparent)", color: "var(--neon)", fontFamily: "var(--font-mono)" }}>
                       {msg.name[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
                     color: "var(--neon)",
                     clipPath: "polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%)",
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(0,255,135,0.08)"; }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "color-mix(in srgb, var(--neon) 8%, transparent)"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                 >
                   + {label}

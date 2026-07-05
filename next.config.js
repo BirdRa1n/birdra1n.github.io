@@ -5,14 +5,6 @@ const nextConfig = {
     "@uiw/react-md-editor",
     "@uiw/react-markdown-preview",
   ],
-  async headers() {
-    return [
-      {
-        source: "/sw.js",
-        headers: [{ key: "x-robots-tag", value: "noindex" }],
-      },
-    ];
-  },
   async rewrites() {
     return [
       {

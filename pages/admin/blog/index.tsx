@@ -18,7 +18,7 @@ export default function AdminBlogPage() {
     setLoading(true);
     try {
       const { data } = await supabase
-        .schema("blog" as any)
+        .schema("blog")
         .from("posts")
         .select("*, tags:post_tags(tag:tags(*))")
         .order("created_at", { ascending: false });
@@ -33,7 +33,7 @@ export default function AdminBlogPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await supabase.schema("blog" as any).from("posts").delete().eq("id", deleteId);
+    await supabase.schema("blog").from("posts").delete().eq("id", deleteId);
     setDeleteId(null);
     fetchPosts();
   };

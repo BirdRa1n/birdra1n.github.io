@@ -24,8 +24,8 @@ export default function AdminCertificatesPage() {
     setLoading(true);
     try {
       const [{ data: certsData }, { data: orgsData }] = await Promise.all([
-        supabase.schema("portfolio" as any).from("certificates").select("*, organization:organizations(*)").order("emission", { ascending: false }),
-        supabase.schema("portfolio" as any).from("organizations").select("*").order("name"),
+        supabase.schema("portfolio").from("certificates").select("*, organization:organizations(*)").order("emission", { ascending: false }),
+        supabase.schema("portfolio").from("organizations").select("*").order("name"),
       ]);
       setCerts((certsData || []) as Certificate[]);
       setOrgs((orgsData || []) as Organization[]);
@@ -71,9 +71,9 @@ export default function AdminCertificatesPage() {
     };
 
     if (editId) {
-      await supabase.schema("portfolio" as any).from("certificates").update(payload).eq("id", editId);
+      await supabase.schema("portfolio").from("certificates").update(payload).eq("id", editId);
     } else {
-      await supabase.schema("portfolio" as any).from("certificates").insert(payload);
+      await supabase.schema("portfolio").from("certificates").insert(payload);
     }
 
     setSaving(false);
@@ -85,7 +85,7 @@ export default function AdminCertificatesPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await supabase.schema("portfolio" as any).from("certificates").delete().eq("id", deleteId);
+    await supabase.schema("portfolio").from("certificates").delete().eq("id", deleteId);
     setDeleteId(null);
     fetch();
   };
@@ -141,7 +141,7 @@ export default function AdminCertificatesPage() {
                     onFocus={e => e.currentTarget.style.borderColor = "var(--neon)"}
                     onBlur={e => e.currentTarget.style.borderColor = "var(--border)"}
                   />
-                  <button onClick={addSkill} className="px-3 rounded-sm" style={{ background: "rgba(0,255,135,0.1)", border: "1px solid rgba(0,255,135,0.2)", color: "var(--neon)" }}><FiPlus size={14} /></button>
+                  <button onClick={addSkill} className="px-3 rounded-sm" style={{ background: "color-mix(in srgb, var(--neon) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)", color: "var(--neon)" }}><FiPlus size={14} /></button>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {form.skills.map(skill => (
@@ -183,7 +183,7 @@ export default function AdminCertificatesPage() {
             >
               {/* Actions */}
               <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1.5 rounded-sm" style={{ background: "rgba(0,255,135,0.1)" }} onClick={() => handleEdit(cert)}>
+                <button className="p-1.5 rounded-sm" style={{ background: "color-mix(in srgb, var(--neon) 10%, transparent)" }} onClick={() => handleEdit(cert)}>
                   <FiEdit2 size={11} style={{ color: "var(--neon)" }} />
                 </button>
                 <button className="p-1.5 rounded-sm" style={{ background: "rgba(255,85,85,0.1)" }} onClick={() => setDeleteId(cert.id)}>
@@ -195,7 +195,7 @@ export default function AdminCertificatesPage() {
                 {(cert.organization as any)?.logo ? (
                   <img src={(cert.organization as any).logo} alt="" className="w-10 h-10 object-contain rounded-sm p-1" style={{ border: "1px solid var(--border)", background: "var(--bg-card-alt)" }} />
                 ) : (
-                  <div className="w-10 h-10 rounded-sm flex-shrink-0 flex items-center justify-center" style={{ background: "rgba(0,255,135,0.08)", border: "1px solid rgba(0,255,135,0.15)" }}>
+                  <div className="w-10 h-10 rounded-sm flex-shrink-0 flex items-center justify-center" style={{ background: "color-mix(in srgb, var(--neon) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 15%, transparent)" }}>
                     <FiAward size={16} style={{ color: "var(--neon)" }} />
                   </div>
                 )}

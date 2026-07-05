@@ -21,7 +21,7 @@ export default function AdminTagsPage() {
 
   const fetch = async () => {
     setLoading(true);
-    const { data } = await supabase.schema("blog" as any).from("tags").select("*").order("name");
+    const { data } = await supabase.schema("blog").from("tags").select("*").order("name");
 
     setTags((data || []) as BlogTag[]);
     setLoading(false);
@@ -32,7 +32,7 @@ export default function AdminTagsPage() {
   const handleAdd = async () => {
     if (!name.trim()) return;
     setSaving(true);
-    await supabase.schema("blog" as any).from("tags").insert({ name: name.trim(), slug: slugify(name) });
+    await supabase.schema("blog").from("tags").insert({ name: name.trim(), slug: slugify(name) });
     setName("");
     setSaving(false);
     fetch();
@@ -40,7 +40,7 @@ export default function AdminTagsPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await supabase.schema("blog" as any).from("tags").delete().eq("id", deleteId);
+    await supabase.schema("blog").from("tags").delete().eq("id", deleteId);
     setDeleteId(null);
     fetch();
   };

@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 
 import { useCertificates } from "@/contexts/certificates";
-import CERTIFICATES from "@/types/certificates";
+import type { Certificate } from "@/types/database";
 
 const CertSkeleton = () => (
   <div
@@ -29,11 +29,11 @@ const CertSkeleton = () => (
   </div>
 );
 
-const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
+const CertCard = ({ cert, index }: { cert: Certificate; index: number }) => (
   <motion.a
     animate={{ opacity: 1, y: 0 }}
     className="group relative rounded-xl block cursor-pointer p-4"
-    href={cert.url}
+    href={cert.url ?? undefined}
     initial={{ opacity: 0, y: 20 }}
     rel="noopener noreferrer"
     style={{
@@ -81,7 +81,7 @@ const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
             className="w-full h-full flex items-center justify-center text-[10px] font-bold"
             style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}
           >
-            {cert.organization.name.slice(0, 2).toUpperCase()}
+            {(cert.organization?.name ?? cert.title).slice(0, 2).toUpperCase()}
           </div>
         )}
       </div>
@@ -98,7 +98,7 @@ const CertCard = ({ cert, index }: { cert: CERTIFICATES; index: number }) => (
           className="text-[10px] truncate"
           style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
         >
-          {cert.organization.name}
+          {cert.organization?.name}
         </p>
       </div>
 
@@ -143,13 +143,10 @@ const Certificates = () => {
 
       <div className="flex justify-end">
         <a
-          className="group flex items-center gap-2 text-xs font-medium transition-colors duration-200"
+          className="group flex items-center gap-2 text-xs font-medium ui-link-muted"
           href="https://www.credly.com/users/dario-rios-1998"
           rel="noopener noreferrer"
-          style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
           target="_blank"
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--neon)"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--text-muted)"; }}
         >
           open credly.com/birdra1n
           <span className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
