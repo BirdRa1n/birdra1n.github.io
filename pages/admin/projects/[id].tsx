@@ -108,7 +108,12 @@ export default function AdminProjectEditor() {
 
   const handleSave = () =>
     withSave(async () => {
-      const payload = { ...form, updated_at: new Date().toISOString() };
+      const payload = {
+        ...form,
+        // Colunas uuid não aceitam "" — enviar null quando sem categoria
+        category_id: form.category_id || null,
+        updated_at: new Date().toISOString(),
+      };
 
       if (isNew) {
         const { data, error } = await supabase
