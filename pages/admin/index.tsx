@@ -5,6 +5,7 @@ import { FiFolder, FiFileText, FiMail, FiAward, FiSmartphone, FiEye, FiTrendingU
 import NextLink from "next/link";
 
 import AdminLayout from "@/layouts/admin";
+import { ResumeUploadCard } from "@/components/admin/ResumeUploadCard";
 import { useAdminAuth } from "@/contexts/admin-auth";
 import supabase from "@/utils/supabase/client";
 
@@ -150,6 +151,11 @@ export default function AdminDashboard() {
               <FiTrendingUp size={13} style={{ color: "var(--neon)", opacity: 0.5 }} />
             </div>
           </motion.div>
+
+          {/* Currículo (CV) */}
+          <div className="mb-10">
+            <ResumeUploadCard />
+          </div>
 
           {/* Recent activity grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

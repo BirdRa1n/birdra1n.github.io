@@ -121,6 +121,12 @@ export interface OrganizationRow {
   created_at: string;
 }
 
+export interface SiteSettingRow {
+  key: string;
+  value: string | null;
+  updated_at: string;
+}
+
 export interface ProjectRow {
   id: string;
   category_id: string | null;
@@ -267,6 +273,7 @@ export type Database = {
       >;
       contact_messages: TableDef<ContactMessageRow>;
       organizations: TableDef<OrganizationRow>;
+      site_settings: TableDef<SiteSettingRow>;
       projects: TableDef<
         ProjectRow,
         [

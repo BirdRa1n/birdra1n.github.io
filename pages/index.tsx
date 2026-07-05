@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef, useEffect, useState, useCallback } from "react";
 import NextLink from "next/link";
+import { FiDownload } from "react-icons/fi";
 
 import { GithubIcon } from "@/components/icons";
 import Certificates from "@/components/home/certificates";
@@ -10,6 +11,7 @@ import Repositories from "@/components/home/repos";
 import SkillsGlobe from "@/components/home/skills-globe";
 import { siteConfig } from "@/config/site";
 import { useReposContext } from "@/contexts/repos";
+import { useResume, resumeDownloadUrl } from "@/hooks/useResume";
 import DefaultLayout from "@/layouts/default";
 
 /* ─── Hooks ──────────────────────────────────────────────────── */
@@ -228,6 +230,7 @@ const BOOT_LINES = [
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function IndexPage() {
   const { repos, fetchingRepos } = useReposContext();
+  const { resume } = useResume();
   const roles = [
     "Full-Stack Developer",
     "Front-End Engineer",
@@ -329,6 +332,17 @@ export default function IndexPage() {
               <NextLink className="btn-primary" href="#repositories">
                 Initialize_Portfolio()
               </NextLink>
+              {resume && (
+                <a
+                  className="btn-outline"
+                  href={resumeDownloadUrl(resume)}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <FiDownload size={14} />
+                  Download_CV
+                </a>
+              )}
               <a
                 className="btn-outline"
                 href={siteConfig.links.github}
