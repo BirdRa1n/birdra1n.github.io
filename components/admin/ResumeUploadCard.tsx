@@ -4,14 +4,9 @@ import { motion } from "framer-motion";
 import { FiFileText, FiUploadCloud, FiExternalLink, FiCheckCircle } from "react-icons/fi";
 
 import { Button } from "@/components/ui";
-import {
-  useResume,
-  resumeDownloadUrl,
-  RESUME_SETTING_KEY,
-} from "@/hooks/useResume";
+import { useResume, resumeDownloadUrl } from "@/hooks/useResume";
 import supabase from "@/utils/supabase/client";
 
-const RESUME_PATH = "curriculo.pdf";
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
 export function ResumeUploadCard() {
@@ -39,32 +34,34 @@ export function ResumeUploadCard() {
 
     setUploading(true);
     try {
-      const { error: uploadError } = await supabase.storage
-        .from("resume")
-        .upload(RESUME_PATH, file, {
-          upsert: true,
-          contentType: "application/pdf",
-          cacheControl: "3600",
-        });
+      // Upload via Edge Function (service_role): valida o admin pelo JWT e
+      // grava contornando o RLS do storage de forma segura.
+      const form = new FormData();
 
-      if (uploadError) {
-        flash("error", uploadError.message);
+      form.append("file", file);
+
+      const { data, error } = await supabase.functions.invoke("upload-resume", {
+        body: form,
+      });
+
+      if (error) {
+        // Tenta extrair a mensagem retornada pela função
+        let msg = error.message;
+
+        try {
+          const body = await (error as any).context?.json?.();
+
+          if (body?.error) msg = body.error;
+        } catch {
+          /* ignore */
+        }
+        flash("error", msg);
 
         return;
       }
 
-      const { data: pub } = supabase.storage.from("resume").getPublicUrl(RESUME_PATH);
-
-      const { error: settingError } = await supabase
-        .schema("portfolio")
-        .from("site_settings")
-        .upsert(
-          { key: RESUME_SETTING_KEY, value: pub.publicUrl, updated_at: new Date().toISOString() },
-          { onConflict: "key" }
-        );
-
-      if (settingError) {
-        flash("error", settingError.message);
+      if (data?.error) {
+        flash("error", data.error);
 
         return;
       }
