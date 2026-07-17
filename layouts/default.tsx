@@ -98,6 +98,9 @@ export default function DefaultLayout({
                       &gt; {item.label.toLowerCase()}
                     </NextLink>
                   ))}
+                  <NextLink className="text-xs ui-link-muted" href="/play">
+                    &gt; play.exe
+                  </NextLink>
                 </div>
               </div>
 
