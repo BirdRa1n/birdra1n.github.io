@@ -54,6 +54,7 @@ export interface PostRow {
   featured: boolean;
   views_count: number;
   read_time_min: number | null;
+  locale: Locale;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -75,14 +76,28 @@ export interface PostProjectMentionRow {
   project_id: string;
 }
 
-export interface CommentRow {
-  id: string;
+export type Locale = "pt" | "en" | "es";
+
+export interface PostTranslationRow {
   post_id: string;
-  author: string;
-  email: string | null;
+  locale: Locale;
+  title: string;
+  excerpt: string | null;
   content: string;
-  approved: boolean;
+  auto_translated: boolean;
   created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectTranslationRow {
+  project_id: string;
+  locale: Locale;
+  title: string;
+  description: string | null;
+  content: string | null;
+  auto_translated: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CategoryRow {
@@ -141,6 +156,7 @@ export interface ProjectRow {
   featured: boolean;
   status: string;
   views_count: number;
+  locale: Locale;
   created_at: string;
   updated_at: string;
 }
@@ -236,11 +252,11 @@ export type Database = {
           },
         ]
       >;
-      comments: TableDef<
-        CommentRow,
+      post_translations: TableDef<
+        PostTranslationRow,
         [
           {
-            foreignKeyName: "comments_post_id_fkey";
+            foreignKeyName: "post_translations_post_id_fkey";
             columns: ["post_id"];
             isOneToOne: false;
             referencedRelation: "posts";
@@ -252,6 +268,7 @@ export type Database = {
     Views: NoViews;
     Functions: {
       increment_post_views: { Args: { post_slug: string }; Returns: undefined };
+      get_post: { Args: { p_slug: string; p_locale?: string }; Returns: Json };
     };
     Enums: NoEnums;
     CompositeTypes: NoComposite;
@@ -274,6 +291,18 @@ export type Database = {
       contact_messages: TableDef<ContactMessageRow>;
       organizations: TableDef<OrganizationRow>;
       site_settings: TableDef<SiteSettingRow>;
+      project_translations: TableDef<
+        ProjectTranslationRow,
+        [
+          {
+            foreignKeyName: "project_translations_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
       projects: TableDef<
         ProjectRow,
         [
@@ -336,6 +365,8 @@ export type BlogPost = PostRow & {
 };
 export type BlogTag = TagRow;
 export type Project = ProjectRow;
+export type PostTranslation = PostTranslationRow;
+export type ProjectTranslation = ProjectTranslationRow;
 export type Category = CategoryRow;
 export type Certificate = CertificateRow & { organization?: OrganizationRow | null };
 export type Organization = OrganizationRow;
