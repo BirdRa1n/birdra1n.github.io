@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FiHome, FiFolder, FiFileText,
   FiMail, FiAward, FiLogOut, FiMenu, FiX,
-  FiUser, FiChevronRight, FiSmartphone, FiTag,
+  FiUser, FiChevronRight, FiSmartphone, FiTag, FiBriefcase,
 } from "react-icons/fi";
 
 import { useAdminAuth } from "@/contexts/admin-auth";
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { label: "Dashboard",    href: "/admin",              icon: FiHome },
   { label: "Projetos",     href: "/admin/projects",     icon: FiFolder },
   { label: "Blog",         href: "/admin/blog",         icon: FiFileText },
+  { label: "Experiência",  href: "/admin/experience",   icon: FiBriefcase },
   { label: "Certificados", href: "/admin/certificates", icon: FiAward },
   { label: "Apps",         href: "/admin/apps",         icon: FiSmartphone },
   { label: "Contato",      href: "/admin/contact",      icon: FiMail },
