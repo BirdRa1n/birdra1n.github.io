@@ -29,6 +29,7 @@ export interface PostSummary {
 export interface PostDetail extends PostSummary {
   content: string;
   translated: boolean;
+  auto_translated: boolean;
   projects: {
     id: string;
     slug: string;
@@ -56,6 +57,7 @@ export interface ProjectDetail extends ProjectSummary {
   demo_url: string | null;
   repo_url: string | null;
   translated: boolean;
+  auto_translated: boolean;
 }
 
 /* ─── Posts ──────────────────────────────────────────────────── */
@@ -180,7 +182,7 @@ export async function fetchProject(
     .from("projects")
     .select(
       "id,slug,title,description,content,thumbnail_url,demo_url,repo_url,tech_stack,featured,views_count,created_at,locale," +
-        "project_translations(locale,title,description,content)",
+        "project_translations(locale,title,description,content,auto_translated)",
     )
     .eq("slug", slug)
     .eq("status", "published")
@@ -211,6 +213,7 @@ export async function fetchProject(
     created_at: row.created_at,
     locale: tr ? locale : row.locale,
     translated: Boolean(tr),
+    auto_translated: Boolean(tr?.auto_translated),
   };
 }
 

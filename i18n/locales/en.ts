@@ -33,7 +33,7 @@ const en: Dictionary = {
     share: "Share",
     copied: "Link copied",
     downloadCv: "Download résumé",
-    machineTranslated: "Automatically translated from Portuguese.",
+    machineTranslated: "Automatically translated.",
     originalOnly: "This content isn't translated yet — showing the original version.",
   },
   home: {

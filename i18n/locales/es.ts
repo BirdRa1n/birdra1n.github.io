@@ -33,7 +33,7 @@ const es: Dictionary = {
     share: "Compartir",
     copied: "Enlace copiado",
     downloadCv: "Descargar currículum",
-    machineTranslated: "Traducido automáticamente del portugués.",
+    machineTranslated: "Traducido automáticamente.",
     originalOnly: "Este contenido aún no está traducido — se muestra la versión original.",
   },
   home: {

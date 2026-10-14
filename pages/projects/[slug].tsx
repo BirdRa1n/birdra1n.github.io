@@ -1,295 +1,180 @@
 // pages/projects/[slug].tsx
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import NextLink from "next/link";
-import dynamic from "next/dynamic";
-import {
-  FiArrowLeft,
-  FiExternalLink,
-  FiGithub,
-  FiEye,
-  FiAlertTriangle,
-} from "react-icons/fi";
+import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
+import { FiExternalLink, FiGithub } from "react-icons/fi";
 
-import rehypeSanitize from "rehype-sanitize";
-
+import { Markdown } from "@/components/markdown";
+import { EASE_OUT, Reveal } from "@/components/motion";
+import { BackLink, StateMessage, TranslationNotice } from "@/components/page";
+import { useLocalizedData } from "@/hooks/useLocalizedData";
+import { useI18n } from "@/i18n";
 import DefaultLayout from "@/layouts/default";
-import supabase from "@/utils/supabase/client";
+import { fetchProject, incrementProjectViews } from "@/utils/content";
 import { safeUrl } from "@/utils/safe-url";
-import type { Project } from "@/utils/supabase/typed-client";
-
-const MDPreview = dynamic(
-  () => import("@uiw/react-md-editor").then((m) => m.default.Markdown),
-  { ssr: false }
-);
 
 export default function ProjectPage() {
   const router = useRouter();
-  const { slug } = router.query;
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const slug = typeof router.query.slug === "string" ? router.query.slug : "";
+  const { t } = useI18n();
+  const { data: project, loading, error, reload } = useLocalizedData(
+    (locale, signal) => fetchProject(slug, locale, signal),
+    [slug],
+    { enabled: Boolean(slug) },
+  );
+
+  const artRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: artRef, offset: ["start end", "end start"] });
+  const artScale = useTransform(scrollYProgress, [0, 0.5], [0.92, 1]);
+  const iconY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
+  // Conta a visualização uma vez por slug (não a cada troca de idioma)
+  const countedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!slug) return;
+    if (project && countedRef.current !== slug) {
+      countedRef.current = slug;
+      incrementProjectViews(slug);
+    }
+  }, [project, slug]);
 
-    const fetchProject = async () => {
-      try {
-        const { data, error: queryError } = await supabase
-          .schema("portfolio")
-          .from("projects")
-          .select("*")
-          .eq("slug", slug)
-          .eq("status", "published")
-          .single();
-
-        if (queryError) {
-          if (queryError.code === "PGRST116") {
-            setNotFound(true);
-          } else {
-            console.error("[Project] fetch error:", queryError.message);
-            setError(queryError.message);
-          }
-
-          return;
-        }
-
-        if (!data) {
-          setNotFound(true);
-
-          return;
-        }
-
-        setProject(data as Project);
-
-        // Incrementa views de forma silenciosa
-        // (a função vive no schema "portfolio")
-        Promise.resolve(
-          supabase
-            .schema("portfolio")
-            .rpc("increment_project_views", { project_slug: String(slug) })
-        ).catch(() => {});
-      } catch (err: any) {
-        console.error("[Project] fetch exception:", err);
-        setError(err?.message || "Erro inesperado");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProject();
-  }, [slug]);
-
-  if (loading)
+  if (loading && !project) {
     return (
       <DefaultLayout>
-        <div className="max-w-3xl mx-auto py-20 space-y-4">
-          <div
-            className="h-12 w-2/3 rounded-sm animate-pulse"
-            style={{ background: "var(--bg-card)" }}
-          />
-          <div
-            className="h-4 w-1/3 rounded-sm animate-pulse"
-            style={{ background: "var(--bg-card)" }}
-          />
-          <div
-            className="h-96 rounded-sm animate-pulse mt-8"
-            style={{ background: "var(--bg-card)" }}
+        <div className="container-x pt-40 pb-32 space-y-5">
+          <div className="ui-skeleton h-14 w-2/3" />
+          <div className="ui-skeleton h-5 w-1/2" />
+          <div className="ui-skeleton h-[50vh] !rounded-[28px] mt-10" />
+        </div>
+      </DefaultLayout>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <DefaultLayout title={t.projects.notFound}>
+        <div className="container-x pt-32">
+          <StateMessage
+            action={
+              error ? (
+                <button className="btn btn-ghost btn-sm" type="button" onClick={reload}>
+                  {t.common.retry}
+                </button>
+              ) : (
+                <NextLink className="btn btn-ghost btn-sm" href="/projects">
+                  {t.projects.backTo}
+                </NextLink>
+              )
+            }
+            detail={error}
+            title={error ? t.common.loadError : t.projects.notFound}
           />
         </div>
       </DefaultLayout>
     );
+  }
 
-  if (error)
-    return (
-      <DefaultLayout>
-        <div className="max-w-3xl mx-auto py-20 text-center">
-          <FiAlertTriangle
-            className="mx-auto mb-4"
-            size={32}
-            style={{ color: "#FF9500", opacity: 0.6 }}
-          />
-          <p
-            className="text-sm font-bold mb-2 opacity-60"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            {"// Erro ao carregar projeto"}
-          </p>
-          <p
-            className="text-xs opacity-40 mb-6"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            {error}
-          </p>
-          <NextLink
-            className="inline-block text-xs"
-            href="/projects"
-            style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}
-          >
-            ← VOLTAR AOS PROJETOS
-          </NextLink>
-        </div>
-      </DefaultLayout>
-    );
-
-  if (notFound)
-    return (
-      <DefaultLayout>
-        <div className="max-w-3xl mx-auto py-20 text-center opacity-40">
-          <p
-            className="text-xl font-bold mb-2"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            {"// 404"}
-          </p>
-          <p className="text-sm opacity-60" style={{ fontFamily: "var(--font-mono)" }}>
-            Projeto não encontrado
-          </p>
-          <NextLink
-            className="inline-block mt-6 text-xs"
-            href="/projects"
-            style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}
-          >
-            ← VOLTAR AOS PROJETOS
-          </NextLink>
-        </div>
-      </DefaultLayout>
-    );
-
-  if (!project) return null;
+  const demo = safeUrl(project.demo_url);
+  const repo = safeUrl(project.repo_url);
 
   return (
-    <DefaultLayout>
-      <article className="max-w-3xl mx-auto py-12 md:py-20">
-        {/* Back */}
-        <motion.div
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-8"
-          initial={{ opacity: 0, x: -12 }}
-        >
-          <NextLink
-            className="inline-flex items-center gap-2 text-xs opacity-40 hover:opacity-80 transition-opacity"
-            href="/projects"
-            style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
-          >
-            <FiArrowLeft size={12} /> PROJECTS
-          </NextLink>
-        </motion.div>
-
-        {/* Header */}
-        <motion.header
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
-          initial={{ opacity: 0, y: 20 }}
-        >
-          {project.tech_stack?.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {project.tech_stack.map((tech) => (
-                <span key={tech} className="tag-chip">
-                  {tech}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <h1
-            className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {project.title}
-          </h1>
-
-          {project.description && (
-            <p
-              className="text-base opacity-50 leading-relaxed mb-5"
-              style={{ fontFamily: "var(--font-body)" }}
+    <DefaultLayout description={project.description ?? undefined} title={project.title}>
+      <article>
+        <header className="relative overflow-hidden pt-32 md:pt-40">
+          <div aria-hidden className="aurora opacity-40" />
+          <div className="container-x relative">
+            <BackLink href="/projects" label={t.projects.backTo} />
+            <motion.h1
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              className="display-xl mt-8"
+              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+              transition={{ duration: 1, ease: EASE_OUT }}
             >
-              {project.description}
-            </p>
-          )}
-
-          <div
-            className="flex flex-wrap items-center gap-3 py-4"
-            style={{
-              borderTop: "1px solid var(--border)",
-              borderBottom: "1px solid var(--border)",
-            }}
-          >
-            {safeUrl(project.demo_url) && (
-              <a
-                className="ui-btn ui-btn-primary"
-                href={safeUrl(project.demo_url)}
-                rel="noopener noreferrer"
-                target="_blank"
+              {project.title}
+            </motion.h1>
+            {project.description && (
+              <motion.p
+                animate={{ opacity: 1, y: 0 }}
+                className="lead mt-6 max-w-[48ch]"
+                initial={{ opacity: 0, y: 16 }}
+                transition={{ duration: 0.9, delay: 0.1, ease: EASE_OUT }}
               >
-                <FiExternalLink size={13} /> DEMO
-              </a>
+                {project.description}
+              </motion.p>
             )}
-            {safeUrl(project.repo_url) && (
-              <a
-                className="ui-btn ui-btn-outline"
-                href={safeUrl(project.repo_url)}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <FiGithub size={13} /> REPOSITÓRIO
-              </a>
-            )}
-            <span
-              className="flex items-center gap-1 text-xs opacity-30 ml-auto"
-              style={{ fontFamily: "var(--font-mono)" }}
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 flex flex-wrap items-center gap-3"
+              initial={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.9, delay: 0.2, ease: EASE_OUT }}
             >
-              <FiEye size={11} /> {project.views_count} views
-            </span>
+              {demo && (
+                <a className="btn btn-solid" href={demo} rel="noopener noreferrer" target="_blank">
+                  <FiExternalLink size={16} /> {t.projects.demo}
+                </a>
+              )}
+              {repo && (
+                <a className="btn btn-ghost" href={repo} rel="noopener noreferrer" target="_blank">
+                  <FiGithub size={16} /> {t.projects.repo}
+                </a>
+              )}
+              <span className="text-[14px] text-faint ml-1">{t.common.views(project.views_count)}</span>
+            </motion.div>
           </div>
-        </motion.header>
+        </header>
 
-        {/* Cover */}
-        {project.thumbnail_url && (
+        {/* Arte do projeto: cresce ao entrar e o ícone flutua em parallax */}
+        <div ref={artRef} className="container-x mt-14 md:mt-20">
           <motion.div
-            animate={{ opacity: 1 }}
-            className="mb-10 rounded-sm overflow-hidden"
-            initial={{ opacity: 0 }}
-            style={{ border: "1px solid var(--border)" }}
-            transition={{ delay: 0.2 }}
+            className="relative overflow-hidden rounded-[32px] bg-[var(--bg-subtle)] h-[min(62vh,560px)] grid place-items-center origin-center"
+            style={{ scale: artScale }}
           >
-            <img
-              alt={project.title}
-              className="w-full h-64 object-cover"
-              src={project.thumbnail_url}
-            />
+            {project.thumbnail_url ? (
+              <>
+                <img
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 w-full h-full object-cover scale-150 blur-3xl opacity-60 saturate-150"
+                  src={project.thumbnail_url}
+                />
+                <motion.img
+                  alt={project.title}
+                  className="relative w-36 h-36 md:w-52 md:h-52 rounded-[28%] object-cover shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)]"
+                  src={project.thumbnail_url}
+                  style={{ y: iconY }}
+                />
+              </>
+            ) : (
+              <span className="display-xl text-gradient">{project.title.slice(0, 1)}</span>
+            )}
           </motion.div>
-        )}
+        </div>
 
-        {/* Content */}
-        <motion.div
-          animate={{ opacity: 1, y: 0 }}
-          className="prose-custom"
-          data-color-mode="dark"
-          initial={{ opacity: 0, y: 16 }}
-          style={
-            {
-              "--color-canvas-default": "transparent",
-              "--color-border-default": "var(--border)",
-              "--color-fg-default": "var(--text-primary)",
-            } as any
-          }
-          transition={{ delay: 0.25 }}
-        >
-          <MDPreview
-            rehypePlugins={[rehypeSanitize]}
-            source={project.content ?? ""}
-            style={{
-              background: "transparent",
-              color: "inherit",
-              fontFamily: "var(--font-body)",
-              fontSize: "15px",
-              lineHeight: "1.8",
-            }}
-          />
-        </motion.div>
+        <div className="container-narrow py-20 md:py-28">
+          <div className="flex flex-wrap items-center gap-2 mb-10">
+            <TranslationNotice autoTranslated={project.auto_translated} contentLocale={project.locale} />
+          </div>
+
+          {project.tech_stack.length > 0 && (
+            <Reveal className="mb-14">
+              <p className="text-[13px] font-medium text-faint mb-3">{t.projects.stack}</p>
+              <ul className="flex flex-wrap gap-2">
+                {project.tech_stack.map((tech) => (
+                  <li key={tech} className="chip">
+                    {tech}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          )}
+
+          {project.content && (
+            <Reveal>
+              <Markdown source={project.content} />
+            </Reveal>
+          )}
+        </div>
       </article>
     </DefaultLayout>
   );

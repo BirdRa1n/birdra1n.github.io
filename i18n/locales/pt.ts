@@ -31,7 +31,7 @@ const pt = {
     share: "Compartilhar",
     copied: "Link copiado",
     downloadCv: "Baixar currículo",
-    machineTranslated: "Traduzido automaticamente do português.",
+    machineTranslated: "Traduzido automaticamente.",
     originalOnly: "Este conteúdo ainda não tem tradução — exibindo a versão original.",
   },
   home: {

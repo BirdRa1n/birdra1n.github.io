@@ -1,144 +1,59 @@
 // pages/blog/index.tsx
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import NextLink from "next/link";
-import { FiClock, FiEye, FiAlertTriangle } from "react-icons/fi";
-
+import { PostCard } from "@/components/home/writing";
+import { PageIntro, StateMessage } from "@/components/page";
+import { useLocalizedData } from "@/hooks/useLocalizedData";
+import { useI18n } from "@/i18n";
 import DefaultLayout from "@/layouts/default";
-import supabase from "@/utils/supabase/client";
-import { BlogPost } from "@/utils/supabase/typed-client";
-
-const PostCard = ({ post, index }: { post: BlogPost; index: number }) => (
-  <motion.article
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.08, duration: 0.5 }}
-  >
-    <NextLink
-      href={`/blog/${post.slug}`}
-      className="group flex flex-col md:flex-row gap-5 p-5 rounded-sm cursor-pointer overflow-hidden"
-      style={{ background: "var(--bg-card)", border: "1px solid var(--border)", transition: "border-color 0.25s, box-shadow 0.25s" }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--neon)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px color-mix(in srgb, var(--neon) 8%, transparent)"; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"; (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
-    >
-      {post.cover_url && (
-        <div className="w-full md:w-48 h-32 md:h-auto rounded-sm overflow-hidden flex-shrink-0" style={{ border: "1px solid var(--border)" }}>
-          <img src={post.cover_url} alt={post.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-        </div>
-      )}
-      <div className="flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            {post.featured && (
-              <span className="text-[9px] px-2 py-0.5 tracking-widest" style={{ fontFamily: "var(--font-mono)", background: "color-mix(in srgb, var(--neon) 8%, transparent)", border: "1px solid color-mix(in srgb, var(--neon) 20%, transparent)", color: "var(--neon)" }}>
-                DESTAQUE
-              </span>
-            )}
-            {((post as any).tags as any[])?.slice(0, 3).map((t: any) => (
-              <span key={t.tag?.id} className="tag-chip">{t.tag?.name}</span>
-            ))}
-          </div>
-          <h2 className="text-xl font-bold tracking-tight mb-2 group-hover:text-[var(--neon)] transition-colors" style={{ fontFamily: "var(--font-display)" }}>
-            {post.title}
-          </h2>
-          {post.excerpt && (
-            <p className="text-sm opacity-50 leading-relaxed line-clamp-2" style={{ fontFamily: "var(--font-body)" }}>
-              {post.excerpt}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-4 mt-3">
-          {post.read_time_min && (
-            <span className="flex items-center gap-1 text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>
-              <FiClock size={10} /> {post.read_time_min} min
-            </span>
-          )}
-          <span className="flex items-center gap-1 text-[10px] opacity-30" style={{ fontFamily: "var(--font-mono)" }}>
-            <FiEye size={10} /> {post.views_count}
-          </span>
-          <span className="text-[10px] opacity-30 ml-auto" style={{ fontFamily: "var(--font-mono)" }}>
-            {post.published_at ? new Date(post.published_at).toLocaleDateString("pt-BR") : ""}
-          </span>
-          <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--neon)", fontFamily: "var(--font-mono)" }}>LER →</span>
-        </div>
-      </div>
-    </NextLink>
-  </motion.article>
-);
+import { fetchPosts } from "@/utils/content";
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const { data, error: queryError } = await supabase
-          .schema("blog")
-          .from("posts")
-          .select("*, tags:post_tags(tag:tags(*))")
-          .eq("status", "published")
-          .order("published_at", { ascending: false });
-
-        if (queryError) {
-          console.error("[Blog] fetch error:", queryError.message);
-          setError(queryError.message);
-          return;
-        }
-
-        setPosts((data || []) as any[]);
-      } catch (err: any) {
-        console.error("[Blog] fetch exception:", err);
-        setError(err?.message || "Erro inesperado");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+  const { t } = useI18n();
+  const { data, loading, error, reload } = useLocalizedData((locale, signal) => fetchPosts(locale, { signal }));
+  const posts = data ?? [];
+  // Destaque: o post marcado como featured mais recente, senão o mais recente
+  const lead = posts.find((p) => p.featured) ?? posts[0];
+  const rest = posts.filter((p) => p !== lead);
 
   return (
-    <DefaultLayout>
-      <section className="max-w-3xl mx-auto py-12 md:py-20">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-xs tracking-[0.3em] opacity-50" style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}>05</span>
-            <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-          </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-3" style={{ fontFamily: "var(--font-display)" }}>
-            Blog
-          </h1>
-          <p className="text-sm opacity-40" style={{ fontFamily: "var(--font-mono)" }}>
-            {"// Pensamentos, tutoriais e descobertas sobre dev"}
-          </p>
-        </motion.div>
+    <DefaultLayout title={t.blog.title}>
+      <PageIntro eyebrow={t.blog.eyebrow} lead={t.blog.lead} title={t.blog.title} />
 
-        {loading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-36 rounded-sm animate-pulse" style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }} />
-            ))}
+      <section className="container-x pb-32">
+        {loading && posts.length === 0 ? (
+          <div className="space-y-5">
+            <div className="ui-skeleton h-[420px] !rounded-[28px]" />
+            <div className="grid gap-5 md:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="ui-skeleton h-[400px] !rounded-[28px]" />
+              ))}
+            </div>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center gap-3 py-24 opacity-50">
-            <FiAlertTriangle size={28} style={{ color: "#FF9500" }} />
-            <p className="text-sm text-center" style={{ fontFamily: "var(--font-mono)" }}>
-              {"// Erro ao carregar posts"}
-            </p>
-            <p className="text-xs opacity-60 text-center" style={{ fontFamily: "var(--font-mono)" }}>
-              {error}
-            </p>
-          </div>
+          <StateMessage
+            action={
+              <button className="btn btn-ghost btn-sm" type="button" onClick={reload}>
+                {t.common.retry}
+              </button>
+            }
+            detail={error}
+            title={t.common.loadError}
+          />
         ) : posts.length === 0 ? (
-          <div className="text-center py-24 opacity-30">
-            <p className="text-sm" style={{ fontFamily: "var(--font-mono)" }}>{"// Nenhum post ainda — em breve!"}</p>
-          </div>
+          <StateMessage title={t.blog.empty} />
         ) : (
-          <div className="space-y-4">
-            {posts.map((post, i) => <PostCard key={post.id} post={post} index={i} />)}
-          </div>
+          <>
+            {lead && <PostCard large post={lead} />}
+            {rest.length > 0 && (
+              <>
+                <h2 className="display-sm mt-20 mb-8">{t.blog.latest}</h2>
+                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {rest.map((post, i) => (
+                    <PostCard key={post.id} index={i} post={post} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
       </section>
     </DefaultLayout>
