@@ -88,8 +88,8 @@ export function SpaceTyper() {
                 top: `${c.y}%`,
                 fontFamily: "var(--font-mono)",
                 fontSize: "clamp(12px, 2.6vw, 15px)",
-                background: isActive ? "rgba(167,139,250,0.12)" : "rgba(0,0,0,0.35)",
-                border: `1px solid ${isActive ? "var(--neon)" : "rgba(167,139,250,0.25)"}`,
+                background: isActive ? "rgba(250,204,21,0.12)" : "rgba(0,0,0,0.35)",
+                border: `1px solid ${isActive ? "var(--neon)" : "rgba(250,204,21,0.25)"}`,
                 boxShadow: isActive ? "0 0 16px var(--neon-glow)" : "none",
               }}
             >
