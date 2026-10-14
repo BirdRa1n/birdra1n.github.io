@@ -114,8 +114,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       t: DICTIONARIES[locale],
       setLocale,
       ready,
-      formatDate: (date, opts = { day: "numeric", month: "short", year: "numeric" }) =>
-        new Intl.DateTimeFormat(tag, opts).format(new Date(date)),
+      formatDate: (date, opts = { day: "numeric", month: "short", year: "numeric" }) => {
+        // Datas puras ("2025-11-01") são meia-noite UTC: formatar no fuso
+        // local mostraria o dia/mês anterior no Brasil.
+        const dateOnly = typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date);
+
+        return new Intl.DateTimeFormat(tag, dateOnly ? { ...opts, timeZone: "UTC" } : opts).format(new Date(date));
+      },
       formatNumber: (n) => new Intl.NumberFormat(tag).format(n),
     };
   }, [locale, ready, setLocale]);

@@ -1,199 +1,139 @@
 // components/home/hero.tsx
-// Hero fixo (sticky) por 2 telas: o título recua e some enquanto a
-// "janela" de código sobe e assume o centro — transição contínua,
-// guiada pelo scroll, no estilo das páginas de produto da Apple.
+// Primeira dobra pensada para recrutador: quem é, o que faz, onde está,
+// há quanto tempo, e como baixar o currículo/entrar em contato.
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import NextLink from "next/link";
 import { useRef } from "react";
-import { FiArrowDown } from "react-icons/fi";
+import { FiBriefcase, FiDownload, FiGithub, FiLinkedin, FiMail, FiMapPin } from "react-icons/fi";
 
 import { EASE_OUT } from "@/components/motion";
+import { profile, yearsOfExperience } from "@/config/profile";
+import { resumeDownloadUrl, useResume } from "@/hooks/useResume";
 import { useI18n } from "@/i18n";
 
-const C = {
-  kw: "#FF7B72",
-  key: "#79C0FF",
-  str: "#A5D6FF",
-  num: "#F8C555",
-  cmt: "#6A737D",
-  bool: "#C4B5FD",
-  def: "#E6EDF3",
-};
+const rise = (delay: number) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.9, delay, ease: EASE_OUT },
+});
 
-function CodeWindow({ repoCount }: { repoCount: number }) {
-  const line = (k: string, v: React.ReactNode) => (
-    <>
-      <span style={{ color: C.def }}>{"  "}</span>
-      <span style={{ color: C.key }}>{k}</span>
-      <span style={{ color: C.def }}>: </span>
-      {v}
-      <span style={{ color: C.def }}>{",\n"}</span>
-    </>
-  );
-  const s = (v: string) => <span style={{ color: C.str }}>{`"${v}"`}</span>;
-
-  return (
-    <div
-      className="w-full rounded-[22px] overflow-hidden border text-left"
-      style={{
-        background: "#0B0B10",
-        borderColor: "rgba(255,255,255,0.1)",
-        boxShadow: "0 40px 120px -30px rgba(76, 29, 149, 0.55), 0 0 0 1px rgba(255,255,255,0.04) inset",
-      }}
-    >
-      <div className="flex items-center gap-2 px-4 h-11 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-        <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-        <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-        <span className="w-3 h-3 rounded-full bg-[#28C840]" />
-        <span className="ml-3 text-xs font-mono" style={{ color: "#8B8B99" }}>
-          developer.ts
-        </span>
-      </div>
-      <pre className="p-5 sm:p-7 text-[12px] sm:text-[14px] leading-[1.85] font-mono overflow-x-auto m-0">
-        <span style={{ color: C.cmt }}>{"// BirdRa1n — dev config\n"}</span>
-        <span style={{ color: C.kw }}>export const </span>
-        <span style={{ color: C.key }}>developer</span>
-        <span style={{ color: C.def }}>{" = {\n"}</span>
-        {line("name", s("Dário Jr"))}
-        {line("location", s("Brazil"))}
-        {line(
-          "stack",
-          <>
-            <span style={{ color: C.def }}>[</span>
-            {s("Swift")}
-            <span style={{ color: C.def }}>, </span>
-            {s("TypeScript")}
-            <span style={{ color: C.def }}>, </span>
-            {s("React")}
-            <span style={{ color: C.def }}>, </span>
-            {s("Supabase")}
-            <span style={{ color: C.def }}>]</span>
-          </>,
-        )}
-        {line("repos", <span style={{ color: C.num }}>{repoCount || "…"}</span>)}
-        {line("openToWork", <span style={{ color: C.bool }}>true</span>)}
-        {line("coffee", <span style={{ color: C.num }}>Infinity</span>)}
-        <span style={{ color: C.def }}>{"};"}</span>
-      </pre>
-    </div>
-  );
-}
-
-export default function Hero({ repoCount }: { repoCount: number }) {
+export default function Hero() {
   const { t } = useI18n();
-  const ref = useRef<HTMLElement>(null);
+  const { resume } = useResume();
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const portraitY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 80]);
+  const ringScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 1.12]);
 
-  // Título: recua, sobe e some na primeira metade
-  const titleScale = useTransform(scrollYProgress, [0, 0.45], [1, 0.88]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.45], ["0vh", "-12vh"]);
-  // Janela: sobe do rodapé até o centro e cresce
-  const windowY = useTransform(scrollYProgress, [0.05, 0.6], ["72vh", "0vh"]);
-  const windowScale = useTransform(scrollYProgress, [0.05, 0.6, 1], [0.78, 1, 1.04]);
-  const windowOpacity = useTransform(scrollYProgress, [0.05, 0.25], [0.4, 1]);
-  // Luz ambiente acompanha
-  const auroraScale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
-  const auroraOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.35]);
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  const social = [
+    { label: "LinkedIn", href: profile.linkedin, Icon: FiLinkedin },
+    { label: "GitHub", href: profile.github, Icon: FiGithub },
+    { label: profile.email, href: `mailto:${profile.email}`, Icon: FiMail },
+  ];
 
   return (
-    <section ref={ref} className="relative" style={{ height: reduce ? "auto" : "220vh" }}>
-      <div className={`${reduce ? "relative py-32" : "sticky top-0 h-[100svh]"} overflow-hidden`}>
-        <motion.div aria-hidden className="absolute inset-0" style={{ scale: auroraScale, opacity: auroraOpacity }}>
-          <div className="aurora" />
-          <div className="absolute inset-0 grid-fade opacity-60" />
-        </motion.div>
+    <section ref={ref} className="relative overflow-hidden pt-24 md:pt-28">
+      <div aria-hidden className="aurora opacity-80" />
 
-        {/* Título */}
-        <motion.div
-          className="relative z-10 h-full flex flex-col items-center justify-center text-center container-x"
-          style={reduce ? undefined : { scale: titleScale, opacity: titleOpacity, y: titleY }}
-        >
-          <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="chip mb-8"
-            initial={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.8, ease: EASE_OUT }}
-          >
-            <span className="relative flex w-2 h-2">
-              <span className="absolute inset-0 rounded-full bg-[#28C840] ping-slow" />
-              <span className="relative w-2 h-2 rounded-full bg-[#28C840]" />
-            </span>
-            {t.home.eyebrow}
+      <div className="container-x relative grid items-center gap-6 md:gap-10 md:grid-cols-[1.1fr_0.9fr] min-h-[calc(100svh-56px)] pb-10">
+        <div className="order-2 md:order-1 pb-6">
+          {profile.openToWork && (
+            <motion.p {...rise(0)} className="chip mb-7">
+              <span className="relative flex w-2 h-2">
+                <span className="absolute inset-0 rounded-full bg-[#28C840] ping-slow" />
+                <span className="relative w-2 h-2 rounded-full bg-[#28C840]" />
+              </span>
+              {t.home.available}
+            </motion.p>
+          )}
+
+          <motion.p {...rise(0.05)} className="text-[clamp(1.1rem,1.6vw,1.35rem)] text-muted">
+            {t.home.greeting}
+          </motion.p>
+          <motion.h1 {...rise(0.1)} className="display-xl mt-1">
+            {profile.displayName}
+            <span className="text-[var(--accent-fill)]">.</span>
+          </motion.h1>
+          <motion.p {...rise(0.18)} className="display-sm mt-3 text-muted !font-medium">
+            {t.home.role}
           </motion.p>
 
-          <h1 className="display-xl max-w-[12ch]">
-            <motion.span
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              className="block"
-              initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-              transition={{ duration: 1.1, delay: 0.1, ease: EASE_OUT }}
-            >
-              {t.home.heroTitleA}
-            </motion.span>
-            <motion.span
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              className="block text-gradient pb-[0.08em]"
-              initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
-              transition={{ duration: 1.1, delay: 0.25, ease: EASE_OUT }}
-            >
-              {t.home.heroTitleB}
-            </motion.span>
-          </h1>
+          <motion.ul {...rise(0.24)} className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[15px] text-muted">
+            <li className="flex items-center gap-1.5">
+              <FiMapPin className="text-[var(--accent)]" size={15} />
+              {profile.location} · {t.home.remote}
+            </li>
+            <li className="flex items-center gap-1.5">
+              <FiBriefcase className="text-[var(--accent)]" size={15} />
+              {t.home.years(yearsOfExperience())}
+            </li>
+          </motion.ul>
 
-          <motion.p
-            animate={{ opacity: 1, y: 0 }}
-            className="lead mt-7 max-w-[36ch]"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.9, delay: 0.45, ease: EASE_OUT }}
-          >
-            {t.home.heroLead}
+          <motion.p {...rise(0.3)} className="lead mt-6 max-w-[54ch]">
+            {t.home.pitch}
           </motion.p>
 
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-10 flex flex-wrap justify-center gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.9, delay: 0.6, ease: EASE_OUT }}
-          >
-            <NextLink className="btn btn-solid" href="#work">
-              {t.home.ctaWork}
-            </NextLink>
-            <NextLink className="btn btn-ghost" href="/contact">
+          <motion.div {...rise(0.38)} className="mt-9 flex flex-wrap items-center gap-3">
+            {resume && (
+              <a className="btn btn-accent" href={resumeDownloadUrl(resume)} rel="noopener noreferrer" target="_blank">
+                <FiDownload size={16} /> {t.common.downloadCv}
+              </a>
+            )}
+            <NextLink className="btn btn-ghost" href="#contact">
               {t.home.ctaContact}
             </NextLink>
+            <span aria-hidden className="hidden sm:block w-px h-6 bg-[var(--line-strong)] mx-1" />
+            <ul className="flex items-center gap-1">
+              {social.map(({ label, href, Icon }) => (
+                <li key={label}>
+                  <a
+                    aria-label={label}
+                    className="ui-icon-btn !w-11 !h-11"
+                    href={href}
+                    rel="noopener noreferrer"
+                    target={href.startsWith("mailto:") ? undefined : "_blank"}
+                    title={label}
+                  >
+                    <Icon size={19} />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </motion.div>
-        </motion.div>
+        </div>
 
-        {/* Janela de código que assume o palco */}
-        {!reduce && (
+        {/* Retrato: P&B com contorno amarelo, base dissolvendo no fundo */}
+        <motion.div
+          animate={{ opacity: 1, scale: 1 }}
+          className="order-1 md:order-2 relative mx-auto w-full max-w-[230px] sm:max-w-[320px] md:max-w-[520px]"
+          initial={{ opacity: 0, scale: 0.96 }}
+          transition={{ duration: 1.2, ease: EASE_OUT }}
+        >
           <motion.div
             aria-hidden
-            className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none container-x"
-            style={{ y: windowY, scale: windowScale, opacity: windowOpacity }}
-          >
-            <div className="w-full max-w-[680px]">
-              <CodeWindow repoCount={repoCount} />
-            </div>
-          </motion.div>
-        )}
-
-        {!reduce && (
-          <motion.div
-            className="absolute bottom-8 inset-x-0 z-10 flex flex-col items-center gap-2 text-[13px] text-faint"
-            style={{ opacity: hintOpacity }}
-          >
-            <span>{t.home.scroll}</span>
-            <motion.span
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            >
-              <FiArrowDown size={16} />
-            </motion.span>
-          </motion.div>
-        )}
+            className="absolute left-1/2 top-[56%] -translate-x-1/2 -translate-y-1/2 w-[86%] aspect-square rounded-full"
+            style={{
+              scale: ringScale,
+              background: "radial-gradient(circle at 50% 40%, var(--accent-soft), transparent 70%)",
+              border: "1px solid color-mix(in srgb, var(--accent-fill) 35%, transparent)",
+            }}
+          />
+          <motion.img
+            alt={t.home.portraitAlt}
+            className="relative w-full h-auto select-none"
+            draggable={false}
+            height={894}
+            src={profile.portrait}
+            style={{
+              y: portraitY,
+              // vinheta: cabeça nítida, ombros e cortes da foto se dissolvem no fundo
+              maskImage: "radial-gradient(ellipse 62% 78% at 50% 32%, #000 62%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(ellipse 62% 78% at 50% 32%, #000 62%, transparent 100%)",
+            }}
+            width={896}
+          />
+        </motion.div>
       </div>
     </section>
   );

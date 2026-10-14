@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { Head } from "./head";
 
 import { Navbar } from "@/components/navbar";
+import { profile } from "@/config/profile";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/i18n";
 
@@ -12,9 +13,9 @@ function Footer() {
   const year = new Date().getFullYear();
 
   const social = [
+    { label: "LinkedIn", href: siteConfig.links.linkedin },
     { label: "GitHub", href: siteConfig.links.github },
-    { label: "X / Twitter", href: siteConfig.links.twitter },
-    { label: "Discord", href: siteConfig.links.discord },
+    { label: "E-mail", href: siteConfig.links.email },
     { label: "Credly", href: siteConfig.links.credly },
   ];
 
@@ -25,6 +26,7 @@ function Footer() {
           <div className="max-w-sm">
             <p className="font-display text-2xl font-semibold tracking-[-0.03em]">
               {siteConfig.name}
+              <span className="text-[var(--accent-fill)]">.</span>
             </p>
             <p className="mt-3 text-[15px] text-muted leading-relaxed">{t.footer.tagline}</p>
           </div>
@@ -32,7 +34,7 @@ function Footer() {
           <nav aria-label={t.footer.navigate}>
             <p className="text-[13px] font-medium text-faint mb-4">{t.footer.navigate}</p>
             <ul className="space-y-2.5">
-              {[{ key: "home" as const, href: "/" }, ...siteConfig.navItems].map((item) => (
+              {siteConfig.footerItems.map((item) => (
                 <li key={item.href}>
                   <NextLink
                     className="text-[15px] text-muted hover:text-[var(--fg)] transition-colors"
@@ -54,7 +56,7 @@ function Footer() {
                     className="text-[15px] text-muted hover:text-[var(--fg)] transition-colors"
                     href={s.href}
                     rel="noopener noreferrer"
-                    target="_blank"
+                    target={s.href.startsWith("mailto:") ? undefined : "_blank"}
                   >
                     {s.label} <span aria-hidden>↗</span>
                   </a>
@@ -66,7 +68,7 @@ function Footer() {
 
         <div className="mt-16 pt-6 border-t hairline flex flex-col sm:flex-row justify-between gap-2 text-[13px] text-faint">
           <p suppressHydrationWarning>
-            © {year} Dário Jr. {t.footer.rights}
+            © {year} {profile.fullName} {t.footer.rights}
           </p>
           <p>{t.footer.built}</p>
         </div>

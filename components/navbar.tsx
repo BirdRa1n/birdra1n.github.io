@@ -3,19 +3,21 @@ import { AnimatePresence, motion } from "framer-motion";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FiDownload } from "react-icons/fi";
 
 import { LanguageSwitch } from "@/components/language-switch";
 import { useScrolled } from "@/components/motion";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
+import { resumeDownloadUrl, useResume } from "@/hooks/useResume";
 import { useI18n } from "@/i18n";
 
 const Logo = () => (
   <span className="flex items-center gap-2.5 select-none">
     <span
       aria-hidden
-      className="w-7 h-7 rounded-[9px] grid place-items-center text-[11px] font-bold text-white"
-      style={{ background: "var(--grad)", fontFamily: "var(--font-display)" }}
+      className="w-7 h-7 rounded-[9px] grid place-items-center text-[11px] font-bold"
+      style={{ background: "var(--accent-fill)", color: "var(--on-accent)", fontFamily: "var(--font-display)" }}
     >
       DJ
     </span>
@@ -25,18 +27,57 @@ const Logo = () => (
   </span>
 );
 
+/** Seção da home atualmente na tela (scroll-spy para os links de âncora). */
+function useActiveSection(enabled: boolean, ids: string[]) {
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!enabled) {
+      setActive(null);
+
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [enabled, ids.join()]);
+
+  return active;
+}
+
+const HASH_IDS = siteConfig.navItems.filter((i) => i.href.startsWith("/#")).map((i) => i.href.slice(2));
+
 export const Navbar = () => {
   const router = useRouter();
   const { t } = useI18n();
+  const { resume } = useResume();
   const scrolled = useScrolled();
   const [menuOpen, setMenuOpen] = useState(false);
+  const activeSection = useActiveSection(router.pathname === "/", HASH_IDS);
 
   useEffect(() => {
     const close = () => setMenuOpen(false);
 
     router.events.on("routeChangeStart", close);
+    router.events.on("hashChangeStart", close);
 
-    return () => router.events.off("routeChangeStart", close);
+    return () => {
+      router.events.off("routeChangeStart", close);
+      router.events.off("hashChangeStart", close);
+    };
   }, [router.events]);
 
   // Trava o scroll do body com o menu mobile aberto
@@ -48,8 +89,12 @@ export const Navbar = () => {
     };
   }, [menuOpen]);
 
-  const isActive = (href: string) =>
-    href === "/" ? router.pathname === "/" : router.pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href.startsWith("/#")) return router.pathname === "/" && activeSection === href.slice(2);
+    if (href === "/") return router.pathname === "/" && !activeSection;
+
+    return router.pathname.startsWith(href);
+  };
 
   return (
     <header className="fixed top-0 inset-x-0 z-50">
@@ -74,7 +119,7 @@ export const Navbar = () => {
             <Logo />
           </NextLink>
 
-          <ul className="hidden md:flex items-center gap-1">
+          <ul className="hidden lg:flex items-center gap-1">
             {siteConfig.navItems.map((item) => {
               const active = isActive(item.href);
 
@@ -101,13 +146,23 @@ export const Navbar = () => {
           </ul>
 
           <div className="flex items-center gap-1">
+            {resume && (
+              <a
+                className="btn btn-accent btn-sm !min-h-[34px] !px-3.5 mr-1 hidden sm:inline-flex"
+                href={resumeDownloadUrl(resume)}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <FiDownload size={14} /> {t.nav.resume}
+              </a>
+            )}
             <LanguageSwitch />
             <ThemeSwitch />
             <button
               aria-controls="mobile-menu"
               aria-expanded={menuOpen}
               aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
-              className="ui-icon-btn md:hidden"
+              className="ui-icon-btn lg:hidden"
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
             >
@@ -132,7 +187,7 @@ export const Navbar = () => {
         {menuOpen && (
           <motion.div
             animate={{ opacity: 1 }}
-            className="md:hidden fixed inset-x-0 top-14 bottom-0 glass"
+            className="lg:hidden fixed inset-x-0 top-14 bottom-0 glass"
             exit={{ opacity: 0 }}
             id="mobile-menu"
             initial={{ opacity: 0 }}
@@ -157,6 +212,13 @@ export const Navbar = () => {
                   </NextLink>
                 </motion.li>
               ))}
+              {resume && (
+                <li className="pt-6">
+                  <a className="btn btn-accent w-full" href={resumeDownloadUrl(resume)} rel="noopener noreferrer" target="_blank">
+                    <FiDownload size={16} /> {t.common.downloadCv}
+                  </a>
+                </li>
+              )}
             </ul>
           </motion.div>
         )}

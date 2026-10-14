@@ -5,6 +5,7 @@ import { FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
 import { EASE_OUT, Reveal } from "@/components/motion";
 import { PageIntro } from "@/components/page";
+import { profile } from "@/config/profile";
 import { siteConfig } from "@/config/site";
 import { useI18n } from "@/i18n";
 import DefaultLayout from "@/layouts/default";
@@ -173,12 +174,12 @@ export default function ContactPage() {
           <p className="text-[13px] font-medium text-faint mb-4">{t.contact.elsewhere}</p>
           <ul className="space-y-3">
             {[
+              { label: "LinkedIn", href: siteConfig.links.linkedin, handle: "in/ronisdario" },
               { label: "GitHub", href: siteConfig.links.github, handle: "@birdra1n" },
-              { label: "X / Twitter", href: siteConfig.links.twitter, handle: "@birdra1n" },
-              { label: "Discord", href: siteConfig.links.discord, handle: "birdra1n" },
+              { label: "E-mail", href: siteConfig.links.email, handle: profile.email },
             ].map((s) => (
               <li key={s.label}>
-                <a className="surface surface-hover flex items-center justify-between p-5 !rounded-[20px]" href={s.href} rel="noopener noreferrer" target="_blank">
+                <a className="surface surface-hover flex items-center justify-between p-5 !rounded-[20px]" href={s.href} rel="noopener noreferrer" target={s.href.startsWith("mailto:") ? undefined : "_blank"}>
                   <span>
                     <span className="block font-semibold tracking-[-0.01em]">{s.label}</span>
                     <span className="block text-[14px] text-muted">{s.handle}</span>

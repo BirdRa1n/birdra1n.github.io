@@ -5,7 +5,7 @@ import { useI18n } from "@/i18n";
 
 export const Head = ({ title, description }: { title?: string; description?: string }) => {
   const { t } = useI18n();
-  const fullTitle = title ? `${title} — ${siteConfig.name}` : `${siteConfig.name} — Full-Stack Developer`;
+  const fullTitle = title ? `${title} — ${siteConfig.name}` : `${siteConfig.name} — ${t.home.role}`;
   const desc = description ?? t.meta.description;
 
   return (
