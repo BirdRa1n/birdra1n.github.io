@@ -50,7 +50,6 @@ export function useLocalizedData<T>(
       });
 
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale, ready, enabled, nonce, ...deps]);
 
   const reload = useCallback(() => setNonce((n) => n + 1), []);

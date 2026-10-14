@@ -61,7 +61,7 @@ export function RevealWords({
   const words = text.split(" ");
 
   return (
-    <span aria-label={text} className={className} role="text">
+    <span aria-label={text} className={className}>
       {words.map((word, i) => (
         <span
           key={`${word}-${i}`}
