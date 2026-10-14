@@ -15,8 +15,15 @@ import {
   AdminCard,
 } from "@/components/admin/ui";
 import { AdminToastWrapper } from "@/components/admin/AdminToast";
+import {
+  EMPTY_DRAFT,
+  splitDrafts,
+  TranslationsPanel,
+  type TranslationDrafts,
+} from "@/components/admin/TranslationsPanel";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { useAdminEditor } from "@/hooks/useAdminEditor";
+import { LOCALES, type Locale } from "@/i18n";
 import supabase from "@/utils/supabase/client";
 import type { Category } from "@/utils/supabase/typed-client";
 
@@ -28,6 +35,8 @@ const MarkdownEditor = dynamic(
 function slugify(text: string) {
   return text
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
@@ -44,6 +53,7 @@ const EMPTY = {
   category_id: "",
   featured: false,
   status: "draft" as "draft" | "published" | "archived",
+  locale: "pt" as Locale,
 };
 
 export default function AdminProjectEditor() {
@@ -56,6 +66,7 @@ export default function AdminProjectEditor() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [form, setForm] = useState(EMPTY);
   const [techInput, setTechInput] = useState("");
+  const [drafts, setDrafts] = useState<TranslationDrafts>({});
 
   useEffect(() => {
     Promise.resolve(
@@ -70,7 +81,7 @@ export default function AdminProjectEditor() {
         supabase
           .schema("portfolio")
           .from("projects")
-          .select("*")
+          .select("*, project_translations(*)")
           .eq("id", id)
           .single()
       )
@@ -87,7 +98,22 @@ export default function AdminProjectEditor() {
             category_id: data.category_id ?? "",
             featured: data.featured ?? false,
             status: data.status ?? "draft",
+            locale: (data.locale ?? "pt") as Locale,
           });
+          if (data) setDrafts(
+            Object.fromEntries(
+              ((data as any).project_translations ?? []).map((tr: any) => [
+                tr.locale,
+                {
+                  ...EMPTY_DRAFT,
+                  title: tr.title ?? "",
+                  summary: tr.description ?? "",
+                  content: tr.content ?? "",
+                  auto_translated: tr.auto_translated ?? false,
+                },
+              ]),
+            ),
+          );
         })
         .finally(() => setLoading(false));
     }
@@ -104,6 +130,37 @@ export default function AdminProjectEditor() {
       .filter((t) => t && !form.tech_stack.includes(t));
     set("tech_stack", [...form.tech_stack, ...items]);
     setTechInput("");
+  };
+
+  const syncTranslations = async (projectId: string) => {
+    const { upsert, remove } = splitDrafts(drafts, form.locale);
+
+    await Promise.all([
+      remove.length > 0
+        ? supabase
+            .schema("portfolio")
+            .from("project_translations")
+            .delete()
+            .eq("project_id", projectId)
+            .in("locale", remove)
+        : null,
+      upsert.length > 0
+        ? supabase
+            .schema("portfolio")
+            .from("project_translations")
+            .upsert(
+              upsert.map(([locale, d]) => ({
+                project_id: projectId,
+                locale,
+                title: d.title.trim(),
+                description: d.summary.trim() || null,
+                content: d.content || null,
+                auto_translated: d.auto_translated,
+              })),
+              { onConflict: "project_id,locale" },
+            )
+        : null,
+    ]);
   };
 
   const handleSave = () =>
@@ -123,7 +180,10 @@ export default function AdminProjectEditor() {
           .select()
           .single();
         if (error) { showToast("error", error.message); return; }
-        if (data) router.replace(`/admin/projects/${data.id}`);
+        if (data) {
+          await syncTranslations(data.id);
+          router.replace(`/admin/projects/${data.id}`);
+        }
         showToast("success", "Projeto criado!");
       } else {
         const { error } = await supabase
@@ -132,6 +192,7 @@ export default function AdminProjectEditor() {
           .update(payload)
           .eq("id", id);
         if (error) { showToast("error", error.message); return; }
+        await syncTranslations(id as string);
         showToast("success", "Projeto salvo!");
       }
     });
@@ -207,6 +268,13 @@ export default function AdminProjectEditor() {
               placeholder="# Título do Projeto&#10;&#10;Escreva sobre o projeto aqui..."
             />
           </AdminCard>
+
+          <TranslationsPanel
+            drafts={drafts}
+            original={form.locale}
+            summaryLabel="Descrição"
+            onChange={setDrafts}
+          />
         </div>
 
         <div className="space-y-6">
@@ -225,6 +293,17 @@ export default function AdminProjectEditor() {
               <option value="draft">draft</option>
               <option value="published">published</option>
               <option value="archived">archived</option>
+            </AdminSelect>
+            <AdminSelect
+              label="Idioma original"
+              value={form.locale}
+              onChange={(e) => set("locale", e.target.value)}
+            >
+              {LOCALES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
+                </option>
+              ))}
             </AdminSelect>
             <AdminToggle
               label="Destaque"

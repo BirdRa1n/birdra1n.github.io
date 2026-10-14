@@ -15,8 +15,15 @@ import {
   AdminCard,
 } from "@/components/admin/ui";
 import { AdminToastWrapper } from "@/components/admin/AdminToast";
+import {
+  EMPTY_DRAFT,
+  splitDrafts,
+  TranslationsPanel,
+  type TranslationDrafts,
+} from "@/components/admin/TranslationsPanel";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { useAdminEditor } from "@/hooks/useAdminEditor";
+import { LOCALES, type Locale } from "@/i18n";
 import supabase from "@/utils/supabase/client";
 import type { BlogTag, Project } from "@/utils/supabase/typed-client";
 
@@ -47,6 +54,7 @@ const EMPTY = {
   status: "draft" as "draft" | "published" | "archived",
   featured: false,
   read_time_min: 1,
+  locale: "pt" as Locale,
 };
 
 export default function AdminBlogEditor() {
@@ -63,6 +71,9 @@ export default function AdminBlogEditor() {
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
   const [newTagName, setNewTagName] = useState("");
+  const [drafts, setDrafts] = useState<TranslationDrafts>({});
+  // Data original de publicação — não deve mudar a cada "salvar"
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -83,7 +94,7 @@ export default function AdminBlogEditor() {
           const { data: post, error } = await supabase
             .schema("blog")
             .from("posts")
-            .select("*, post_tags(tag_id), post_project_mentions(project_id)")
+            .select("*, post_tags(tag_id), post_project_mentions(project_id), post_translations(*)")
             .eq("id", id)
             .single();
 
@@ -99,7 +110,23 @@ export default function AdminBlogEditor() {
               status: post.status ?? "draft",
               featured: post.featured ?? false,
               read_time_min: post.read_time_min ?? 1,
+              locale: (post.locale ?? "pt") as Locale,
             });
+            setPublishedAt(post.published_at ?? null);
+            setDrafts(
+              Object.fromEntries(
+                ((post as any).post_translations ?? []).map((tr: any) => [
+                  tr.locale,
+                  {
+                    ...EMPTY_DRAFT,
+                    title: tr.title ?? "",
+                    summary: tr.excerpt ?? "",
+                    content: tr.content ?? "",
+                    auto_translated: tr.auto_translated ?? false,
+                  },
+                ]),
+              ),
+            );
             setSelectedTagIds(post.post_tags?.map((t: any) => t.tag_id) ?? []);
             setSelectedProjectIds(
               post.post_project_mentions?.map((m: any) => m.project_id) ?? []
@@ -152,12 +179,39 @@ export default function AdminBlogEditor() {
     }
   };
 
+  const syncTranslations = async (postId: string) => {
+    const { upsert, remove } = splitDrafts(drafts, form.locale);
+
+    await Promise.all([
+      remove.length > 0
+        ? supabase.schema("blog").from("post_translations").delete().eq("post_id", postId).in("locale", remove)
+        : null,
+      upsert.length > 0
+        ? supabase
+            .schema("blog")
+            .from("post_translations")
+            .upsert(
+              upsert.map(([locale, d]) => ({
+                post_id: postId,
+                locale,
+                title: d.title.trim(),
+                excerpt: d.summary.trim() || null,
+                content: d.content,
+                auto_translated: d.auto_translated,
+              })),
+              { onConflict: "post_id,locale" },
+            )
+        : null,
+    ]);
+  };
+
   const handleSave = () =>
     withSave(async () => {
+      const nextPublishedAt =
+        form.status === "published" ? publishedAt ?? new Date().toISOString() : null;
       const payload = {
         ...form,
-        published_at:
-          form.status === "published" ? new Date().toISOString() : null,
+        published_at: nextPublishedAt,
         updated_at: new Date().toISOString(),
       };
 
@@ -217,8 +271,10 @@ export default function AdminBlogEditor() {
                   )
               : null
           ),
+        syncTranslations(postId),
       ]);
 
+      setPublishedAt(nextPublishedAt);
       showToast("success", isNew ? "Post criado!" : "Post salvo!");
     });
 
@@ -334,6 +390,13 @@ export default function AdminBlogEditor() {
               height={560}
             />
           </AdminCard>
+
+          <TranslationsPanel
+            drafts={drafts}
+            original={form.locale}
+            summaryLabel="Excerpt / Resumo"
+            onChange={setDrafts}
+          />
         </div>
 
         <div className="space-y-6">
@@ -352,6 +415,17 @@ export default function AdminBlogEditor() {
               <option value="draft">draft</option>
               <option value="published">published</option>
               <option value="archived">archived</option>
+            </AdminSelect>
+            <AdminSelect
+              label="Idioma original"
+              value={form.locale}
+              onChange={(e) => set("locale", e.target.value)}
+            >
+              {LOCALES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
+                </option>
+              ))}
             </AdminSelect>
             <AdminToggle
               label="Post em Destaque"
