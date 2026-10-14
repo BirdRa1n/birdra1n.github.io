@@ -222,3 +222,55 @@ export function incrementProjectViews(slug: string) {
     supabase.schema("portfolio").rpc("increment_project_views", { project_slug: slug }),
   ).catch(() => {});
 }
+
+/* ─── Experiência e formação ─────────────────────────────────── */
+
+export interface ExperienceItem {
+  id: string;
+  kind: "work" | "education";
+  organization: string;
+  role: string;
+  location: string | null;
+  start_date: string;
+  end_date: string | null;
+  highlights: string[];
+  tech: string[];
+  url: string | null;
+}
+
+export async function fetchExperiences(locale: Locale, signal?: AbortSignal): Promise<ExperienceItem[]> {
+  let query = supabase
+    .schema("portfolio")
+    .from("experiences")
+    .select(
+      "id,kind,organization,role,location,start_date,end_date,highlights,tech,url,sort_order,locale," +
+        "experience_translations(locale,role,location,highlights)",
+    )
+    .eq("experience_translations.locale", locale)
+    .order("kind", { ascending: false }) // work antes de education
+    .order("sort_order", { ascending: true })
+    .order("start_date", { ascending: false });
+
+  if (signal) query = query.abortSignal(signal);
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+
+  return ((data ?? []) as any[]).map((row) => {
+    const tr = row.locale !== locale ? row.experience_translations?.[0] : undefined;
+
+    return {
+      id: row.id,
+      kind: row.kind,
+      organization: row.organization,
+      role: tr?.role ?? row.role,
+      location: tr ? tr.location : row.location,
+      start_date: row.start_date,
+      end_date: row.end_date,
+      highlights: tr?.highlights?.length ? tr.highlights : row.highlights ?? [],
+      tech: row.tech ?? [],
+      url: row.url,
+    };
+  });
+}

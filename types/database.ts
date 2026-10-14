@@ -89,6 +89,34 @@ export interface PostTranslationRow {
   updated_at: string;
 }
 
+export interface ExperienceRow {
+  id: string;
+  kind: "work" | "education";
+  organization: string;
+  role: string;
+  location: string | null;
+  start_date: string;
+  end_date: string | null;
+  highlights: string[];
+  tech: string[];
+  url: string | null;
+  sort_order: number;
+  locale: Locale;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExperienceTranslationRow {
+  experience_id: string;
+  locale: Locale;
+  role: string;
+  location: string | null;
+  highlights: string[];
+  auto_translated: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ProjectTranslationRow {
   project_id: string;
   locale: Locale;
@@ -291,6 +319,19 @@ export type Database = {
       contact_messages: TableDef<ContactMessageRow>;
       organizations: TableDef<OrganizationRow>;
       site_settings: TableDef<SiteSettingRow>;
+      experiences: TableDef<ExperienceRow>;
+      experience_translations: TableDef<
+        ExperienceTranslationRow,
+        [
+          {
+            foreignKeyName: "experience_translations_experience_id_fkey";
+            columns: ["experience_id"];
+            isOneToOne: false;
+            referencedRelation: "experiences";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
       project_translations: TableDef<
         ProjectTranslationRow,
         [
@@ -366,6 +407,7 @@ export type BlogPost = PostRow & {
 export type BlogTag = TagRow;
 export type Project = ProjectRow;
 export type PostTranslation = PostTranslationRow;
+export type Experience = ExperienceRow;
 export type ProjectTranslation = ProjectTranslationRow;
 export type Category = CategoryRow;
 export type Certificate = CertificateRow & { organization?: OrganizationRow | null };
