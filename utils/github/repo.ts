@@ -1,4 +1,6 @@
 // utils/github/repo.ts
+// Chama a Edge Function direto (sem passar por uma API route da Vercel),
+// o que também funciona no export estático do GitHub Pages.
 import type GitHubRepo from "@/types/github";
 
 export interface GitHubRepoWithSkills extends GitHubRepo {
@@ -6,21 +8,18 @@ export interface GitHubRepoWithSkills extends GitHubRepo {
 }
 
 const getRepos = async (signal?: AbortSignal): Promise<GitHubRepoWithSkills[]> => {
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://birdra1n.vercel.app"
-      : "";
-
-  const response = await fetch(`${baseUrl}/api/repos/github`, { signal });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/github-repos`,
+    { signal },
+  );
 
   if (!response.ok) {
-    throw new Error(`Erro ao buscar repositórios: ${response.statusText}`);
+    throw new Error(`Erro ao buscar repositórios: ${response.status}`);
   }
 
   const data = await response.json();
-  const repos = (data.repos ?? []) as GitHubRepoWithSkills[];
 
-  return repos.sort((a, b) => (b.skills?.length ?? 0) - (a.skills?.length ?? 0));
+  return Array.isArray(data) ? (data as GitHubRepoWithSkills[]) : [];
 };
 
 export default getRepos;
