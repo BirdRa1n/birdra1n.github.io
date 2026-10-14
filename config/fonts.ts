@@ -1,7 +1,7 @@
 // config/fonts.ts
 // Fontes servidas pelo next/font (self-hosted, sem request externo,
 // sem FOUT). As variáveis alimentam os tokens do Design System.
-import { Inter, JetBrains_Mono, Syne } from "next/font/google";
+import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 
 export const fontBody = Inter({
   subsets: ["latin"],
@@ -12,15 +12,16 @@ export const fontBody = Inter({
 
 export const fontMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
 });
 
-export const fontDisplay = Syne({
+// Inter Tight: mesma família do corpo, com espaçamento otimizado para
+// títulos grandes (tracking negativo fica limpo em tamanhos display).
+export const fontDisplay = Inter_Tight({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700", "800"],
   variable: "--font-display",
   display: "swap",
 });

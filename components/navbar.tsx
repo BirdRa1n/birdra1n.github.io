@@ -1,189 +1,163 @@
 // components/navbar.tsx
-import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiMenu, FiX } from "react-icons/fi";
+import { useEffect, useState } from "react";
 
-import { GithubIcon } from "@/components/icons";
+import { LanguageSwitch } from "@/components/language-switch";
+import { useScrolled } from "@/components/motion";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
+import { useI18n } from "@/i18n";
 
-const FILE_LABELS: Record<string, string> = {
-  "/": "~/home",
-  "/blog": "blog.md",
-  "/contact": "contact.sh",
-};
-
-const NavLogo = () => (
-  <div className="flex items-center gap-2.5 select-none">
-    <div
-      className="w-8 h-8 rounded flex items-center justify-center text-xs font-bold"
-      style={{
-        background: "var(--neon)",
-        color: "#000",
-        fontFamily: "var(--font-mono)",
-        boxShadow: "0 0 14px var(--neon-glow)",
-      }}
+const Logo = () => (
+  <span className="flex items-center gap-2.5 select-none">
+    <span
+      aria-hidden
+      className="w-7 h-7 rounded-[9px] grid place-items-center text-[11px] font-bold text-white"
+      style={{ background: "var(--grad)", fontFamily: "var(--font-display)" }}
     >
-      BR
-    </div>
-    <div className="leading-none">
-      <span
-        className="font-bold text-sm block"
-        style={{ fontFamily: "var(--font-mono)", color: "var(--neon)" }}
-      >
-        BirdRa1n
-      </span>
-      <span
-        className="text-[9px] block"
-        style={{ fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}
-      >
-        dev portfolio
-      </span>
-    </div>
-  </div>
+      DJ
+    </span>
+    <span className="font-display font-semibold tracking-[-0.02em] text-[15px]">
+      {siteConfig.name}
+    </span>
+  </span>
 );
 
 export const Navbar = () => {
   const router = useRouter();
+  const { t } = useI18n();
+  const scrolled = useScrolled();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Fecha o menu mobile ao navegar
   useEffect(() => {
     const close = () => setMenuOpen(false);
 
-    router.events.on("routeChangeComplete", close);
+    router.events.on("routeChangeStart", close);
 
-    return () => router.events.off("routeChangeComplete", close);
+    return () => router.events.off("routeChangeStart", close);
   }, [router.events]);
 
+  // Trava o scroll do body com o menu mobile aberto
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  const isActive = (href: string) =>
+    href === "/" ? router.pathname === "/" : router.pathname.startsWith(href);
+
   return (
-    <header
-      className="sticky top-0 z-40 border-b"
-      style={{
-        background: "color-mix(in srgb, var(--bg-primary) 88%, transparent)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderColor: "var(--border)",
-      }}
-    >
-      <nav
-        aria-label="Navegação principal"
-        className="container mx-auto max-w-7xl px-6 h-16 flex items-center justify-between gap-4"
+    <header className="fixed top-0 inset-x-0 z-50">
+      <a
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 btn btn-solid btn-sm z-[70]"
+        href="#main"
       >
-        {/* Brand + desktop nav */}
-        <div className="flex items-center gap-10 min-w-0">
-          <NextLink aria-label="Página inicial" href="/">
-            <NavLogo />
+        {t.nav.skip}
+      </a>
+
+      <div
+        className="glass transition-[border-color,box-shadow] duration-300 border-b"
+        style={{
+          borderColor: scrolled || menuOpen ? "var(--line)" : "transparent",
+        }}
+      >
+        <nav
+          aria-label="Principal"
+          className="container-x h-14 flex items-center justify-between gap-6"
+        >
+          <NextLink aria-label={t.nav.home} href="/">
+            <Logo />
           </NextLink>
 
-          <div className="hidden lg:flex gap-6">
+          <ul className="hidden md:flex items-center gap-1">
             {siteConfig.navItems.map((item) => {
-              const isActive = router.pathname === item.href;
-              const label = FILE_LABELS[item.href] ?? item.label;
+              const active = isActive(item.href);
 
               return (
-                <NextLink
-                  key={item.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className="relative text-xs font-medium tracking-wide transition-all duration-200 flex items-center gap-1"
-                  href={item.href}
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    color: isActive ? "var(--neon)" : "var(--text-muted)",
-                    textShadow: isActive ? "0 0 10px var(--neon-glow)" : "none",
-                  }}
-                >
-                  {isActive && <span style={{ color: "var(--neon)" }}>▸</span>}
-                  {label}
-                </NextLink>
+                <li key={item.href}>
+                  <NextLink
+                    aria-current={active ? "page" : undefined}
+                    className="relative isolate px-3.5 py-2 text-[13.5px] tracking-[-0.01em] rounded-full transition-colors"
+                    href={item.href}
+                    style={{ color: active ? "var(--fg)" : "var(--fg-muted)" }}
+                  >
+                    {active && (
+                      <motion.span
+                        className="absolute inset-0 rounded-full bg-[var(--bg-subtle)] -z-10"
+                        layoutId="nav-pill"
+                        transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                      />
+                    )}
+                    {t.nav[item.key]}
+                  </NextLink>
+                </li>
               );
             })}
+          </ul>
+
+          <div className="flex items-center gap-1">
+            <LanguageSwitch />
+            <ThemeSwitch />
+            <button
+              aria-controls="mobile-menu"
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
+              className="ui-icon-btn md:hidden"
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span className="relative w-4 h-3" aria-hidden>
+                <motion.span
+                  animate={menuOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
+                  className="absolute left-0 top-0 h-[1.5px] w-4 bg-current rounded"
+                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                />
+                <motion.span
+                  animate={menuOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 0 }}
+                  className="absolute left-0 bottom-0 h-[1.5px] w-4 bg-current rounded"
+                  transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                />
+              </span>
+            </button>
           </div>
-        </div>
+        </nav>
+      </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-4">
-          <a
-            aria-label="GitHub"
-            className="hidden sm:block opacity-45 transition-opacity hover:opacity-100"
-            href={siteConfig.links.github}
-            rel="noopener noreferrer"
-            target="_blank"
-            title="GitHub"
-          >
-            <GithubIcon
-              className="w-5 h-5"
-              style={{ color: "var(--text-primary)" }}
-            />
-          </a>
-          <ThemeSwitch />
-          <button
-            aria-controls="mobile-menu"
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-            className="lg:hidden w-8 h-8 flex items-center justify-center rounded-sm opacity-60 hover:opacity-100 transition-opacity"
-            style={{ color: "var(--text-primary)" }}
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            {menuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            animate={{ opacity: 1, height: "auto" }}
-            className="lg:hidden overflow-hidden border-t"
-            exit={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1 }}
+            className="md:hidden fixed inset-x-0 top-14 bottom-0 glass"
+            exit={{ opacity: 0 }}
             id="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            style={{
-              background:
-                "color-mix(in srgb, var(--bg-primary) 96%, transparent)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              borderColor: "var(--border)",
-            }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
           >
-            <div className="px-6 py-6 flex flex-col gap-5">
-              {siteConfig.navMenuItems.map((item) => {
-                const isActive = router.pathname === item.href;
-                const label = FILE_LABELS[item.href] ?? item.label;
-
-                return (
+            <ul className="container-x pt-8 flex flex-col gap-1">
+              {[{ key: "home" as const, href: "/" }, ...siteConfig.navItems].map((item, i) => (
+                <motion.li
+                  key={item.href}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  initial={{ opacity: 0, y: -8 }}
+                  transition={{ delay: 0.04 * i, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <NextLink
-                    key={item.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className="text-sm font-medium transition-colors"
+                    aria-current={isActive(item.href) ? "page" : undefined}
+                    className="block py-3 font-display text-[28px] font-semibold tracking-[-0.03em]"
                     href={item.href}
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      color: isActive ? "var(--neon)" : "var(--text-muted)",
-                    }}
+                    style={{ color: isActive(item.href) ? "var(--fg)" : "var(--fg-muted)" }}
                   >
-                    {isActive && "▸ "}
-                    {label}
+                    {t.nav[item.key]}
                   </NextLink>
-                );
-              })}
-              <a
-                className="text-sm font-medium sm:hidden"
-                href={siteConfig.links.github}
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  color: "var(--text-muted)",
-                }}
-                target="_blank"
-              >
-                github ↗
-              </a>
-            </div>
+                </motion.li>
+              ))}
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>
